@@ -1,0 +1,44 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7088690400123596,
+      "y": 4.240825653076172
+    },
+    "rotation": 120.69972356252295
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Backup_HP"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Return_HP"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Backup_Straight"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

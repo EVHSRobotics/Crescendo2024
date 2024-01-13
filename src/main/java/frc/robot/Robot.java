@@ -4,11 +4,20 @@
 
 package frc.robot;
 
+import java.util.logging.Logger;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,15 +26,34 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  StructPublisher<Pose2d> publisher;
+  Pose2d poseA;
+  StructArrayPublisher<Pose2d> arrayPublisher;
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-  }
+    poseA = new Pose2d();
+
+// WPILib
+  publisher = NetworkTableInstance.getDefault()
+    .getStructTopic("MyPose", Pose2d.struct).publish();
+
+  arrayPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
+
+
+
+}
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
+    publisher.set(poseA);
+    arrayPublisher.set(new Pose2d[] {poseA});
+
+    SmartDashboard.putBoolean("color", DriverStation.getAlliance().get().equals(Alliance.Blue));
+    SmartDashboard.updateValues();
   }
 
   @Override

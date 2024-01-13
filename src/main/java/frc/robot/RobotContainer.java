@@ -10,6 +10,9 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,11 +21,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Vision;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Limelight;
 
 public class RobotContainer {
   
@@ -32,6 +40,8 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final SendableChooser<String> autoChooser;
+private Vision vision;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -66,13 +76,26 @@ public class RobotContainer {
   }
 
   public RobotContainer() {
+    autoChooser = new SendableChooser<String>();
+    autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
+    autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
+
+
+    SmartDashboard.putData(autoChooser);
+    SmartDashboard.updateValues();
+
     configureBindings();
-  }
 
-  enum AutoPaths {
+
+    vision = new Vision(new Limelight(0, "table", 19), joystick);
+
     
-    StraightPath("NewPath");
+  }
+  public enum AutoPaths {
 
+    
+    BackupHPAuto("Backup_HP_Auto"),
+    BackupPathPlannerHPAuto("New Auto");
     private String pathName;
 
     AutoPaths(String pathName) {
@@ -88,7 +111,10 @@ public class RobotContainer {
     public Command action();
   }
   
-
+public Command[] getTeleCommand() {
+  Command[] commands = {vision};
+  return commands;
+}
  
   public Command getAutonomousCommand() {
 
@@ -102,10 +128,32 @@ public class RobotContainer {
 
     
     // return straightLineCommand;
-    return genChoreoCommand(AutoPaths.StraightPath);
+    // return genChoreoCommand(AutoPaths.StraightPath);
+
+    // easiest way: running auto through PathPlannerLib while using choreo trajectories
+    drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected()));
+    return drivetrain.getAutoPath(autoChooser.getSelected());
+    // drivetrain.setPose(null);
+    // Command chooser = autoChooser.getSelected().;
+    // return autoChooser.getSelected();
   } 
 
-  // Creates an auto script filled with commands and paths
+
+
+  // Choreo path command using pathplanner: not needed when using auto straight off of pathplanner
+  public Command choreoPathPlannerGen(AutoPaths path){
+    PathPlannerPath PPpath = PathPlannerPath.fromChoreoTrajectory(path.getPath());
+    drivetrain.setPose(PPpath.getStartingDifferentialPose());
+    return AutoBuilder.followPath(PPpath);
+  }
+
+
+
+
+
+
+  // Deprecated
+    // Creates an auto script filled with commands and paths
   public Command genAutoScript(AutoCommands... comms) {
     if (comms.length == 0) { return null; }
     Command script = comms[0].action();
@@ -117,23 +165,8 @@ public class RobotContainer {
     return script;
   }
 
-  // public void yes(){
-  //   AutoBuilder.configureHolonomic(
-  //           this::getPose, // Supplier of current robot pose
-  //           this::seedFieldRelative,  // Consumer for seeding pose against auto
-  //           this::getCurrentRobotChassisSpeeds,
-  //           (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-  //           new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
-  //                                           new PIDConstants(10, 0, 0),
-  //                                           1,
-  //                                           1,
-  //                                           new ReplanningConfig(),
-  //                                           0.004),
-                                            
-  //           this);
-  // }
-
   // Creates the path auto command
+  // note: was not working so moved on to using pathplanner one instead but with choreo paths
   public Command genChoreoCommand(AutoPaths path) {
     
     ChoreoTrajectory pathTraj = Choreo.getTrajectory(path.getPath());
@@ -164,11 +197,6 @@ public class RobotContainer {
         () ->  DriverStation.getAlliance().get().equals(Alliance.Red), // Whether or not to mirror the path based on alliance (this assumes the path is created for the blue alliance)
         drivetrain // The subsystem(s) to require, typically your drive subsystem only
     );
-
-    
-
-    
-
     return swerveCommand;
     
   }
