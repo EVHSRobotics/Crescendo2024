@@ -31,6 +31,8 @@ public class RobotContainer {
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric();
+
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private void configureBindings() {
@@ -39,7 +41,7 @@ public class RobotContainer {
                                                                                            // negative Y (forward)
             .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+        ));;
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
