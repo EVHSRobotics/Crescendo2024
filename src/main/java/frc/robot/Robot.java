@@ -17,14 +17,19 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.LimelightHelpers;
 
+public class Robot extends TimedRobot {
+  
+  private Command m_autonomousCommand;
+  private boolean isUsingLimelight = false;
   private RobotContainer m_robotContainer;
   StructPublisher<Pose2d> publisher;
   Pose2d poseA;
@@ -54,6 +59,17 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("color", DriverStation.getAlliance().get().equals(Alliance.Blue));
     SmartDashboard.updateValues();
+    
+    if (isUsingLimelight) {    
+      var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
+      
+      Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
+
+      if (lastResult.valid) {
+        TunerConstants.DriveTrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
+      }
+    }
+
   }
 
   @Override

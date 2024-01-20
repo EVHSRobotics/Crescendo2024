@@ -55,6 +55,7 @@ private Vision vision;
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private void configureBindings() {
+  
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
