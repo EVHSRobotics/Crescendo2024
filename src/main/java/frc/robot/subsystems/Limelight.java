@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
 
-  private NetworkTable table;
-  private NetworkTableEntry tx;
+  private NetworkTable LimelightTable;
+  public NetworkTableEntry tx;
   private NetworkTableEntry ty;
-  private NetworkTableEntry tv;
+  public NetworkTableEntry tv;
   private NetworkTableEntry ta;
   private NetworkTableEntry tclass;
   private int pipeline;
@@ -23,26 +23,29 @@ public class Limelight extends SubsystemBase {
   // Target Height
 
   /** Creates a new Limelight. */
-  public Limelight(int pipeline, String tableName, double mountangle) {
-    this.mountAngle = mountangle;
-    table = NetworkTableInstance.getDefault().getTable(tableName);
-    this.pipeline = pipeline;
-    table.getEntry("pipeline").setNumber(this.pipeline);
+  public Limelight(int limelightNumber) {
+    // we can use the limelight number to create each specific limelight based on the location (currently just have one )
+    LimelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    
 
   }
 
   @Override
   public void periodic() {
 
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty"); 
-    tv = table.getEntry("tv");
-    ta = table.getEntry("ta");
+    tx = LimelightTable.getEntry("tx");
+    ty = LimelightTable.getEntry("ty"); 
+    tv = LimelightTable.getEntry("tv");
+    ta = LimelightTable.getEntry("ta");
+
+
 
     // Only for vision based limelight
-    tclass = table.getEntry("tclass");
+    tclass = LimelightTable.getEntry("tclass");
 
-    SmartDashboard.putNumber("tx", tv.getInteger(0));
+    SmartDashboard.putNumber("tx", tx.getDouble(0));
+    SmartDashboard.putNumber("ty", ty.getDouble(0));
+
     SmartDashboard.updateValues();
 
   }
@@ -56,15 +59,7 @@ public class Limelight extends SubsystemBase {
     }
     return a;   
   }
-// gets the type of object detected by the limelight
-  // public GameObject getGameObject() {
-  //   String classData = tclass.getString("cube");
-  //   SmartDashboard.putString("detectedValue", classData);
-  //   SmartDashboard.updateValues();
 
-  //   return classData.contains("cube") ? GameObject.CUBE : GameObject.CONE;   
-  // }
-  // gets the error of the limelight to the detected object
   public double getX() {
     double x = tx.getDouble(0.0);
    
@@ -73,10 +68,13 @@ public class Limelight extends SubsystemBase {
     }
     return x;   
   }
+
   public boolean getObjectSeen() {
     return tv.getInteger(0) == 0 ? false : true;
   }
+
   // gets the error of the limelight to the detected object
+
   public double getY() {
     double y = ty.getDouble(0.0);
     SmartDashboard.putNumber("ty", y);
