@@ -62,6 +62,11 @@ private Vision vision;
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));;
 
+ joystick.x().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(0) // Drive left with negative X (left)
+            .withRotationalRate(vision.getAimRotation() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
@@ -87,9 +92,10 @@ private Vision vision;
     configureBindings();
 
 
-    vision = new Vision(new Limelight(0, "table", 19), joystick);
+    vision = new Vision();
 
     
+
   }
   public enum AutoPaths {
 
