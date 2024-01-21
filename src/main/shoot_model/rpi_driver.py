@@ -1,9 +1,7 @@
-
 import numpy as np
 import time
 import tflite_runtime.interpreter as tflite
-from networktables import NetworkTablesInstance
-
+from ntcore import NetworkTableInstance
 
 class ShootModelDriver:
     def __init__(self):
@@ -21,8 +19,8 @@ class ShootModelDriver:
         self.interpreter.allocate_tensors()
 
         print("Connecting to Network Tables")
-        self.ntinst = NetworkTablesInstance.getDefault()
-        self.ntinst.startClientTeam(2854)
+        self.ntinst = NetworkTableInstance.getDefault()
+        self.ntinst.setServerTeam(2854)
         self.ntinst.startDSClient()       
 
     def run(self):
@@ -37,21 +35,23 @@ class ShootModelDriver:
             # output
             outputDetails = self.output_tensor()[0][0]
             
-            print("Output: " + outputDetails)
+            print("Output: " + str(outputDetails))
 
             # Uploads the data back along with the timestamp
             self.ntinst.getTable("shootModel").putNumber("predictedTimestamp", time.time())
             self.ntinst.getTable("shootModel").putNumber("predictedPerOut", outputDetails)
-   
+
+            # Predicts every 2 seconds
+            time.sleep(2)
 
     def set_input(self):
         
         # Get the ty, ta values directly from limelight
         ty = self.ntinst.getTable("limelight").getEntry("ty").getDouble(0)
         ta = self.ntinst.getTable("limelight").getEntry("ta").getDouble(0)
-        print("TY: " + ty)
-        print("TA: " + ta)
-        self.interpreter.set_tensor(self.interpreter.get_input_details()[0]['index'], np.float32([ty, ta]))
+        print("TY: " + str(ty))
+        print("TA: " + str(ta))
+        self.interpreter.set_tensor(self.interpreter.get_input_details()[0]['index'], np.float32([[ty, ta]]))
        
 
     def output_tensor(self):
