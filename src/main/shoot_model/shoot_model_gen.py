@@ -1,0 +1,68 @@
+import tensorflow as tf
+import numpy as np
+import pandas as pd
+from keras.models import *
+from keras.layers import *
+from keras.optimizers import *
+
+import matplotlib as plt
+
+shootModel = None
+
+shootModelInterpretor = None
+shootModelInputDetails = None
+shootModelOutputDetails = None
+
+# Gens the shoot linear regression model using the excel file with all of the data attributes
+# Saves the model to a keras file and a tflite file
+def genShootModel():
+
+    shootData = (pd.read_excel("/Crescendo2024/src/main/java/frc/robot/DataPts.xlsx"))
+
+    shootDataX = shootData[["ty", "ta"]]
+    shootDataY = shootData[["perOut"]]
+
+    shootModel = Sequential()
+
+    shootModel.add(Dense(1, input_dim=2))
+    shootModel.add(Dense(25))
+    shootModel.add(Dense(25))
+    shootModel.add(Dense(25))
+    shootModel.add(Dense(1))
+
+    shootModel.compile(loss="mse", optimizer=Adam(0.1))
+    shootModel.fit(shootDataX, shootDataY, epochs=1000)
+
+    shootModel.save("ShootModel.keras")
+
+    convertedTFLiteModel = tf.lite.TFLiteConverter.from_keras_model(shootModel).convert()
+    
+    with open("ShootModel_Lite.tflite", "wb") as shootTflite:
+        shootTflite.write(convertedTFLiteModel)
+
+# Loads the shoot model using tflite for more efficiency
+def loadShootModelTFLite(inputVals):
+
+    shootModelInterpretor = tf.lite.Interpreter(model_path="ShootModel_Lite.tflite")
+
+    shootModelInputDetails = shootModelInterpretor.get_input_details()
+    shootModelOutputDetails = shootModelInterpretor.get_output_details()
+
+    shootModelInterpretor.allocate_tensors()
+    shootModelInterpretor.set_tensor(shootModelInputDetails[0]["index"], np.float32([inputVals]))
+    shootModelInterpretor.invoke()
+
+    shootModelPrediction = shootModelInterpretor.get_tensor(shootModelOutputDetails[0]["index"])
+    print(shootModelPrediction)
+
+
+# Loads the more accurate model using keras
+def loadShootModelKeras(inputVals):
+
+    shootModel = load_model("ShootModel.keras")
+
+    shootModelPrediction = shootModel.predict(np.array([inputVals]))
+
+
+
+loadShootModelTFLite([0.5, 0.5])
