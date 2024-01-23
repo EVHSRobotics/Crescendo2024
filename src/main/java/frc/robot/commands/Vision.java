@@ -60,7 +60,6 @@ public class Vision extends Command {
     // addRequirements(aprilScanner);
    SmartDashboard.putString("H", "Hello");
     SmartDashboard.updateValues();
-    runPythonShootModel();
    
   }
 

@@ -17,11 +17,12 @@ class ShootModelDriver:
             self.hardware_type = "Unoptimized"
 
         self.interpreter.allocate_tensors()
+        NetworkTableInstance.getDefault().startClient4("RPI")
+        NetworkTableInstance.getDefault().setServerTeam(2854)
+        NetworkTableInstance.getDefault().startDSClient()
 
         print("Connecting to Network Tables")
-        self.ntinst = NetworkTableInstance.getDefault()
-        self.ntinst.setServerTeam(2854)
-        self.ntinst.startDSClient()       
+       
 
     def run(self):
         while True:
@@ -32,25 +33,28 @@ class ShootModelDriver:
             # run inference
             self.interpreter.invoke()
 
+
             # output
             outputDetails = self.output_tensor()[0][0]
             
             print("Output: " + str(outputDetails))
 
             # Uploads the data back along with the timestamp
-            self.ntinst.getTable("shootModel").putNumber("predictedTimestamp", time.time())
-            self.ntinst.getTable("shootModel").putNumber("predictedPerOut", outputDetails)
+            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTimestamp", time.time())
+            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedPerOut", outputDetails)
 
-            # Predicts every 2 seconds
-            time.sleep(2)
+            # Predicts every 1 seconds
+            time.sleep(0.5)
 
     def set_input(self):
         
         # Get the ty, ta values directly from limelight
-        ty = self.ntinst.getTable("limelight").getEntry("ty").getDouble(0)
-        ta = self.ntinst.getTable("limelight").getEntry("ta").getDouble(0)
+        ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0)
+        ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0)
+        
         print("TY: " + str(ty))
         print("TA: " + str(ta))
+        
         self.interpreter.set_tensor(self.interpreter.get_input_details()[0]['index'], np.float32([[ty, ta]]))
        
 
