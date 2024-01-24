@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -21,10 +26,22 @@ public class Robot extends TimedRobot {
   private boolean isUsingLimelight = false;
   private RobotContainer m_robotContainer;
   
+ StructPublisher<Pose2d> publisher;
+  Pose2d poseA;
+  StructArrayPublisher<Pose2d> arrayPublisher;
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+  // WPILib
+  publisher = NetworkTableInstance.getDefault()
+    .getStructTopic("MyPose", Pose2d.struct).publish();
+
+  arrayPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
+
+
+
   }
 
   @Override

@@ -58,7 +58,13 @@ public class Vision extends Command {
     aprilLimelight = new Limelight(1);
     // addRequirements(videoServer);
     // addRequirements(aprilScanner);
+<<<<<<< HEAD
   
+=======
+   SmartDashboard.putString("H", "Hello");
+    SmartDashboard.updateValues();
+   
+>>>>>>> d6246a07189649b5163a55833683a1bcb70dc967
   }
 
   // Called when the command is initially scheduled.
