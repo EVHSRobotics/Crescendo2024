@@ -14,13 +14,15 @@ public class Shoot extends Command {
 
   private Shooter shooter;
   private XboxController armController;
+  private boolean useAlgoShooting = false;
+
   /** Creates a new Shoot. */
-  public Shoot() {
+  public Shoot(Shooter shooter, XboxController armController) {
     //1 is port for arm
-     armController = new XboxController(1);
+     this.armController = armController;
     // Use addRequirements() here to declare subsystem dependencies.
 
-    shooter = new Shooter();
+    this.shooter = shooter;
     
     addRequirements(shooter);
 
@@ -35,12 +37,18 @@ public class Shoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (useAlgoShooting) {
 
+    
   double output = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
   if (armController.getYButton()){
     shooter.setShooterSpeed(output);
   }
-  shooter.setShooterSpeed(output);
+}
+else {
+
+  shooter.setShooterSpeed(armController.getAButtonPressed() ? 1 : 0);
+}
  
   }
 

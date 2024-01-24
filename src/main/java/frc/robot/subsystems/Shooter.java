@@ -9,33 +9,27 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-  TalonFX forwardTop;
-  TalonFX forwardBottom;
-  TalonFX middle;
+  Talon forwardTop;
+  Talon forwardBottom;
 
   /** Creates a new Shooter. */
   public Shooter() {
 
-    forwardTop = new TalonFX(0);
-    forwardBottom = new TalonFX(0);
-    middle = new TalonFX(0);
+    forwardTop = new Talon(0);
+    forwardBottom = new Talon(0);
 
-    forwardTop.setNeutralMode(NeutralModeValue.Coast);
-    forwardBottom.setNeutralMode(NeutralModeValue.Coast);
-    middle.setNeutralMode(NeutralModeValue.Coast);
+    forwardTop.addFollower(forwardBottom);
 
     forwardBottom.setInverted(true);
   }
 
   public void setShooterSpeed(double percentOutput) {
     forwardTop.set(percentOutput);
-    forwardBottom.set(percentOutput);
-    middle.set(percentOutput);
-    
   }
 
 

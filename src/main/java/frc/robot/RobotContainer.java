@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,10 +28,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Intake;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.Vision;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
   
@@ -42,6 +47,11 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
 private Vision vision;
+  private Shooter shooter;
+  private Shoot shoot;
+  private Intake intake;
+  private IntakeSub intakeSub;
+  private XboxController operatorController = new XboxController(1);
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -92,10 +102,15 @@ private Vision vision;
 
     configureBindings();
 
-
-    vision = new Vision();
+    // Init all subsystems
+    shooter = new Shooter();
+    intakeSub = new IntakeSub();
 
     
+    vision = new Vision();
+
+    shoot = new Shoot(shooter, operatorController);
+    intake = new Intake(intakeSub, operatorController);
 
   }
   public enum AutoPaths {
