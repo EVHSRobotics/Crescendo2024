@@ -58,10 +58,7 @@ public class Vision extends Command {
     aprilLimelight = new Limelight(1);
     // addRequirements(videoServer);
     // addRequirements(aprilScanner);
-   SmartDashboard.putString("H", "Hello");
-    SmartDashboard.updateValues();
-    runPythonShootModel();
-   
+  
   }
 
   // Called when the command is initially scheduled.
@@ -72,35 +69,8 @@ public class Vision extends Command {
   }
 
 
-  public void runPythonShootModel() {
-    try {
-      
+  
     
-    // ProcessBuilder pb = new ProcessBuilder("sudo apt", " --version");
-
-    // Process p = pb.start();
-      Process p = Runtime.getRuntime().exec("python test.py");
-    BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-    String line;
-    while ((line = r.readLine()) != null) {
-SmartDashboard.putString("H", line);
-    SmartDashboard.updateValues();    
-
-
-
-  }
-
-    int eC = p.waitFor();
-
-    System.out.println("Exited with " + eC);
-    }
-    catch (IOException | InterruptedException e) {
-      SmartDashboard.putString("H", e.getLocalizedMessage());
-    SmartDashboard.updateValues();
-    }
-
-  }
   public double getAimRotation() {
     double distance = aprilLimelight.tx.getDouble(0);
     double error = 0.1; 

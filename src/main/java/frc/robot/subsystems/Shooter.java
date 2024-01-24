@@ -35,6 +35,7 @@ public class Shooter extends SubsystemBase {
     forwardTop.set(percentOutput);
     forwardBottom.set(percentOutput);
     middle.set(percentOutput);
+    
   }
 
 

@@ -38,8 +38,6 @@ public class Limelight extends SubsystemBase {
     tv = LimelightTable.getEntry("tv");
     ta = LimelightTable.getEntry("ta");
 
-
-
     // Only for vision based limelight
     tclass = LimelightTable.getEntry("tclass");
 
