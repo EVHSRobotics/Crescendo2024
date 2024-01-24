@@ -35,10 +35,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Vision extends Command {
 
   // private AprilScanner aprilScanner;
-  private Limelight aprilLimelight;
-  private CommandXboxController xboxController;
-  public Limelight gameObjectTopLimelight;
-  public Limelight gameObjectBottomLimelight;
+  private XboxController operatorController;
+
   public double xdistance;
   NetworkTable table1;
   NetworkTableEntry tx, tv;
@@ -50,16 +48,12 @@ public class Vision extends Command {
 
   
 
-  public Vision() {
+  public Vision(XboxController operatorController) {
     // Use addRequirements() here to declare subsystem dependencies.
     // VideoServer videoServer, AprilScanner aprilScanner,
     // this.aprilScanner = aprilScanner;
     // table1 = NetworkTableInstance.getDefault().getTable("limelight-bottom");
-    aprilLimelight = new Limelight(1);
-    // addRequirements(videoServer);
-    // addRequirements(aprilScanner);
-   SmartDashboard.putString("H", "Hello");
-    SmartDashboard.updateValues();
+    this.operatorController = operatorController;
    
   }
 
@@ -72,7 +66,7 @@ public class Vision extends Command {
 
 
   public double getAimRotation() {
-    double distance = aprilLimelight.tx.getDouble(0);
+    double distance = LimelightHelpers.getTX("limelight");
     double error = 0.1; 
     double p_constant = -0.028; 
     double output = (distance - error) * p_constant;
@@ -96,7 +90,7 @@ public class Vision extends Command {
   
   public void aimLimelightAprilTags() {
 
-    double x = aprilLimelight.getX();
+    double x = LimelightHelpers.getTX("limelight");
     errorsum = 0;
     error = x;
 

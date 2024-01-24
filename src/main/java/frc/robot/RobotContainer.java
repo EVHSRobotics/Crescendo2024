@@ -107,8 +107,9 @@ private Vision vision;
     intakeSub = new IntakeSub();
 
     
-    vision = new Vision();
+    vision = new Vision(operatorController);
 
+    // Init all commands
     shoot = new Shoot(shooter, operatorController);
     intake = new Intake(intakeSub, operatorController);
 
