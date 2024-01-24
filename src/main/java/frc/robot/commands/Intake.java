@@ -34,11 +34,14 @@ public class Intake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!intakeSub.getBanner()) {
+    if (!intakeSub.getBanner() || operatorController.getAButton()) {
     intakeSub.setIntakeSpeed(operatorController.getRightTriggerAxis() > 0 ? operatorController.getRightTriggerAxis() : -operatorController.getLeftTriggerAxis());
   }
   else {
+   
     intakeSub.setIntakeSpeed(-operatorController.getLeftTriggerAxis());
+
+    
   }
   }
 
