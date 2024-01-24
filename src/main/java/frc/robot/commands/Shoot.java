@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.Shooter;
@@ -12,8 +13,11 @@ import frc.robot.subsystems.Shooter;
 public class Shoot extends Command {
 
   private Shooter shooter;
+  private XboxController armController;
   /** Creates a new Shoot. */
   public Shoot() {
+    //1 is port for arm
+     armController = new XboxController(1);
     // Use addRequirements() here to declare subsystem dependencies.
 
     shooter = new Shooter();
@@ -33,7 +37,9 @@ public class Shoot extends Command {
   public void execute() {
 
   double output = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
-  
+  if (armController.getYButton()){
+    shooter.setShooterSpeed(output);
+  }
   shooter.setShooterSpeed(output);
  
   }

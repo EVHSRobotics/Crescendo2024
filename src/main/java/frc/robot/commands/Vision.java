@@ -58,7 +58,9 @@ public class Vision extends Command {
     aprilLimelight = new Limelight(1);
     // addRequirements(videoServer);
     // addRequirements(aprilScanner);
-  
+   SmartDashboard.putString("H", "Hello");
+    SmartDashboard.updateValues();
+   
   }
 
   // Called when the command is initially scheduled.
@@ -69,8 +71,6 @@ public class Vision extends Command {
   }
 
 
-  
-    
   public double getAimRotation() {
     double distance = aprilLimelight.tx.getDouble(0);
     double error = 0.1; 
