@@ -11,6 +11,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -20,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,10 +29,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.Vision;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.commands.RunIntake;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
   
@@ -39,9 +45,14 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+  XboxController operator = new XboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
-private Vision vision;
+// private Vision vision;
+
+  private RunIntake intake;
+  private Shoot shooter;
+
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -63,11 +74,6 @@ private Vision vision;
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));;
 
- joystick.x().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-                                                                                           // negative Y (forward)
-            .withVelocityY(0) // Drive left with negative X (left)
-            .withRotationalRate(vision.getAimRotation() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
@@ -86,6 +92,8 @@ private Vision vision;
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
+    intake = new RunIntake(operator);
+    shooter = new Shoot(operator);
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.updateValues();
@@ -93,10 +101,8 @@ private Vision vision;
     configureBindings();
 
 
-    vision = new Vision();
 
     
-
   }
   public enum AutoPaths {
 
@@ -119,7 +125,7 @@ private Vision vision;
   }
   
 public Command[] getTeleCommand() {
-  Command[] commands = {vision};
+  Command[] commands = {intake, shooter};
   return commands;
 }
  

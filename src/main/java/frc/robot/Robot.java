@@ -23,6 +23,8 @@ import frc.robot.subsystems.LimelightHelpers;
 public class Robot extends TimedRobot {
   
   private Command m_autonomousCommand;
+  private Command[] teleCommands;
+
   private boolean isUsingLimelight = false;
   private RobotContainer m_robotContainer;
   
@@ -94,6 +96,10 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+    teleCommands = m_robotContainer.getTeleCommand();
+    for(Command command : teleCommands){
+      command.schedule();
     }
   }
 

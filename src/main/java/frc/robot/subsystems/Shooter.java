@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
@@ -13,28 +15,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-  TalonFX forwardTop;
-  TalonFX forwardBottom;
-  TalonFX middle;
+  TalonSRX top;
+  TalonSRX bottom;
 
   /** Creates a new Shooter. */
   public Shooter() {
 
-    forwardTop = new TalonFX(0);
-    forwardBottom = new TalonFX(0);
-    middle = new TalonFX(0);
+    top = new TalonSRX(12);
+    bottom = new TalonSRX(11);
 
-    forwardTop.setNeutralMode(NeutralModeValue.Coast);
-    forwardBottom.setNeutralMode(NeutralModeValue.Coast);
-    middle.setNeutralMode(NeutralModeValue.Coast);
 
-    forwardBottom.setInverted(true);
   }
 
   public void setShooterSpeed(double percentOutput) {
-    forwardTop.set(percentOutput);
-    forwardBottom.set(percentOutput);
-    middle.set(percentOutput);
+    top.set(ControlMode.PercentOutput,percentOutput);
+    bottom.set(ControlMode.PercentOutput, percentOutput);
   }
 
 

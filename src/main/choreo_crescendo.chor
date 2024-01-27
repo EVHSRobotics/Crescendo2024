@@ -312,14 +312,14 @@
                         "first"
                     ],
                     "type": "StopPoint",
-                    "uuid": "399b7ddf-afbd-41ed-9079-b7ee860b45d9"
+                    "uuid": "4bb652c2-6273-4b4c-8daa-2538af825de4"
                 },
                 {
                     "scope": [
                         "last"
                     ],
                     "type": "StopPoint",
-                    "uuid": "f38a5fe4-83ac-44d2-adf4-b3e1174836c4"
+                    "uuid": "1dc400d2-49d9-4f39-b93e-033c1f6daa0c"
                 }
             ],
             "usesControlIntervalGuessing": true,
@@ -626,14 +626,14 @@
                         "first"
                     ],
                     "type": "StopPoint",
-                    "uuid": "b665b9ba-c483-4e09-9204-4589f7ed6398"
+                    "uuid": "1151e716-e1d5-4503-b8a0-c0f09f42a06d"
                 },
                 {
                     "scope": [
                         "last"
                     ],
                     "type": "StopPoint",
-                    "uuid": "def2e654-02d9-4e1c-bea8-3e7f43f5f920"
+                    "uuid": "fef4aede-e131-4c20-9297-546b3f7aee57"
                 }
             ],
             "usesControlIntervalGuessing": true,
@@ -669,14 +669,14 @@
                         "first"
                     ],
                     "type": "StopPoint",
-                    "uuid": "9720634f-4a64-470b-a768-6c5e5110c2b4"
+                    "uuid": "1e461194-a8e5-4013-8e49-46299b6dec7e"
                 },
                 {
                     "scope": [
                         "last"
                     ],
                     "type": "StopPoint",
-                    "uuid": "d5210ebf-d74d-4813-826f-e989509adfbb"
+                    "uuid": "38f604a2-0174-450c-b7b5-6c284207814c"
                 }
             ],
             "usesControlIntervalGuessing": true,

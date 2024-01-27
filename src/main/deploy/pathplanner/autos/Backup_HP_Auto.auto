@@ -29,6 +29,12 @@
               }
             ]
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
+          }
         }
       ]
     }
