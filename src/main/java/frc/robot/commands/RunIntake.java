@@ -9,8 +9,8 @@ public class RunIntake extends Command{
 
     Intake intake;
     XboxController controller;
-    public RunIntake(XboxController controller){
-        intake = new Intake();
+    public RunIntake(Intake intake, XboxController controller){
+        this.intake = intake;
         this.controller = controller;
     }
 

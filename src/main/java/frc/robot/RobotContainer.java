@@ -34,7 +34,7 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.Vision;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.commands.RunIntake;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 
@@ -51,7 +51,9 @@ public class RobotContainer {
 // private Vision vision;
 
   private RunIntake intake;
-  private Shoot shooter;
+  private Shoot shoot;
+  private Shooter shootSub;
+  private Intake intakeSub;
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -92,17 +94,16 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
-    intake = new RunIntake(operator);
-    shooter = new Shoot(operator);
+    intakeSub = new Intake();
+
+    intake = new RunIntake(intakeSub, operator);
+    shootSub = new Shooter();
+    shoot = new Shoot(shootSub, operator);
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.updateValues();
 
     configureBindings();
-
-
-
-    
   }
   public enum AutoPaths {
 
@@ -125,7 +126,7 @@ public class RobotContainer {
   }
   
 public Command[] getTeleCommand() {
-  Command[] commands = {intake, shooter};
+  Command[] commands = {intake, shoot};
   return commands;
 }
  

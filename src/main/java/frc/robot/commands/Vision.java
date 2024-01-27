@@ -35,10 +35,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Vision extends Command {
 
   // private AprilScanner aprilScanner;
-  private Limelight aprilLimelight;
-  private CommandXboxController xboxController;
-  public Limelight gameObjectTopLimelight;
-  public Limelight gameObjectBottomLimelight;
+  private XboxController operatorController;
+
   public double xdistance;
   NetworkTable table1;
   NetworkTableEntry tx, tv;
@@ -50,17 +48,12 @@ public class Vision extends Command {
 
   
 
-  public Vision() {
+  public Vision(XboxController operatorController) {
     // Use addRequirements() here to declare subsystem dependencies.
     // VideoServer videoServer, AprilScanner aprilScanner,
     // this.aprilScanner = aprilScanner;
     // table1 = NetworkTableInstance.getDefault().getTable("limelight-bottom");
-    aprilLimelight = new Limelight(1);
-    // addRequirements(videoServer);
-    // addRequirements(aprilScanner);
-   SmartDashboard.putString("H", "Hello");
-    SmartDashboard.updateValues();
-    runPythonShootModel();
+    this.operatorController = operatorController;
    
   }
 
@@ -72,37 +65,8 @@ public class Vision extends Command {
   }
 
 
-  public void runPythonShootModel() {
-    try {
-      
-    
-    // ProcessBuilder pb = new ProcessBuilder("sudo apt", " --version");
-
-    // Process p = pb.start();
-      Process p = Runtime.getRuntime().exec("python test.py");
-    BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-    String line;
-    while ((line = r.readLine()) != null) {
-SmartDashboard.putString("H", line);
-    SmartDashboard.updateValues();    
-
-
-
-  }
-
-    int eC = p.waitFor();
-
-    System.out.println("Exited with " + eC);
-    }
-    catch (IOException | InterruptedException e) {
-      SmartDashboard.putString("H", e.getLocalizedMessage());
-    SmartDashboard.updateValues();
-    }
-
-  }
   public double getAimRotation() {
-    double distance = aprilLimelight.tx.getDouble(0);
+    double distance = LimelightHelpers.getTX("limelight");
     double error = 0.1; 
     double p_constant = -0.028; 
     double output = (distance - error) * p_constant;
@@ -126,7 +90,7 @@ SmartDashboard.putString("H", line);
   
   public void aimLimelightAprilTags() {
 
-    double x = aprilLimelight.getX();
+    double x = LimelightHelpers.getTX("limelight");
     errorsum = 0;
     error = x;
 

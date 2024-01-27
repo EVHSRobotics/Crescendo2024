@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,8 +10,9 @@ import frc.robot.subsystems.Shooter;
 public class Shoot extends Command {
     Shooter shooter;
     XboxController controller;
-    public Shoot(XboxController controller){
-        shooter = new Shooter();
+    private boolean useAlgoShooting = false;
+    public Shoot(Shooter shooter, XboxController controller){
+        this.shooter = shooter;
         this.controller = controller;
     }
 
@@ -21,5 +23,18 @@ public class Shoot extends Command {
         SmartDashboard.putNumber("power", controller.getLeftX());
         SmartDashboard.updateValues();
         shooter.setShooterSpeed(controller.getLeftY());
+
+            if (useAlgoShooting) {
+
+        
+                double output = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
+                if (controller.getYButton()){
+                    shooter.setShooterSpeed(output);
+                }
+            }
+            else {
+
+             shooter.setShooterSpeed(controller.getRightTriggerAxis());
+            }
     }
 }
