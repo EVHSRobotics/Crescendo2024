@@ -22,7 +22,6 @@ public class Shoot extends Command {
     public void execute() {
         SmartDashboard.putNumber("power", controller.getLeftX());
         SmartDashboard.updateValues();
-        shooter.setShooterSpeed(controller.getLeftY());
 
             if (useAlgoShooting) {
 
@@ -34,7 +33,7 @@ public class Shoot extends Command {
             }
             else {
 
-             shooter.setShooterSpeed(controller.getRightTriggerAxis());
+             shooter.setShooterSpeed(controller.getAButton() ? -0.35 : 0);
             }
     }
 }

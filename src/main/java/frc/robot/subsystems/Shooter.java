@@ -24,13 +24,11 @@ public class Shooter extends SubsystemBase {
 
     top = new TalonSRX(12);
     bottom = new TalonSRX(11);
-
-
+    bottom.follow(top);
   }
 
   public void setShooterSpeed(double percentOutput) {
     top.set(ControlMode.PercentOutput,percentOutput);
-    bottom.set(ControlMode.PercentOutput, percentOutput);
   }
 
 
