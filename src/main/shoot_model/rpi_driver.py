@@ -12,7 +12,7 @@ class ShootModelDriver:
             self.hardware_type = "Coral Edge TPU"
         except:
             print("Failed to create Interpreter with Coral, switching to unoptimized")
-            model_path = "ShootModel_Lite.tflite"
+            model_path = "ShootModel_Lite_2D.tflite"
             self.interpreter = tflite.Interpreter(model_path)
             self.hardware_type = "Unoptimized"
 
