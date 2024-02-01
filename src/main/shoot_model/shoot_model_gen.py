@@ -17,10 +17,10 @@ shootModelOutputDetails = None
 # Saves the model to a keras file and a tflite file
 def genShootModel():
 
-    shootData = (pd.read_excel("/Crescendo2024/src/main/java/frc/robot/DataPts.xlsx"))
+    shootData = (pd.read_excel("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/src/main/shoot_model/DataPts.xlsx"))
 
     shootDataX = shootData[["ty", "ta"]]
-    shootDataY = shootData[["perOut"]]
+    shootDataY = shootData[["perOut", "theta"]]
 
     shootModel = Sequential()
 
@@ -28,7 +28,7 @@ def genShootModel():
     shootModel.add(Dense(25))
     shootModel.add(Dense(25))
     shootModel.add(Dense(25))
-    shootModel.add(Dense(1))
+    shootModel.add(Dense(2))
 
     shootModel.compile(loss="mse", optimizer=Adam(0.1))
     shootModel.fit(shootDataX, shootDataY, epochs=1000)
@@ -53,7 +53,7 @@ def loadShootModelTFLite(inputVals):
     shootModelInterpretor.invoke()
 
     shootModelPrediction = shootModelInterpretor.get_tensor(shootModelOutputDetails[0]["index"])
-    print(shootModelPrediction)
+    print(shootModelPrediction[0][1])
 
 
 # Loads the more accurate model using keras
@@ -64,5 +64,5 @@ def loadShootModelKeras(inputVals):
     shootModelPrediction = shootModel.predict(np.array([inputVals]))
 
 
-
-loadShootModelTFLite([0.5, 0.5])
+genShootModel()
+# loadShootModelTFLite([0.5, 0.5])
