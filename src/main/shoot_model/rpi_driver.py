@@ -7,7 +7,7 @@ class ShootModelDriver:
     def __init__(self):
         print("Initializing TFLite runtime interpreter")
         try:
-            model_path = "ShootModel_Lite.tflite"
+            model_path = "ShootModel_Lite_2D.tflite"
             self.interpreter = tflite.Interpreter(model_path, experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
             self.hardware_type = "Coral Edge TPU"
         except:
