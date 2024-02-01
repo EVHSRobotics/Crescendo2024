@@ -14,6 +14,7 @@ public class Shoot extends Command {
     public Shoot(Shooter shooter, XboxController controller){
         this.shooter = shooter;
         this.controller = controller;
+        addRequirements(shooter);
     }
 
     public void initialize() {
@@ -21,32 +22,33 @@ public class Shoot extends Command {
     }
     public void execute() {
         SmartDashboard.putNumber("power", controller.getLeftX());
-        SmartDashboard.putNumber("rpm", shooter.getRPM());
+        SmartDashboard.putNumber("rpmTop", shooter.getRPM());
+
         SmartDashboard.updateValues();
 
             if (useAlgoShooting) {
 
 
-                double output = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
-                if (controller.getYButton()){
-                    shooter.setShooterSpeed(output);
-                }
+                // double output//// = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
+                // if (controller.getYButton()){
+                //     shooter.setShooterSpeed(output);
+                // }
             }
             else {
                 if(controller.getAButton()){
-                    shooter.setShooterRPM(-1500);
+                    shooter.setShooterRPM(1000);
                 } else if(controller.getBButton()){
-                    shooter.setShooterRPM(-25000);
+                    shooter.setShooterSpeed(0.5);
                 }else if(controller.getXButton()){
-                    shooter.setShooterRPM(-2500);
+                    shooter.setShooterRPM(-1500);
                 }else if(controller.getYButton()){
-                    shooter.setShooterRPM(-3500);
-                }else{
-                    shooter.setShooterRPM(0);
+                    shooter.setShooterRPM(-1000);
+                  }else{
+                    shooter.setShooterSpeed(0);
                 }
                 // shooter.setShooterSpeed(controller.getRightY());
 
-            //  shooter.setShooterSpeed(controller.getAButton() ? -0.75 : 0);
+            //  shooter.setShooterSpeed(controller.getAButton() ? -1 : 0);
             }
     }
 }
