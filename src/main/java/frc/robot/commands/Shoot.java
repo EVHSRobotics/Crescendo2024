@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,8 +22,8 @@ public class Shoot extends Command {
 
     }
     public void execute() {
-        SmartDashboard.putNumber("power", controller.getLeftX());
-        SmartDashboard.putNumber("rpmTop", shooter.getRPM());
+        SmartDashboard.putNumber("power", controller.getRightTriggerAxis());
+        SmartDashboard.putNumber("rpmTop", MathUtil.applyDeadband(shooter.getVelocity(), 5));
 
         SmartDashboard.updateValues();
 
@@ -35,17 +36,18 @@ public class Shoot extends Command {
                 // }
             }
             else {
-                if(controller.getAButton()){
-                    shooter.setShooterRPM(1000);
-                } else if(controller.getBButton()){
-                    shooter.setShooterSpeed(0.5);
-                }else if(controller.getXButton()){
-                    shooter.setShooterRPM(-1500);
-                }else if(controller.getYButton()){
-                    shooter.setShooterRPM(-1000);
-                  }else{
-                    shooter.setShooterSpeed(0);
+                if(controller.getAButton())
+                    shooter.setShooterRPM(MathUtil.applyDeadband(0.7, 0.1));
+                else if(controller.getBButton()){
+                    shooter.setShooterRPM(MathUtil.applyDeadband(0.5, 0.1));
+                } else if(controller.getXButton()){
+                    shooter.setShooterRPM(1);
                 }
+                 else{
+                    shooter.setShooterRPM(0);
+
+                }
+
                 // shooter.setShooterSpeed(controller.getRightY());
 
             //  shooter.setShooterSpeed(controller.getAButton() ? -1 : 0);

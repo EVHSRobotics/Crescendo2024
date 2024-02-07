@@ -29,10 +29,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.RunArm;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Vision;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
@@ -49,11 +51,12 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
 // private Vision vision;
-
+private RunArm runArm;
   private RunIntake intake;
   private Shoot shoot;
   private Shooter shootSub;
   private Intake intakeSub;
+  private Arm arm;
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -95,10 +98,11 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
     intakeSub = new Intake();
-
+    arm = new Arm();
     intake = new RunIntake(intakeSub, operator);
     shootSub = new Shooter();
     shoot = new Shoot(shootSub, operator);
+    runArm = new RunArm(arm, operator);
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.updateValues();
@@ -126,7 +130,7 @@ public class RobotContainer {
   }
   
 public Command[] getTeleCommand() {
-  Command[] commands = {intake, shoot};
+  Command[] commands = {shoot, intake};
   return commands;
 }
  
