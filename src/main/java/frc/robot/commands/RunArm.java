@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 
 public class RunArm extends Command {
 
@@ -32,8 +33,34 @@ public class RunArm extends Command {
 
     SmartDashboard.putNumber("armpos", arm.getArmPosition());
     SmartDashboard.updateValues();
+  
+    // if (controller.getBButton()) {
+    //   arm.setPosition(0);
+
+    // }
+    // else if (controller.getAButton()) {
+    //   arm.setPosition(0.15);
+    // }
+    // else {
+      
+    //   if (arm.getArmPosition() >= -0.068) {
+    //     arm.setVoltage(0.25);
+    //   }
+    //   else {
+    //     arm.setVoltage(0);
+    //   }
+    // }
+    //   // arm.moveArm(0);
+    // }
+    // if(controller.getBButton())
+    // //   arm.setVoltage(SmartDashboard.getNumber("KG", 0));
+    // // else if (controller.getAButton()) 
+    //   arm.setVoltage(1.6);
+    // else
+    //   arm.setVoltage(0);
     // arm.moveArm(MathUtil.applyDeadband(controller.getLeftY(), 0.1));
-  }
+    }
+  
 
   // Called once the command ends or is interrupted.
   @Override

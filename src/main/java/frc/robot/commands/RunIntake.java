@@ -20,7 +20,12 @@ public class RunIntake extends Command{
     public void execute() {
         SmartDashboard.putNumber("powerother", controller.getRightY());
         SmartDashboard.updateValues();
+        if(controller.getLeftY() < -0.01){
         intake.runIntake(controller.getLeftY());
+        }
+        else {
+            intake.runIntake(0);
+        }
     }
 
 

@@ -4,16 +4,38 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MusicTone;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
 
   private TalonFX left;
   private TalonFX right;
+  private CANcoder encoder;
+  private PIDController rightPID;
+  private ArmFeedforward rightFeedforward;
+
   /** Creates a new Arm. */
   // Neg out back to base - for right and left
   // Pos out to talon fx arm - for right and left
@@ -26,14 +48,64 @@ public class Arm extends SubsystemBase {
 
     left = new TalonFX(43);
     right = new TalonFX(42);
+    left.setNeutralMode(NeutralModeValue.Brake);
+    right.setNeutralMode(NeutralModeValue.Brake);
+    rightPID = new PIDController(2, 0, 0);
+   rightFeedforward = new ArmFeedforward(1, 1, 0.5, 0.1);
+    
+    encoder = new CANcoder(61);
 right.setPosition(0);
     // left.setInverted(true);
     // left.setInverted(true);
     // left.set(ControlMode.Follower,)
+
     left.setControl(new Follower(42, true));
+
+     TalonFXConfiguration motionMagicFXConfig = new TalonFXConfiguration();
+         Slot0Configs configs = new Slot0Configs();
+          configs.kS = 1;
+          configs.kV = 0.5;
+          configs.kA = 0.5;
+          configs.kG = 1.2;
+        
+          configs.GravityType = GravityTypeValue.Arm_Cosine;
+          configs.kP = 20;
+          
+          configs.kI = 0;
+          configs.kD = 0.1;
+          
+    motionMagicFXConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
+    motionMagicFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    motionMagicFXConfig.MotionMagic.MotionMagicAcceleration = 1;
+    motionMagicFXConfig.MotionMagic.MotionMagicCruiseVelocity = 0.5;
+    
+          
+    //       // set accel and velocity for going up
+          motionMagicFXConfig.withSlot0(configs);
+
+          left.getConfigurator().apply(motionMagicFXConfig);
+          right.getConfigurator().apply(motionMagicFXConfig);
+
+      SmartDashboard.putNumber("KG", 0);
+      SmartDashboard.updateValues();
+  }
+
+  public void goPosMotionMagic(double pos){
+    right.setControl(new MotionMagicVoltage(pos));
+  }
+
+  public void goToPosition(double pos) {
+    
+    // double output = rightPID.calculate(getArmPosition(), pos)*16 + rightFeedforward.calculate(pos, 0, 0);
+
+    SmartDashboard.putNumber("perOutExpected", getArmPosition());
+    SmartDashboard.updateValues();
+    // right.setControl(new VoltageOut(output));
+    // right.setControl(new DutyCycleOut(output));
+
   }
   public double getArmPosition() {
-    return right.getPosition().getValueAsDouble();
+      return encoder.getAbsolutePosition().getValueAsDouble();
   }
   
   public void moveArm(double perOut) {
@@ -43,6 +115,92 @@ right.setPosition(0);
     right.setPosition(0);
   }
 
+   public void holdPosition() {
+
+                right.setControl(new MotionMagicDutyCycle(getArmPosition()));
+
+         
+    }
+
+    public void slowlyGoDown() {
+                      right.setControl(new MotionMagicVoltage(getArmPosition() - 0.025));
+
+            
+    }
+
+    public void slowyGoUp() {
+      SmartDashboard.putString("val12", new MotionMagicVoltage(getArmPosition() + 0.05).toString());
+      SmartDashboard.updateValues();
+      
+                      right.setControl(new MotionMagicVoltage(getArmPosition() + 0.025));
+
+    }
+
+    public void stop() {
+        right.setControl(new DutyCycleOut(0));
+    }
+
+    public void resetSensor() {
+        
+    }
+
+    public void setPosition(double position) {
+      SmartDashboard.putNumber("setpos", position);
+      SmartDashboard.updateValues();
+        
+                      right.setControl(new MotionMagicVoltage(position));
+    }
+
+    public void setVoltage(double voltage) {
+      
+      right.setControl(new VoltageOut(voltage));
+    }
+    public void setBreak() {
+        right.setControl(new StaticBrake());
+        left.setControl(new StaticBrake());
+    }
+    
+    public void manageMotion(double targetPosition) {
+        double currentPosition = getArmPosition();
+
+       
+
+
+        // going up
+        if(currentPosition < targetPosition) {
+    
+          MotionMagicConfigs motionMagic = new MotionMagicConfigs();
+          motionMagic.MotionMagicCruiseVelocity = 13360*0.2;
+          motionMagic.MotionMagicAcceleration = 13360*0.20;
+          motionMagic.MotionMagicJerk = 1600;
+          left.getConfigurator().apply(motionMagic);
+          right.getConfigurator().apply(motionMagic);
+          // right.configMotionAcceleration(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_UP, 0);
+          // right.configMotionCruiseVelocity(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_UP, 0);
+    
+          // select the up gains
+          // armMotorMaster.selectProfileSlot(0, 0);
+          SmartDashboard.putBoolean("Going Up or Down", true);
+    
+        } else {
+           MotionMagicConfigs motionMagic = new MotionMagicConfigs();
+          motionMagic.MotionMagicCruiseVelocity = 8090*0.2;
+          motionMagic.MotionMagicAcceleration = 8090*0.2;
+          motionMagic.MotionMagicJerk = 1600;
+          left.getConfigurator().apply(motionMagic);
+          right.getConfigurator().apply(motionMagic);
+  
+          // set accel and velocity for going down
+          // armMotorMaster.configMotionAcceleration(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_DOWN, 0);
+          // armMotorMaster.configMotionCruiseVelocity(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_DOWN, 0);
+    
+          // // select the down gains
+          // armMotorMaster.selectProfileSlot(1, 0);
+          SmartDashboard.putBoolean("Going Up or Down", false);
+
+        }
+    
+      }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

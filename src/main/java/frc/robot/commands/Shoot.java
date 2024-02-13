@@ -23,7 +23,7 @@ public class Shoot extends Command {
     }
     public void execute() {
         SmartDashboard.putNumber("power", controller.getRightTriggerAxis());
-        SmartDashboard.putNumber("rpmTop", MathUtil.applyDeadband(shooter.getVelocity(), 5));
+        SmartDashboard.putNumber("rpmTop", shooter.getVelocity());
 
         SmartDashboard.updateValues();
 
@@ -36,15 +36,10 @@ public class Shoot extends Command {
                 // }
             }
             else {
-                if(controller.getAButton())
-                    shooter.setShooterRPM(MathUtil.applyDeadband(0.7, 0.1));
-                else if(controller.getBButton()){
-                    shooter.setShooterRPM(MathUtil.applyDeadband(0.5, 0.1));
-                } else if(controller.getXButton()){
-                    shooter.setShooterRPM(1);
-                }
+                if(controller.getLeftY() > -0.01)
+                    shooter.setShooterRPM(MathUtil.applyDeadband(controller.getLeftY(), 0.1));
                  else{
-                    shooter.setShooterRPM(0);
+                    shooter.setRPS(0);
 
                 }
 

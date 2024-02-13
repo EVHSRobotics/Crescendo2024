@@ -130,7 +130,7 @@ private RunArm runArm;
   }
   
 public Command[] getTeleCommand() {
-  Command[] commands = {shoot, intake};
+  Command[] commands = {shoot, runArm, intake};
   return commands;
 }
  

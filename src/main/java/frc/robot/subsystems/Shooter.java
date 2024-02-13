@@ -6,8 +6,10 @@ package frc.robot.subsystems;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -27,7 +29,7 @@ public class Shooter extends SubsystemBase {
   private final double MAXSPEED = 500;
   /** Creates a new Shooter. */
   public Shooter() {
-    // TalonSRXConfiguration configuration = new TalonSRXConfiguration();
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
     // configuration.motionAcceleration = 
     top = new TalonFX(40);
     bottom = new TalonFX(41);
@@ -41,7 +43,23 @@ public class Shooter extends SubsystemBase {
     // top.setInverted(true);
     //     bottom.setInverted(true);
 
-    
+    var slot0Configs = configuration.Slot0;
+    slot0Configs.kS = 0.2;
+    slot0Configs.kV = 0.18;
+    slot0Configs.kA = 0.1;
+    slot0Configs.kP = 0.11;
+    slot0Configs.kI = 0;
+    slot0Configs.kD = 0;
+
+    var motionMagic = configuration.MotionMagic;
+
+    motionMagic.MotionMagicAcceleration = 200;
+    motionMagic.MotionMagicJerk = 2000;
+
+    top.getConfigurator().apply(configuration);
+    bottom.getConfigurator().apply(configuration);
+
+
     top.setInverted(true);
     bottom.setControl(new Follower(40, false));
     
@@ -69,6 +87,10 @@ public class Shooter extends SubsystemBase {
   }
   public void setPower(double power){
     top.setControl(new DutyCycleOut(power));
+  }
+
+  public void setRPS(double RPS){
+    top.setControl(new MotionMagicVelocityVoltage(RPS));
   }
  
 
