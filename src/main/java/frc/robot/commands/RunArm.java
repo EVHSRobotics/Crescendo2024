@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.SuperStructure.ArmPosition;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -25,27 +26,27 @@ public class RunArm extends Command {
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
 
-  public enum ArmPosition {
+  // public enum ArmPosition {
 
-    STOW(-0.25),
-    LOW_INTAKE(0.06),
-    HIGH_INTAKE(-0.19),
-    AMP(-0.180908),
-    SHOOT(-0.02),
-    STAGEFIT(0.01),
-    ALGO(0),
-    HORIZONTAL(0);
+  //   STOW(-0.25),
+  //   LOW_INTAKE(0.06),
+  //   HIGH_INTAKE(-0.19),
+  //   AMP(-0.180908),
+  //   SHOOT(-0.02),
+  //   STAGEFIT(0.01),
+  //   ALGO(0),
+  //   HORIZONTAL(0);
 
-    private double pos;
+  //   private double pos;
 
-    ArmPosition(double pos) {
-      this.pos = pos;
-    }
+  //   ArmPosition(double pos) {
+  //     this.pos = pos;
+  //   }
 
-    public double getPos() {
-      return this.pos;
-    }
-  }
+  //   public double getPos() {
+  //     return this.pos;
+  //   }
+  // }
 
   /** Creates a new RunArm. */
   public RunArm(Arm arm, XboxController controller) {

@@ -28,7 +28,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.RunArm.ArmPosition;
+import frc.robot.commands.SuperStructure.*;
 
 
 public class Arm extends SubsystemBase {
@@ -109,7 +109,9 @@ public class Arm extends SubsystemBase {
   public double getArmPosition() {
       return encoder.getAbsolutePosition().getValueAsDouble();
   }
-  
+  public boolean isArmInRange(ArmPosition pos) {
+    return Math.abs(pos.getPos() - getArmPosition()) < 0.015;
+  }
   public void moveArm(double perOut) {
     right.setControl(new DutyCycleOut(-perOut));
   }

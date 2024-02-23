@@ -15,6 +15,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
+
 public class SuperStructure extends Command {
 
   private Arm arm;
@@ -116,6 +117,10 @@ public class SuperStructure extends Command {
     else if (operator.getXButton()) {
       setPosition(ArmPosition.STAGEFIT);
     }
+    else if (MathUtil.applyDeadband(operator.getRightY(), 0.1) != 0) {
+      // Override Intake mode at any point to be manual
+      currentIntake = IntakeMode.MANUAL;
+    }
 
 
     if(operator.getPOV() == 270){
@@ -133,7 +138,7 @@ public class SuperStructure extends Command {
     }
 
     if (currentIntake == IntakeMode.MANUAL) {
-      intake.runIntake(MathUtil.applyDeadband(operator.getLeftY(), 0.1));
+      intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
     }
     else {
       intake.runIntake(currentIntake.getSpeed());
@@ -143,18 +148,54 @@ public class SuperStructure extends Command {
   public void setPosition(ArmPosition pos) {
     this.currentPosition = pos;
   }
+ 
 
   public void setIntakeMode(IntakeMode mode) {
-    this.currentIntake = mode;
 
+    // If mode isn't manual
     if (mode != IntakeMode.MANUAL) {
-      intakeTimer.schedule(new TimerTask() {
-        @Override
-        public void run() {
-          currentIntake = IntakeMode.MANUAL;
-          intakeTimer.cancel();
-        }
-      }, mode.getTime());
+      // if the arm is in algo mode
+      if (currentPosition == ArmPosition.ALGO) {
+        // We can immediately shoot it
+        currentIntake = mode;
+
+        intakeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+              // Sets intake mode back to manual
+              currentIntake = IntakeMode.MANUAL;
+              intakeTimer.cancel();
+            }
+          }, mode.getTime());
+      }
+      else {
+        // This is if it is not in algo mode
+        // First continously check if the arm is at the setpoint
+        intakeTimer.cancel();
+        intakeTimer.scheduleAtFixedRate(new TimerTask() {
+          @Override
+          public void run() {
+            if (arm.isArmInRange(currentPosition)) {
+              // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
+              // a new command that is supposed to run the intake till the time expires, or banner sensor is triggered
+              intakeTimer.cancel();
+              currentIntake = mode;
+
+              intakeTimer.schedule(new TimerTask() {
+                  @Override
+                  public void run() {
+                    // Sets intake mode back to manual
+                    currentIntake = IntakeMode.MANUAL;
+                    intakeTimer.cancel();
+                  }
+                }, mode.getTime());
+            }
+          }
+        }, 0, 1);      
+      }
+    }
+    else {
+      this.currentIntake = mode;
     }
   }
 
