@@ -25,11 +25,10 @@ public class RunArm extends Command {
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
 
-
   private final Timer m_timer = new Timer();
+
   public enum ArmPosition {
 
-    
     STOW(-0.25),
     LOW_INTAKE(0.06),
     HIGH_INTAKE(-0.19),
@@ -49,6 +48,7 @@ public class RunArm extends Command {
       return this.pos;
     }
   }
+
   /** Creates a new RunArm. */
   public RunArm(Arm arm, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -57,12 +57,13 @@ public class RunArm extends Command {
     this.Intake = new Intake();
     this.controller = controller;
     addRequirements(arm);
-    
+
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -73,26 +74,17 @@ public class RunArm extends Command {
     // SmartDashboard.putNumber("numberMG", 0);
     SmartDashboard.updateValues();
 
-    if(controller.getRightBumperPressed()){
+    if (controller.getRightBumperPressed()) {
       // currentlyAdjusting = true;
 
       // //arm.goPosMotionMagic(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
       // arm.setPosition(SmartDashboard.getNumber("testingArmPos", 0));
       // Intake.bannerseen = false;
-      
-      setPosition(ArmPosition.ALGO);
-    }
-    else if(controller.getRightBumperReleased()){
-      //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-      //arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-      // Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
-      // Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
-      Intake.runIntake(1.0);
-      }
 
-    
+      setPosition(ArmPosition.ALGO);
+    } 
     else if (controller.getAButton()) {
-      
+
       setPosition(ArmPosition.LOW_INTAKE);
       Intake.runIntake(controller.getLeftY());
       // if(Intake.bannerseen == true){
@@ -102,57 +94,52 @@ public class RunArm extends Command {
 
     else if (controller.getBButton()) {
       setPosition(ArmPosition.AMP);
-    }
-    else if (controller.getYButton()) {
+    } else if (controller.getYButton()) {
       setPosition(ArmPosition.STOW);
-    }
-    else if (controller.getLeftBumper()) {
-      
+    } else if (controller.getLeftBumper()) {
+
       setPosition(ArmPosition.HIGH_INTAKE);
       Intake.runIntake(.50);
-     
+
     }
 
-    else if(controller.getLeftBumperReleased()){
+    else if (controller.getLeftBumperReleased()) {
       Intake.runIntake(0);
     }
 
-    else if (controller.getXButton()){
+    else if (controller.getXButton()) {
       setPosition(ArmPosition.STAGEFIT);
     }
 
-    
-
     if (currentPosition == ArmPosition.ALGO && controller.getRightBumper()) {
-      Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-      arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(ArmPosition.HIGH_INTAKE.getPos()));
+      Shoot.setShooterRPM(
+          NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+          .getDouble(ArmPosition.HIGH_INTAKE.getPos()));
+    } else {
+      arm.setPosition(currentPosition.getPos());
     }
-    else{
-    arm.setPosition(currentPosition.getPos());
-    }
-  //   if (controller.getBButton()) {
-  //     arm.goPosMotonMagic(0);
-  //     System.out.println("runnign");
-  //   // (ArmPosition.STOW.getPos());
-  //   }
-  //   else if (controller.getAButton()) {
-  //   arm.goPosMotionMagic(-0.25);
-  //   // (ArmPosition.STOW.getPos());
-  //   } 
-  //   else if (controller.getXButton()) {
-  //     arm.goPosMotionMagic(-0.178);
-  //   } 
-  //   else if (controller.getYButton()) {
-  //     arm.goPosMotionMagic(SmartDashboard.getNumber("numberMG", 0));
-  //   }
-  //   else {
-  //   // arm.setVoltage(controller.getRightY());
-  //   arm.setVoltage(0);
-  //  }
-    
+    // if (controller.getBButton()) {
+    // arm.goPosMotonMagic(0);
+    // System.out.println("runnign");
+    // // (ArmPosition.STOW.getPos());
+    // }
+    // else if (controller.getAButton()) {
+    // arm.goPosMotionMagic(-0.25);
+    // // (ArmPosition.STOW.getPos());
+    // }
+    // else if (controller.getXButton()) {
+    // arm.goPosMotionMagic(-0.178);
+    // }
+    // else if (controller.getYButton()) {
+    // arm.goPosMotionMagic(SmartDashboard.getNumber("numberMG", 0));
+    // }
+    // else {
+    // // arm.setVoltage(controller.getRightY());
+    // arm.setVoltage(0);
+    // }
 
-    }
-  
+  }
 
   public void setPosition(ArmPosition pos) {
     this.currentPosition = pos;
@@ -160,7 +147,8 @@ public class RunArm extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
