@@ -35,12 +35,13 @@ public class RunIntake extends Command{
     }
     public void execute() {
         SmartDashboard.putNumber("powerother", controller.getLeftY());
-                SmartDashboard.putNumber("pov", controller.getPOV());
-
+        SmartDashboard.putNumber("pov", controller.getPOV());
         SmartDashboard.updateValues();
 
-     
-            intake.runIntake(controller.getLeftY());
+        if (controller.getLeftY()<-0.1){
+        intake.runIntake(controller.getLeftY());
+        }
+        
 
 
 

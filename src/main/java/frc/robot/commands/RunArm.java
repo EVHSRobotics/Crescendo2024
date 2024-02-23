@@ -7,19 +7,26 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
 public class RunArm extends Command {
 
   private Arm arm;
   private XboxController controller;
+  private Intake Intake;
+  private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
-   
+  private boolean currentlyAdjusting = false;
+  private boolean noteIn = false;
+  private final Timer m_timer = new Timer();
   public enum ArmPosition {
 
     
@@ -28,6 +35,7 @@ public class RunArm extends Command {
     HIGH_INTAKE(-0.19),
     AMP(-0.180908),
     SHOOT(-0.02),
+    STAGEFIT(0.01),
     HORIZONTAL(0);
 
     private double pos;
@@ -44,7 +52,8 @@ public class RunArm extends Command {
   public RunArm(Arm arm, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
-    
+    this.Shoot = new Shooter();
+    this.Intake = new Intake();
     this.controller = controller;
     addRequirements(arm);
     
@@ -62,23 +71,60 @@ public class RunArm extends Command {
     // SmartDashboard.putNumber("edit", 0);
     // SmartDashboard.putNumber("numberMG", 0);
     SmartDashboard.updateValues();
-    if(controller.getPOV() == 90){
-        setPosition(ArmPosition.AMP);
-    }
-    else if (controller.getPOV() == 0) {
-    
-        setPosition(ArmPosition.STOW);
-    }
-    else if (controller.getPOV() == 180) {
-      setPosition(ArmPosition.LOW_INTAKE);
-    }
-    else if (controller.getLeftBumper()) {
-      setPosition(ArmPosition.HIGH_INTAKE);
-    }
-    else if (controller.getPOV() == 270) {
-    }
-    arm.setPosition(SmartDashboard.getNumber("edit", 0));
 
+    if(controller.getRightBumper()){
+      currentlyAdjusting = true;
+      noteIn = false;
+      //arm.goPosMotionMagic(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+      arm.setPosition(SmartDashboard.getNumber("testingArmPos", 0));
+    }
+    else if(currentlyAdjusting){
+      //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      if (m_timer.get() < 0.6){
+        Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
+      }
+      else {
+        m_timer.reset();
+        currentlyAdjusting = false;
+        arm.setPosition(ArmPosition.STOW.getPos());
+      }
+
+    }
+    else if (controller.getAButton() && !noteIn) {
+      
+      arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
+      Intake.runIntake(.50);
+      if(Intake.bannerseen == true){
+      noteIn = false;
+      arm.setPosition(ArmPosition.STOW.getPos());
+      }
+    }
+
+    
+
+    else if (controller.getBButton()) {
+      arm.setPosition(ArmPosition.AMP.getPos());
+      Intake.shootAmp();
+    }
+    else if (controller.getYButton()) {
+      arm.setPosition(ArmPosition.STOW.getPos());
+    }
+    else if (controller.getLeftBumper() && !noteIn) {
+      setPosition(ArmPosition.HIGH_INTAKE);
+      Intake.runIntake(.50);
+      if(Intake.bannerseen == true){
+      noteIn = false;
+      arm.setPosition(ArmPosition.STOW.getPos());
+      }
+    }
+
+    else if (controller.getXButton()){
+      arm.setPosition(ArmPosition.STAGEFIT.getPos());
+    }
+
+    else if(controller.getPOV() == 270){
+      noteIn = !noteIn;
+    }
     // arm.setPosition(currentPosition.getPos());
   //   if (controller.getBButton()) {
   //     arm.goPosMotionMagic(0);
@@ -102,6 +148,8 @@ public class RunArm extends Command {
     
 
     }
+  
+
   public void setPosition(ArmPosition pos) {
     this.currentPosition = pos;
   }

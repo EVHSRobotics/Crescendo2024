@@ -8,29 +8,41 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class Intake implements Subsystem{
-  //private final static ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+public class Intake implements Subsystem {
+  // private final static ColorSensorV3 m_colorSensor = new
+  // ColorSensorV3(I2C.Port.kOnboard);
+  private DigitalInput bannerSensor;
   private TalonSRX intake;
-    private DigitalInput bannerintake ;
-    private boolean bannerseen;
-    public Intake(){
-         bannerintake = new DigitalInput(2);
-          intake = new TalonSRX(44);
-        
-    }
+  public boolean bannerseen = false;
 
-    public void runIntake(double power){
-      
-        intake.set(ControlMode.PercentOutput, power);
-        SmartDashboard.putNumber("BannerSeen?", power);
-        SmartDashboard.updateValues();
-      }
+  public Intake() {
+    bannerSensor = new DigitalInput(1); // 1 is the one that works!
+    intake = new TalonSRX(44);
     
-    public boolean getBanner() {
-        return bannerintake.get();
-      }
-      public void setIntakeSpeed(double percentOutput) {
-        intake.set(ControlMode.PercentOutput, percentOutput);
-      } 
+  }
+
+  public void runIntake(double power) {
+    if(!bannerseen){
+    intake.set(ControlMode.PercentOutput, power);
+    SmartDashboard.putNumber("BannerSeen?", power);
+    SmartDashboard.updateValues();
+    
+    if (getBanner()){
+      bannerseen = true;
     }
+  }
+  }
   
+
+  public void shootAmp(){
+    intake.set(ControlMode.PercentOutput, -1);
+  }
+
+  public boolean getBanner() {
+    return bannerSensor.get();
+  }
+
+  public void setIntakeSpeed(double percentOutput) {
+    intake.set(ControlMode.PercentOutput, percentOutput);
+  }
+}
