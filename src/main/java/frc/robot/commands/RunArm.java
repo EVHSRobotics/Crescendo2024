@@ -113,13 +113,15 @@ public class RunArm extends Command {
      
     }
 
+    else if(controller.getLeftBumperReleased()){
+      Intake.runIntake(0);
+    }
+
     else if (controller.getXButton()){
       setPosition(ArmPosition.STAGEFIT);
     }
 
-    else if(controller.getPOV() == 270){
-      Intake.bannerseen = !Intake.bannerseen;
-    }
+    
 
     if (currentPosition == ArmPosition.ALGO && controller.getRightBumper()) {
       Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
@@ -129,7 +131,7 @@ public class RunArm extends Command {
     arm.setPosition(currentPosition.getPos());
     }
   //   if (controller.getBButton()) {
-  //     arm.goPosMotionMagic(0);
+  //     arm.goPosMotonMagic(0);
   //     System.out.println("runnign");
   //   // (ArmPosition.STOW.getPos());
   //   }

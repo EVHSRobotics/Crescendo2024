@@ -38,7 +38,7 @@ public class RunIntake extends Command{
         SmartDashboard.putNumber("pov", controller.getPOV());
         SmartDashboard.updateValues();
 
-        if (controller.getLeftY()<-0.1 && controller.getRightY() >0.1){
+        if (controller.getLeftY()<-0.1 && controller.getLeftY() >0.1){
         intake.runIntake(controller.getLeftY());
         }
         else {
