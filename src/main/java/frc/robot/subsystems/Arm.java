@@ -28,6 +28,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.RunArm.ArmPosition;
+
 
 public class Arm extends SubsystemBase {
 
@@ -148,11 +150,11 @@ public class Arm extends SubsystemBase {
       SmartDashboard.putNumber("setpos", position);
       SmartDashboard.updateValues();
         
-    if(position > 0.06){
-      right.setControl(new VoltageOut(0));
-    }else {
-      right.setControl(new MotionMagicVoltage(position));
-  }    }
+      right.setControl(new MotionMagicVoltage(
+        MathUtil.clamp(position, ArmPosition.LOW_INTAKE.getPos(), ArmPosition.STOW.getPos())
+      ));
+
+  }    
 
     public void setVoltage(double voltage) {
       SmartDashboard.putNumber("armVoltageFFChar", voltage);

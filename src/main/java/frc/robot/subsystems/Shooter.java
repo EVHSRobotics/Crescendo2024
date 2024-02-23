@@ -90,6 +90,7 @@ public class Shooter extends SubsystemBase {
     // Multiply velocity units by 600/UnitsPerRotation to obtain RPM.
 
     // double Velo = RPM * unitsPerRot/600;
+    percentOutput = MathUtil.clamp(percentOutput, 0, 100);
     double vel = getVelocity();
     if (Math.abs(vel) < 5 ) {
       vel = 0;

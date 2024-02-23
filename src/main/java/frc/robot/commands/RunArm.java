@@ -24,7 +24,7 @@ public class RunArm extends Command {
   private Intake Intake;
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
-  private boolean currentlyAdjusting = false;
+
 
   private final Timer m_timer = new Timer();
   public enum ArmPosition {
@@ -36,6 +36,7 @@ public class RunArm extends Command {
     AMP(-0.180908),
     SHOOT(-0.02),
     STAGEFIT(0.01),
+    ALGO(0),
     HORIZONTAL(0);
 
     private double pos;
@@ -72,14 +73,16 @@ public class RunArm extends Command {
     // SmartDashboard.putNumber("numberMG", 0);
     SmartDashboard.updateValues();
 
-    if(controller.getRightBumper()){
-      currentlyAdjusting = true;
+    if(controller.getRightBumperPressed()){
+      // currentlyAdjusting = true;
 
-      //arm.goPosMotionMagic(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-      arm.setPosition(SmartDashboard.getNumber("testingArmPos", 0));
-      Intake.bannerseen = false;
+      // //arm.goPosMotionMagic(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+      // arm.setPosition(SmartDashboard.getNumber("testingArmPos", 0));
+      // Intake.bannerseen = false;
+      
+      setPosition(ArmPosition.ALGO);
     }
-    else if(currentlyAdjusting){
+    else if(controller.getLeftBumperReleased()){
       //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       //arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
       Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
@@ -88,7 +91,6 @@ public class RunArm extends Command {
       }
       else {
         m_timer.reset();
-        currentlyAdjusting = false;
         setPosition(ArmPosition.STOW);
       }
 
@@ -122,7 +124,14 @@ public class RunArm extends Command {
     else if(controller.getPOV() == 270){
       Intake.bannerseen = !Intake.bannerseen;
     }
+
+    if (currentPosition == ArmPosition.ALGO && controller.getRightBumper()) {
+      Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(ArmPosition.HIGH_INTAKE.getPos()));
+    }
+    else{
     arm.setPosition(currentPosition.getPos());
+    }
   //   if (controller.getBButton()) {
   //     arm.goPosMotionMagic(0);
   //     System.out.println("runnign");
