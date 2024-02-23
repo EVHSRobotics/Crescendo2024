@@ -25,7 +25,7 @@ public class RunArm extends Command {
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
   private boolean currentlyAdjusting = false;
-  private boolean noteIn = false;
+
   private final Timer m_timer = new Timer();
   public enum ArmPosition {
 
@@ -74,56 +74,52 @@ public class RunArm extends Command {
 
     if(controller.getRightBumper()){
       currentlyAdjusting = true;
-      noteIn = false;
+
       //arm.goPosMotionMagic(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
       arm.setPosition(SmartDashboard.getNumber("testingArmPos", 0));
+      Intake.bannerseen = false;
     }
     else if(currentlyAdjusting){
       //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
       if (m_timer.get() < 0.6){
         Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
       }
       else {
         m_timer.reset();
         currentlyAdjusting = false;
-        arm.setPosition(ArmPosition.STOW.getPos());
+        setPosition(ArmPosition.STOW);
       }
 
     }
-    else if (controller.getAButton() && !noteIn) {
+    else if (controller.getAButton()) {
       
-      arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
-      Intake.runIntake(.50);
-      if(Intake.bannerseen == true){
-      noteIn = false;
-      arm.setPosition(ArmPosition.STOW.getPos());
-      }
+      setPosition(ArmPosition.LOW_INTAKE);
+      Intake.runIntake(controller.getLeftY());
+      // if(Intake.bannerseen == true){
+      // setPosition(ArmPosition.STOW);
+      // }
     }
-
-    
 
     else if (controller.getBButton()) {
-      arm.setPosition(ArmPosition.AMP.getPos());
-      Intake.shootAmp();
+      setPosition(ArmPosition.AMP);
     }
     else if (controller.getYButton()) {
-      arm.setPosition(ArmPosition.STOW.getPos());
+      setPosition(ArmPosition.STOW);
     }
-    else if (controller.getLeftBumper() && !noteIn) {
+    else if (controller.getLeftBumper()) {
+      
       setPosition(ArmPosition.HIGH_INTAKE);
       Intake.runIntake(.50);
-      if(Intake.bannerseen == true){
-      noteIn = false;
-      arm.setPosition(ArmPosition.STOW.getPos());
-      }
+     
     }
 
     else if (controller.getXButton()){
-      arm.setPosition(ArmPosition.STAGEFIT.getPos());
+      setPosition(ArmPosition.STAGEFIT);
     }
 
     else if(controller.getPOV() == 270){
-      noteIn = !noteIn;
+      Intake.bannerseen = !Intake.bannerseen;
     }
     // arm.setPosition(currentPosition.getPos());
   //   if (controller.getBButton()) {
