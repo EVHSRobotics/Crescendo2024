@@ -81,6 +81,7 @@ public class RunArm extends Command {
     }
     else if(currentlyAdjusting){
       //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      //arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
       Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
       if (m_timer.get() < 0.6){
         Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
