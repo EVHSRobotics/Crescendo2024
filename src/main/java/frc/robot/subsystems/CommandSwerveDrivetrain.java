@@ -2,9 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.ParentConfigurator;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -42,6 +46,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        optimize();
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -49,6 +54,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        optimize();
+    }
+
+    private void optimize(){
+        // m_pigeon2.optimizeBusUtilization();
+        // for(SwerveModule module : this.Modules){
+        //     ParentDevice.optimizeBusUtilizationForAll(module.getDriveMotor(), module.getSteerMotor(), module.getCANcoder());
+        // }
     }
 
     private void configurePP(){
@@ -103,4 +116,5 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Pose2d getPose() {
         return this.getState().Pose;
     }
+
 }

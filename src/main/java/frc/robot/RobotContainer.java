@@ -29,10 +29,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.GroundIntake;
 import frc.robot.commands.RunArm;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Vision;
+import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -47,16 +50,21 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
-  XboxController operator = new XboxController(1);
+  private final XboxController operator = new XboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
 // private Vision vision;
-private RunArm runArm;
+  private RunArm runArm;
   private RunIntake intake;
   private Shoot shoot;
   private Shooter shootSub;
   private Intake intakeSub;
   private Arm arm;
+
+  private FeedForwardCharacterization armCharacterization;
+  private FeedForwardCharacterization shootTopCharacterization;
+  // private FeedForwardCharacterization shootBottomCharacterization;
+  private FeedForwardCharacterization driveCharacterization;
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -71,6 +79,8 @@ private RunArm runArm;
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private void configureBindings() {
+
+    
   
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
@@ -79,12 +89,14 @@ private RunArm runArm;
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));;
 
+    
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -99,15 +111,24 @@ private RunArm runArm;
 
     intakeSub = new Intake();
     arm = new Arm();
-    intake = new RunIntake(intakeSub, operator);
+
     shootSub = new Shooter();
-    shoot = new Shoot(shootSub, operator);
+
     runArm = new RunArm(arm, operator);
+
+    intake = new RunIntake(intakeSub, operator, runArm);
+    shoot = new Shoot(shootSub, operator, runArm);
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.updateValues();
 
     configureBindings();
+
+    armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
+    // shootBottomCharacterization = new FeedForwardCharacterization(shootSub, shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
+    shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer, shootSub::topGetVelocity);
+    
+    // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
   public enum AutoPaths {
 
@@ -129,8 +150,23 @@ private RunArm runArm;
     public Command action();
   }
   
+  public FeedForwardCharacterization getFFShooterTop(){
+    return shootTopCharacterization;
+  }
+
+  //   public FeedForwardCharacterization getFFShooterBottom(){
+  //   return shootBottomCharacterization;
+  // }
+    public FeedForwardCharacterization getFFArm(){
+    return armCharacterization;
+  }
+    public FeedForwardCharacterization getFFDrive(){
+    return driveCharacterization;
+  }
+
+
 public Command[] getTeleCommand() {
-  Command[] commands = {shoot, runArm, intake};
+  Command[] commands = {runArm, intake, shoot};
   return commands;
 }
  

@@ -1,15 +1,15 @@
-package frc.robot.generated;
-
-// Copyright (c) 2023 FRC 6328
+// Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
+package frc.robot.generated;
 
-import Jama.QRDecomposition;
 import Jama.Matrix;
+import Jama.QRDecomposition;
+
 
 // NOTE: This file is available at
 // http://algs4.cs.princeton.edu/14analysis/PolynomialRegression.java.html

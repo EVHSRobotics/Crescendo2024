@@ -10,12 +10,14 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,6 +29,8 @@ public class Shooter extends SubsystemBase {
   static final double unitsPerRot = 4096;
   BangBangController flyWheelController = new BangBangController();
   private final double MAXSPEED = 500;
+
+  SimpleMotorFeedforward feedforward;
   /** Creates a new Shooter. */
   public Shooter() {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
@@ -63,12 +67,22 @@ public class Shooter extends SubsystemBase {
     top.setInverted(true);
     bottom.setControl(new Follower(40, false));
     
+    feedforward = new SimpleMotorFeedforward(0, 0);
   }
 
-  public double getVelocity(){
+   public Double getVelocity(){
     return top.getVelocity().getValueAsDouble();
   }
 
+  public Double topGetVelocity(){
+    return top.getVelocity().getValueAsDouble();
+  }
+
+  public void topVoltageConsumer(Double voltage){
+    SmartDashboard.putNumber("shooterVoltageFFChar", voltage);
+    SmartDashboard.updateValues();
+    // top.setControl(new VoltageOut(voltage));
+  }
 
 
   public void setShooterRPM(double percentOutput){
@@ -80,7 +94,7 @@ public class Shooter extends SubsystemBase {
     if (Math.abs(vel) < 5 ) {
       vel = 0;
     }
-    double output = flyWheelController.calculate(vel, percentOutput*MAXSPEED);
+    double output = flyWheelController.calculate(vel, percentOutput) + feedforward.calculate(vel);
     // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
     top.setControl(new DutyCycleOut(output));
 

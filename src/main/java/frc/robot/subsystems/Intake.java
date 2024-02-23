@@ -22,7 +22,7 @@ public class Intake implements Subsystem{
     public void runIntake(double power){
       
         intake.set(ControlMode.PercentOutput, power);
-        SmartDashboard.putBoolean("BannerSeen?", getBanner());
+        SmartDashboard.putNumber("BannerSeen?", power);
         SmartDashboard.updateValues();
       }
     
@@ -33,4 +33,4 @@ public class Intake implements Subsystem{
         intake.set(ControlMode.PercentOutput, percentOutput);
       } 
     }
- ,
+  

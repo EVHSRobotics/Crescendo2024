@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.hardware.ParentDevice;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -41,7 +45,6 @@ public class Robot extends TimedRobot {
 
   arrayPublisher = NetworkTableInstance.getDefault()
     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
-
 
 
   }
@@ -108,14 +111,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopExit() {}
+  TalonFX shoot;
 
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+    // m_robotContainer.getFFArm().schedule();
   }
 
+
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+
+
+  }
 
   @Override
   public void testExit() {}

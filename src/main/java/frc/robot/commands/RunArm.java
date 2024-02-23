@@ -4,10 +4,13 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 
@@ -15,12 +18,36 @@ public class RunArm extends Command {
 
   private Arm arm;
   private XboxController controller;
+  private ArmPosition currentPosition = ArmPosition.STOW;
+   
+  public enum ArmPosition {
+
+    
+    STOW(-0.25),
+    LOW_INTAKE(0.06),
+    HIGH_INTAKE(-0.19),
+    AMP(-0.180908),
+    SHOOT(-0.02),
+    HORIZONTAL(0);
+
+    private double pos;
+
+    ArmPosition(double pos) {
+      this.pos = pos;
+    }
+
+    public double getPos() {
+      return this.pos;
+    }
+  }
   /** Creates a new RunArm. */
   public RunArm(Arm arm, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
+    
     this.controller = controller;
-
+    addRequirements(arm);
+    
   }
 
   // Called when the command is initially scheduled.
@@ -32,35 +59,52 @@ public class RunArm extends Command {
   public void execute() {
 
     SmartDashboard.putNumber("armpos", arm.getArmPosition());
+    // SmartDashboard.putNumber("edit", 0);
+    // SmartDashboard.putNumber("numberMG", 0);
     SmartDashboard.updateValues();
-  
-    // if (controller.getBButton()) {
-    //   arm.setPosition(0);
-
-    // }
-    // else if (controller.getAButton()) {
-    //   arm.setPosition(0.15);
-    // }
-    // else {
-      
-    //   if (arm.getArmPosition() >= -0.068) {
-    //     arm.setVoltage(0.25);
-    //   }
-    //   else {
-    //     arm.setVoltage(0);
-    //   }
-    // }
-    //   // arm.moveArm(0);
-    // }
-    // if(controller.getBButton())
-    // //   arm.setVoltage(SmartDashboard.getNumber("KG", 0));
-    // // else if (controller.getAButton()) 
-    //   arm.setVoltage(1.6);
-    // else
-    //   arm.setVoltage(0);
-    // arm.moveArm(MathUtil.applyDeadband(controller.getLeftY(), 0.1));
+    if(controller.getPOV() == 90){
+        setPosition(ArmPosition.AMP);
     }
-  
+    else if (controller.getPOV() == 0) {
+    
+        setPosition(ArmPosition.STOW);
+    }
+    else if (controller.getPOV() == 180) {
+      setPosition(ArmPosition.LOW_INTAKE);
+    }
+    else if (controller.getLeftBumper()) {
+      setPosition(ArmPosition.HIGH_INTAKE);
+    }
+    else if (controller.getPOV() == 270) {
+    }
+    arm.setPosition(SmartDashboard.getNumber("edit", 0));
+
+    // arm.setPosition(currentPosition.getPos());
+  //   if (controller.getBButton()) {
+  //     arm.goPosMotionMagic(0);
+  //     System.out.println("runnign");
+  //   // (ArmPosition.STOW.getPos());
+  //   }
+  //   else if (controller.getAButton()) {
+  //   arm.goPosMotionMagic(-0.25);
+  //   // (ArmPosition.STOW.getPos());
+  //   } 
+  //   else if (controller.getXButton()) {
+  //     arm.goPosMotionMagic(-0.178);
+  //   } 
+  //   else if (controller.getYButton()) {
+  //     arm.goPosMotionMagic(SmartDashboard.getNumber("numberMG", 0));
+  //   }
+  //   else {
+  //   // arm.setVoltage(controller.getRightY());
+  //   arm.setVoltage(0);
+  //  }
+    
+
+    }
+  public void setPosition(ArmPosition pos) {
+    this.currentPosition = pos;
+  }
 
   // Called once the command ends or is interrupted.
   @Override

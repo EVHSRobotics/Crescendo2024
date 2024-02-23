@@ -19,6 +19,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -34,7 +35,6 @@ public class Arm extends SubsystemBase {
   private TalonFX right;
   private CANcoder encoder;
   private PIDController rightPID;
-  private ArmFeedforward rightFeedforward;
 
   /** Creates a new Arm. */
   // Neg out back to base - for right and left
@@ -48,39 +48,44 @@ public class Arm extends SubsystemBase {
 
     left = new TalonFX(43);
     right = new TalonFX(42);
-    left.setNeutralMode(NeutralModeValue.Brake);
-    right.setNeutralMode(NeutralModeValue.Brake);
+    
     rightPID = new PIDController(2, 0, 0);
-   rightFeedforward = new ArmFeedforward(1, 1, 0.5, 0.1);
     
     encoder = new CANcoder(61);
-right.setPosition(0);
-    // left.setInverted(true);
-    // left.setInverted(true);
+
+// encoder.set
     // left.set(ControlMode.Follower,)
 
     left.setControl(new Follower(42, true));
 
      TalonFXConfiguration motionMagicFXConfig = new TalonFXConfiguration();
          Slot0Configs configs = new Slot0Configs();
-          configs.kS = 1;
-          configs.kV = 0.5;
-          configs.kA = 0.5;
-          configs.kG = 1.2;
+          configs.kS = 0;
+          configs.kV = 0;
+          configs.kA = 0;
+          configs.kG = 0;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 20;
+          configs.kP = 37;
           
           configs.kI = 0;
-          configs.kD = 0.1;
-          
+          configs.kD = 5;
+
+
+      // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+      // motionMagicFXConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+      // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = true;
+
+        
+
+
     motionMagicFXConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
     motionMagicFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     motionMagicFXConfig.MotionMagic.MotionMagicAcceleration = 1;
     motionMagicFXConfig.MotionMagic.MotionMagicCruiseVelocity = 0.5;
-    
-          
-    //       // set accel and velocity for going up
+    motionMagicFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+          motionMagicFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+          // set accel and velocity for going up
           motionMagicFXConfig.withSlot0(configs);
 
           left.getConfigurator().apply(motionMagicFXConfig);
@@ -91,19 +96,14 @@ right.setPosition(0);
   }
 
   public void goPosMotionMagic(double pos){
-    right.setControl(new MotionMagicVoltage(pos));
+    if(pos > 0.06){
+      right.setControl(new VoltageOut(0));
+    }else {
+      right.setControl(new MotionMagicVoltage(pos));
   }
+}
 
-  public void goToPosition(double pos) {
-    
-    // double output = rightPID.calculate(getArmPosition(), pos)*16 + rightFeedforward.calculate(pos, 0, 0);
 
-    SmartDashboard.putNumber("perOutExpected", getArmPosition());
-    SmartDashboard.updateValues();
-    // right.setControl(new VoltageOut(output));
-    // right.setControl(new DutyCycleOut(output));
-
-  }
   public double getArmPosition() {
       return encoder.getAbsolutePosition().getValueAsDouble();
   }
@@ -148,12 +148,31 @@ right.setPosition(0);
       SmartDashboard.putNumber("setpos", position);
       SmartDashboard.updateValues();
         
-                      right.setControl(new MotionMagicVoltage(position));
-    }
+    if(position > 0.06){
+      right.setControl(new VoltageOut(0));
+    }else {
+      right.setControl(new MotionMagicVoltage(position));
+  }    }
 
     public void setVoltage(double voltage) {
-      
+      SmartDashboard.putNumber("armVoltageFFChar", voltage);
+      SmartDashboard.updateValues();
+      // feedforward as needed
       right.setControl(new VoltageOut(voltage));
+    }
+
+    public void movePosPController(double setpoint){
+
+      double error = setpoint - encoder.getAbsolutePosition().getValueAsDouble();
+      System.out.println("eroor" + error);
+      System.out.println("p" + (error) *1.2* 12);
+
+      right.setControl(new VoltageOut((error) *1.2* 12));
+
+    }
+
+    public double getVelocity(){
+      return right.getVelocity().getValueAsDouble();
     }
     public void setBreak() {
         right.setControl(new StaticBrake());
