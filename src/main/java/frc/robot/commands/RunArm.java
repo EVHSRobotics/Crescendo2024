@@ -82,19 +82,15 @@ public class RunArm extends Command {
       
       setPosition(ArmPosition.ALGO);
     }
-    else if(controller.getLeftBumperReleased()){
+    else if(controller.getRightBumperReleased()){
       //Shoot.setShooterRPM(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       //arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-      Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
-      if (m_timer.get() < 0.6){
-        Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
-      }
-      else {
-        m_timer.reset();
-        setPosition(ArmPosition.STOW);
+      // Shoot.setShooterRPM(SmartDashboard.getNumber("testingshooterspeed", 0));
+      // Shoot.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
+      Intake.runIntake(1.0);
       }
 
-    }
+    
     else if (controller.getAButton()) {
       
       setPosition(ArmPosition.LOW_INTAKE);

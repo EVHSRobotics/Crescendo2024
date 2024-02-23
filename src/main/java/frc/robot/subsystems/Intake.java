@@ -13,28 +13,31 @@ public class Intake implements Subsystem {
   // ColorSensorV3(I2C.Port.kOnboard);
   private DigitalInput bannerSensor;
   private TalonSRX intake;
-  public boolean bannerseen = false;
+  public boolean useBanner;
 
   public Intake() {
+    useBanner = true;
     bannerSensor = new DigitalInput(1); // 1 is the one that works!
     intake = new TalonSRX(44);
-    
+
   }
 
   public void runIntake(double power) {
-    if(!bannerseen){
-    intake.set(ControlMode.PercentOutput, power);
+    if (useBanner) {
+      if (!getBanner()) {
+        intake.set(ControlMode.PercentOutput, power);
+      } else {
+        intake.set(ControlMode.PercentOutput, 0);
+      }
+    } else {
+      intake.set(ControlMode.PercentOutput, power);
+    }
     SmartDashboard.putNumber("BannerSeen?", power);
     SmartDashboard.updateValues();
-    
-    if (getBanner()){
-      bannerseen = true;
-    }
-  }
-  }
-  
 
-  public void shootAmp(){
+  }
+
+  public void shootAmp() {
     intake.set(ControlMode.PercentOutput, -1);
   }
 
