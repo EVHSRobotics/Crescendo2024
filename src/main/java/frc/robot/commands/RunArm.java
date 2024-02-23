@@ -122,7 +122,7 @@ public class RunArm extends Command {
     else if(controller.getPOV() == 270){
       Intake.bannerseen = !Intake.bannerseen;
     }
-    // arm.setPosition(currentPosition.getPos());
+    arm.setPosition(currentPosition.getPos());
   //   if (controller.getBButton()) {
   //     arm.goPosMotionMagic(0);
   //     System.out.println("runnign");
