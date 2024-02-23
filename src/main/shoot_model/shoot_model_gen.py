@@ -24,26 +24,26 @@ def genShootModel():
 
     shootModel = Sequential()
 
-    shootModel.add(Dense(1, input_dim=2))
+    shootModel.add(Dense(25, input_dim=2))
     shootModel.add(Dense(25))
     shootModel.add(Dense(25))
     shootModel.add(Dense(25))
     shootModel.add(Dense(2))
 
-    shootModel.compile(loss="mse", optimizer=Adam(0.1))
+    shootModel.compile(loss="mse", optimizer=Adam())
     shootModel.fit(shootDataX, shootDataY, epochs=1000)
 
-    shootModel.save("ShootModel.keras")
+    shootModel.save("ShootModel_2D.keras")
 
     convertedTFLiteModel = tf.lite.TFLiteConverter.from_keras_model(shootModel).convert()
     
-    with open("ShootModel_Lite.tflite", "wb") as shootTflite:
+    with open("ShootModel_Lite_2D.tflite", "wb") as shootTflite:
         shootTflite.write(convertedTFLiteModel)
 
 # Loads the shoot model using tflite for more efficiency
 def loadShootModelTFLite(inputVals):
 
-    shootModelInterpretor = tf.lite.Interpreter(model_path="ShootModel_Lite.tflite")
+    shootModelInterpretor = tf.lite.Interpreter(model_path="ShootModel_Lite_2D.tflite")
 
     shootModelInputDetails = shootModelInterpretor.get_input_details()
     shootModelOutputDetails = shootModelInterpretor.get_output_details()
@@ -59,10 +59,10 @@ def loadShootModelTFLite(inputVals):
 # Loads the more accurate model using keras
 def loadShootModelKeras(inputVals):
 
-    shootModel = load_model("ShootModel.keras")
+    shootModel = load_model("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/src/main/shoot_model/ShootModel_2D.keras")
 
     shootModelPrediction = shootModel.predict(np.array([inputVals]))
+    print(shootModelPrediction)
 
-
-genShootModel()
-# loadShootModelTFLite([0.5, 0.5])
+# genShootModel()
+loadShootModelKeras([-5.5, 0.13])
