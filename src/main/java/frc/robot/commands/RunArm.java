@@ -25,8 +25,6 @@ public class RunArm extends Command {
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
 
-  private final Timer m_timer = new Timer();
-
   public enum ArmPosition {
 
     STOW(-0.25),
@@ -83,10 +81,13 @@ public class RunArm extends Command {
 
       setPosition(ArmPosition.ALGO);
     } 
+    else if (controller.getRightBumperReleased()) {
+      Intake.runIntake(1);
+    }
     else if (controller.getAButton()) {
 
       setPosition(ArmPosition.LOW_INTAKE);
-      Intake.runIntake(controller.getLeftY());
+      Intake.runIntake(1);
       // if(Intake.bannerseen == true){
       // setPosition(ArmPosition.STOW);
       // }

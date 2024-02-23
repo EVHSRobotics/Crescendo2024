@@ -38,18 +38,9 @@ public class RunIntake extends Command{
         SmartDashboard.putNumber("pov", controller.getPOV());
         SmartDashboard.updateValues();
 
-        if(!controller.getAButton()){
-        if (controller.getLeftY()<-0.1 && controller.getLeftY() >0.1 ){
-        intake.runIntake(controller.getLeftY());
-        }
-        else {
-        intake.runIntake(0);
-        }
-        }
+      
+        
 
-        if(controller.getPOV() == 270){
-        intake.useBanner = !intake.useBanner;
-        }
 
 
 

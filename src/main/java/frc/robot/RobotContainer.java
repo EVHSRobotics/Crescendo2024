@@ -34,6 +34,7 @@ import frc.robot.commands.GroundIntake;
 import frc.robot.commands.RunArm;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.SuperStructure;
 import frc.robot.commands.Vision;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.generated.TunerConstants;
@@ -54,9 +55,10 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
 // private Vision vision;
-  private RunArm runArm;
-  private RunIntake intake;
-  private Shoot shoot;
+  // private RunArm runArm;
+  // private RunIntake intake;
+  // private Shoot shoot;
+  private SuperStructure superStructure;
   private Shooter shootSub;
   private Intake intakeSub;
   private Arm arm;
@@ -111,13 +113,12 @@ public class RobotContainer {
 
     intakeSub = new Intake();
     arm = new Arm();
-
     shootSub = new Shooter();
 
-    runArm = new RunArm(arm, operator);
-
-    intake = new RunIntake(intakeSub, operator, runArm);
-    shoot = new Shoot(shootSub, operator, runArm);
+    superStructure = new SuperStructure(arm, intakeSub, shootSub, operator);
+    // runArm = new RunArm(arm, operator);
+    // intake = new RunIntake(intakeSub, operator, runArm);
+    // shoot = new Shoot(shootSub, operator, runArm);
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.updateValues();
@@ -166,7 +167,7 @@ public class RobotContainer {
 
 
 public Command[] getTeleCommand() {
-  Command[] commands = {runArm, intake, shoot};
+  Command[] commands = {superStructure};
   return commands;
 }
  

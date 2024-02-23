@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
           configs.kP = 37;
           
           configs.kI = 0;
-          configs.kD = 5;
+          configs.kD = 10;
 
 
       // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
