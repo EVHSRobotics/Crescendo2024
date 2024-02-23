@@ -24,11 +24,13 @@ public class Intake implements Subsystem {
 
   public void runIntake(double power) {
     if (useBanner) {
-      if (!getBanner()) {
-        intake.set(ControlMode.PercentOutput, power);
-      } else {
-        intake.set(ControlMode.PercentOutput, 0);
-      }
+        // Outtaking is ok
+        if (!getBanner() || power > 0) {
+          intake.set(ControlMode.PercentOutput, power);
+        } else {
+          intake.set(ControlMode.PercentOutput, 0);
+        }
+      
     } else {
       intake.set(ControlMode.PercentOutput, power);
     }
