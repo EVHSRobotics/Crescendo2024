@@ -64,5 +64,5 @@ def loadShootModelKeras(inputVals):
     shootModelPrediction = shootModel.predict(np.array([inputVals]))
     print(shootModelPrediction)
 
-# genShootModel()
-loadShootModelKeras([-5.5, 0.13])
+genShootModel()
+# loadShootModelKeras([-5.5, 0.13])
