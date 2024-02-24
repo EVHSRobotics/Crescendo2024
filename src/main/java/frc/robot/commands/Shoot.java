@@ -12,12 +12,10 @@ import frc.robot.subsystems.Shooter;
 public class Shoot extends Command {
     Shooter shooter;
     XboxController controller;
-    RunArm armDriver;
-    private boolean useAlgoShooting = false;
-    public Shoot(Shooter shooter, XboxController controller, RunArm armDriver){
+    private boolean useAlgoShooting = true;
+    public Shoot(Shooter shooter, XboxController controller){
         this.shooter = shooter;
         this.controller = controller;
-        this.armDriver = armDriver;
         addRequirements(shooter);
     }
 
@@ -25,7 +23,7 @@ public class Shoot extends Command {
 
     }
     public void execute() {
-        SmartDashboard.putNumber("power", controller.getRightTriggerAxis());
+        // SmartDashboard.putNumber("power", controller.getRightTriggerAxis());
         // SmartDashboard.putNumber("rpmTop", shooter.getVelocity());
         // SmartDashboard.putNumber("shooterRPM", 0);
         SmartDashboard.updateValues();
@@ -35,12 +33,17 @@ public class Shoot extends Command {
 
                 // double output//// = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
                 if (controller.getYButton()){
-                    shooter.setShooterRPM(20);
+                    shooter.motionMagicVelo(90);
+                } else if (controller.getAButton()){
+                    shooter.motionMagicVelo(50);
                 }
+                 else{
+                    shooter.motionMagicVelo(0);
+                 }
             }
             else {
                 // if(controller.getLeftY() > -0.01)
-                    shooter.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
+                    // shooter.setShooterRPM(SmartDashboard.getNumber("rpmTop", 0));
                 //  else{
                 //     shooter.setRPS(0);
 

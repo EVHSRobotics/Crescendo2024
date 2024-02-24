@@ -57,7 +57,7 @@ public class RobotContainer {
 // private Vision vision;
   // private RunArm runArm;
   // private RunIntake intake;
-  // private Shoot shoot;
+  private Shoot shoot;
   private SuperStructure superStructure;
   private Shooter shootSub;
   private Intake intakeSub;
@@ -85,18 +85,19 @@ public class RobotContainer {
     
   
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-                                                                                           // negative Y (forward)
-            .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));;
+    drivetrain.applyRequest(() -> drive.withVelocityX((Math.signum(joystick.getLeftY()) * -(Math.abs(joystick.getLeftY()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftY(), 2)) + 0.1 : 0)) * MaxSpeed) // Drive forward with
+                                                                                       // negative Y (forward)
+        .withVelocityY((Math.signum(joystick.getLeftX()) * -(Math.abs(joystick.getLeftX()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftX(), 2)) + 0.1 : 0)) * MaxSpeed) // Drive left with negative X (left)
+        .withRotationalRate((Math.signum(joystick.getRightX()) * -(Math.abs(joystick.getRightX()) > 0.15 ? Math.abs(Math.pow(joystick.getRightX(), 2)) + 0.1 : 0)) * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    ));
+
 
     
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
-    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading on right bumper press
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     
 
@@ -114,6 +115,7 @@ public class RobotContainer {
     intakeSub = new Intake();
     arm = new Arm();
     shootSub = new Shooter();
+    shoot = new Shoot(shootSub, operator);
 
     superStructure = new SuperStructure(arm, intakeSub, shootSub, operator);
     // runArm = new RunArm(arm, operator);

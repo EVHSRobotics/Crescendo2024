@@ -68,10 +68,10 @@ public class Arm extends SubsystemBase {
           configs.kG = 0;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 37;
+          configs.kP = 55;
           
           configs.kI = 0;
-          configs.kD = 10;
+          configs.kD = 4;
 
 
       // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -110,7 +110,7 @@ public class Arm extends SubsystemBase {
       return encoder.getAbsolutePosition().getValueAsDouble();
   }
   public boolean isArmInRange(ArmPosition pos) {
-    return Math.abs(pos.getPos() - getArmPosition()) < 0.015;
+    return Math.abs(pos.getPos() - getArmPosition()) <= 0.03;
   }
   public void moveArm(double perOut) {
     right.setControl(new DutyCycleOut(-perOut));
@@ -153,7 +153,7 @@ public class Arm extends SubsystemBase {
       SmartDashboard.updateValues();
         
       right.setControl(new MotionMagicVoltage(
-        MathUtil.clamp(position, ArmPosition.LOW_INTAKE.getPos(), ArmPosition.STOW.getPos())
+        MathUtil.clamp(position, ArmPosition.STOW.getPos(), ArmPosition.LOW_INTAKE.getPos())
       ));
 
   }    

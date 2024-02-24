@@ -21,11 +21,16 @@ public class Intake implements Subsystem {
     intake = new TalonSRX(44);
 
   }
-
+  public void pushIntake(double power) {
+   
+      intake.set(ControlMode.PercentOutput, power);
+    
+  }
   public void runIntake(double power) {
     if (useBanner) {
         // Outtaking is ok
-        if (!getBanner() || power > 0) {
+        SmartDashboard.putNumber("test", power);
+        if (!getBanner() || power < 0) {
           intake.set(ControlMode.PercentOutput, power);
         } else {
           intake.set(ControlMode.PercentOutput, 0);

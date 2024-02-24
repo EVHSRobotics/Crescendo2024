@@ -26,27 +26,27 @@ public class RunArm extends Command {
   private Shooter Shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
 
-  // public enum ArmPosition {
+  public enum ArmPosition {
 
-  //   STOW(-0.25),
-  //   LOW_INTAKE(0.06),
-  //   HIGH_INTAKE(-0.19),
-  //   AMP(-0.180908),
-  //   SHOOT(-0.02),
-  //   STAGEFIT(0.01),
-  //   ALGO(0),
-  //   HORIZONTAL(0);
+    STOW(-0.25),
+    LOW_INTAKE(0.06),
+    HIGH_INTAKE(-0.11),
+    AMP(-0.180908),
+    SHOOT(-0.02),
+    STAGEFIT(0.01),
+    ALGO(0),
+    HORIZONTAL(0);
 
-  //   private double pos;
+    private double pos;
 
-  //   ArmPosition(double pos) {
-  //     this.pos = pos;
-  //   }
+    ArmPosition(double pos) {
+      this.pos = pos;
+    }
 
-  //   public double getPos() {
-  //     return this.pos;
-  //   }
-  // }
+    public double getPos() {
+      return this.pos;
+    }
+  }
 
   /** Creates a new RunArm. */
   public RunArm(Arm arm, XboxController controller) {
@@ -105,9 +105,9 @@ public class RunArm extends Command {
 
     }
 
-    else if (controller.getLeftBumperReleased()) {
-      Intake.runIntake(0);
-    }
+    // else if (controller.getLeftBumperReleased()) {
+    //   Intake.runIntake(0);
+    // }
 
     else if (controller.getXButton()) {
       setPosition(ArmPosition.STAGEFIT);

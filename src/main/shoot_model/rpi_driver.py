@@ -7,17 +7,17 @@ class ShootModelDriver:
     def __init__(self):
         print("Initializing TFLite runtime interpreter")
         try:
-            model_path = "ShootModel_Lite_3D.tflite"
+            model_path = "ShootModel_Lite_2D.tflite"
             self.interpreter = tflite.Interpreter(model_path, experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
             self.hardware_type = "Coral Edge TPU"
         except:
             print("Failed to create Interpreter with Coral, switching to unoptimized")
-            model_path = "ShootModel_Lite_3D.tflite"
+            model_path = "ShootModel_Lite_2D.tflite"
             self.interpreter = tflite.Interpreter(model_path)
             self.hardware_type = "Unoptimized"
 
         self.interpreter.allocate_tensors()
-        NetworkTableInstance.getDefault().startClient4("RPI")
+        NetworkTableInstance.getDefault().startClient4("RPI_CLIENT")
         NetworkTableInstance.getDefault().setServerTeam(2854)
         NetworkTableInstance.getDefault().startDSClient()
 

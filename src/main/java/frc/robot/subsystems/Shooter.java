@@ -13,11 +13,13 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,6 +40,11 @@ public class Shooter extends SubsystemBase {
     top = new TalonFX(40);
     bottom = new TalonFX(41);
     
+    // SmartDashboard.putNumber("KP", 0);
+    // SmartDashboard.putNumber("KD", 0);
+    // SmartDashboard.putNumber("KI", 0);
+
+    SmartDashboard.updateValues();
     top.setNeutralMode(NeutralModeValue.Coast);
     bottom.setNeutralMode(NeutralModeValue.Coast);
   //   top.config_kP(0, 0.000);
@@ -48,26 +55,24 @@ public class Shooter extends SubsystemBase {
     //     bottom.setInverted(true);
 
     var slot0Configs = configuration.Slot0;
-    slot0Configs.kS = 0.2;
-    slot0Configs.kV = 0.18;
-    slot0Configs.kA = 0.1;
-    slot0Configs.kP = 0.11;
-    slot0Configs.kI = 0;
-    slot0Configs.kD = 0;
-
+    slot0Configs.kS = 0.27002;
+    slot0Configs.kV = 0.11435;
+    slot0Configs.kA = 0;
+    slot0Configs.kP = 0.3;
+    slot0Configs.kI = 0; // 0.05
+    slot0Configs.kD = 0; // 0.1
     var motionMagic = configuration.MotionMagic;
 
     motionMagic.MotionMagicAcceleration = 200;
     motionMagic.MotionMagicJerk = 2000;
-
+    configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     top.getConfigurator().apply(configuration);
     bottom.getConfigurator().apply(configuration);
 
 
-    top.setInverted(true);
-    bottom.setControl(new Follower(40, false));
+    // bottom.setControl(new Follower(40, false));
     
-    feedforward = new SimpleMotorFeedforward(0, 0);
+    feedforward = new SimpleMotorFeedforward(0.27002, 0.11435);
   }
 
    public Double getVelocity(){
@@ -75,27 +80,60 @@ public class Shooter extends SubsystemBase {
   }
 
   public Double topGetVelocity(){
-    return top.getVelocity().getValueAsDouble();
+    return top.getVelocity().getValueAsDouble();  
   }
 
   public void topVoltageConsumer(Double voltage){
     SmartDashboard.putNumber("shooterVoltageFFChar", voltage);
     SmartDashboard.updateValues();
-    // top.setControl(new VoltageOut(voltage));
+    top.setControl(new VoltageOut(voltage));
   }
 
-
-  public void setShooterRPM(double percentOutput){
+  public void motionMagicVelo(double percentOutput){
     // double error = RPM - top.getSelectedSensorVelocity();
     // Multiply velocity units by 600/UnitsPerRotation to obtain RPM.
 
     // double Velo = RPM * unitsPerRot/600;
-    percentOutput = MathUtil.clamp(percentOutput, 0, 100);
+    
+
+    // System.out.print(feedforward.calculate(vel));
+    // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
+    top.setControl(new MotionMagicVelocityVoltage(percentOutput));
+    bottom.setControl(new MotionMagicVelocityVoltage(percentOutput));
+
+  }
+
+  public void motionMagicVelo(double topSpeed, double bottomSpeed){
+    // double error = RPM - top.getSelectedSensorVelocity();
+    // Multiply velocity units by 600/UnitsPerRotation to obtain RPM.
+
+    // double Velo = RPM * unitsPerRot/600;
+    
+
+    // System.out.print(feedforward.calculate(vel));
+    // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
+    top.setControl(new MotionMagicVelocityVoltage(topSpeed));
+    bottom.setControl(new MotionMagicVelocityVoltage(bottomSpeed));
+
+  }
+  
+  public void setPerOut(double percentOutput) {
+    top.setControl(new DutyCycleOut(percentOutput));
+  }
+
+
+  public void setShooterRPM(double percentOutput){
+    // double error = RPM  - top.getSelectedSensorVelocity();
+    // Multiply velocity units by 600/UnitsPerRotation to obtain RPM.
+
+    // double Velo = RPM * unitsPerRot/600;
     double vel = getVelocity();
     if (Math.abs(vel) < 5 ) {
       vel = 0;
     }
-    double output = flyWheelController.calculate(vel, percentOutput) + feedforward.calculate(vel);
+
+    // System.out.print(feedforward.calculate(vel));
+    double output = flyWheelController.calculate(vel, percentOutput);
     // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
     top.setControl(new DutyCycleOut(output));
 
