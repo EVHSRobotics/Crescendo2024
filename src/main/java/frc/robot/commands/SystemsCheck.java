@@ -9,11 +9,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.SuperStructure.ArmPosition;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 public class SystemsCheck extends Command {
 
+  private CommandSwerveDrivetrain drivetrain;
   private FieldCentric drive;
   private Arm arm;
   private Intake intake;
@@ -40,9 +42,10 @@ public class SystemsCheck extends Command {
   }
 
   /** Creates a new SystemsCheck. */
-  public SystemsCheck(FieldCentric drive, Arm arm, Intake intake, Shooter shoot) {
+  public SystemsCheck(CommandSwerveDrivetrain drivetrain, FieldCentric drive, Arm arm, Intake intake, Shooter shoot) {
     // Use addRequirements() here to declare subsystem dependencies.
     
+    this.drivetrain = drivetrain;
     this.drive = drive;
     this.arm = arm;
     this.intake = intake;
@@ -82,7 +85,7 @@ public class SystemsCheck extends Command {
         case DRIVE:
           // Run Modules at 40% speed for 3 seconds
             if ((System.currentTimeMillis() - checkTimer) < 3000) {
-            drive.withVelocityX(2.4).withVelocityY(2.4).withRotationalRate(1.884);
+              drivetrain.applyRequest(() -> drive.withVelocityX(2.4).withVelocityY(2.4).withRotationalRate(1.884));
           }
           else {
             nextSystemCheck();

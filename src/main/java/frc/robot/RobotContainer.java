@@ -9,6 +9,7 @@ import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -71,7 +72,7 @@ public class RobotContainer {
 
   private SystemsCheck systemsCheck;
 
-
+  private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle().withTargetDirection(Rotation2d.fromDegrees(45)).withVelocityX(0.75*MaxSpeed).withVelocityY(0.75*MaxSpeed);
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -94,12 +95,12 @@ public class RobotContainer {
         .withRotationalRate((Math.signum(joystick.getRightX()) * -(Math.abs(joystick.getRightX()) > 0.15 ? Math.abs(Math.pow(joystick.getRightX(), 2)) + 0.1 : 0)) * MaxAngularRate) // Drive counterclockwise with negative X (left)
     ));
 
-
     
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
+        
+    joystick.x().whileTrue(drivetrain.applyRequest(() -> sourceAngle));
     // reset the field-centric heading on right bumper press
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     
@@ -133,7 +134,7 @@ public class RobotContainer {
     armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
     // shootBottomCharacterization = new FeedForwardCharacterization(shootSub, shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
     shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer, shootSub::topGetVelocity);
-    systemsCheck = new SystemsCheck(drive, arm, intakeSub, shootSub);
+    systemsCheck = new SystemsCheck(drivetrain, drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
   public enum AutoPaths {
