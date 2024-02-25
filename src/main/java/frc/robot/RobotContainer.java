@@ -35,6 +35,7 @@ import frc.robot.commands.RunArm;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.SuperStructure;
+import frc.robot.commands.SystemsCheck;
 import frc.robot.commands.Vision;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.generated.TunerConstants;
@@ -67,6 +68,8 @@ public class RobotContainer {
   private FeedForwardCharacterization shootTopCharacterization;
   // private FeedForwardCharacterization shootBottomCharacterization;
   private FeedForwardCharacterization driveCharacterization;
+
+  private SystemsCheck systemsCheck;
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -130,7 +133,7 @@ public class RobotContainer {
     armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
     // shootBottomCharacterization = new FeedForwardCharacterization(shootSub, shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
     shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer, shootSub::topGetVelocity);
-    
+    systemsCheck = new SystemsCheck(drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
   public enum AutoPaths {
@@ -172,6 +175,7 @@ public Command[] getTeleCommand() {
   Command[] commands = {superStructure};
   return commands;
 }
+
  
   public Command getAutonomousCommand() {
 
@@ -206,7 +210,9 @@ public Command[] getTeleCommand() {
 
 
 
-
+public Command getSystemsCheck() {
+  return systemsCheck;
+}
 
 
   // Deprecated

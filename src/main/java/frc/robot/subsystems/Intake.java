@@ -21,9 +21,13 @@ public class Intake implements Subsystem {
     intake = new TalonSRX(44);
 
   }
+  public double getIntakeSpeed() {
+
+    return intake.getSelectedSensorVelocity();
+  }
   public void pushIntake(double power) {
    
-      intake.set(ControlMode.PercentOutput, power);
+    intake.set(ControlMode.PercentOutput, power);
     
   }
   public void runIntake(double power) {
