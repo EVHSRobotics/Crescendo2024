@@ -26,6 +26,7 @@ public class SuperStructure extends Command {
   private Shooter shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
   private IntakeMode currentIntake = IntakeMode.MANUAL;
+  private boolean cancelAlgoShoot = false;
 
   private XboxController operator;
   private Timer timer = new Timer();
@@ -33,8 +34,8 @@ public class SuperStructure extends Command {
   private java.util.Timer autoTippingTimer = new java.util.Timer();
 
   public enum IntakeMode {
-    OUTTAKE(1, 1000),
-    INTAKE(1, 750),
+    OUTTAKE(1, 1000), // for algo shoot and amp shoot
+    INTAKE(1, 750), // for high intake shoot
     MANUAL(0, 1000);
 
     private double speed;
@@ -107,11 +108,20 @@ public class SuperStructure extends Command {
     
 
     if (operator.getRightBumperPressed()) {
+      cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
     } 
     else if (operator.getRightBumperReleased()) {
-      setIntakeMode(IntakeMode.OUTTAKE);
-      
+      if (!cancelAlgoShoot) {
+        setIntakeMode(IntakeMode.OUTTAKE);
+      }
+    }
+    else if (operator.getXButton()) {
+      // Cancel button for algo shoot
+      if (currentPosition == ArmPosition.ALGO) {
+        cancelAlgoShoot = true;
+        setPosition(ArmPosition.STOW);
+      }
     }
     else if (operator.getAButton()) {
       setPosition(ArmPosition.LOW_INTAKE);
@@ -133,7 +143,7 @@ public class SuperStructure extends Command {
       setIntakeMode(IntakeMode.INTAKE);
 
     }
-    else if (operator.getXButton()) {
+    else if (operator.getPOV() == 270) {
       setPosition(ArmPosition.STAGEFIT);
     }
     else if (MathUtil.applyDeadband(operator.getRightY(), 0.1) != 0) {
@@ -147,7 +157,7 @@ public class SuperStructure extends Command {
     }
 
 
-    if(operator.getPOV() == 270){
+    if(operator.getPOV() == 180){
       intake.useBanner = !intake.useBanner;
     }
 
