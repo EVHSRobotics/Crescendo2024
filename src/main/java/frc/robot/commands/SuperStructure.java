@@ -30,6 +30,7 @@ public class SuperStructure extends Command {
   private XboxController operator;
   private Timer timer = new Timer();
   private java.util.Timer intakeTimer = new java.util.Timer();
+  private java.util.Timer autoTippingTimer = new java.util.Timer();
 
   public enum IntakeMode {
     OUTTAKE(1, 1000),
@@ -53,7 +54,7 @@ public class SuperStructure extends Command {
   }
 
   public enum ArmPosition {
-
+    REVERSE_TIPPING(-0.35),
     STOW(-0.25),
     LOW_INTAKE(0.06),
     HIGH_INTAKE(-0.15),
@@ -101,6 +102,10 @@ public class SuperStructure extends Command {
   public void execute() {
     SmartDashboard.putNumber("AP", arm.getArmPosition());
     SmartDashboard.updateValues();
+
+
+    
+
     if (operator.getRightBumperPressed()) {
       setPosition(ArmPosition.ALGO);
     } 
@@ -111,6 +116,10 @@ public class SuperStructure extends Command {
     else if (operator.getAButton()) {
       setPosition(ArmPosition.LOW_INTAKE);
 
+    }
+    else if (operator.getStartButton()) {
+      // Tipping algo
+      // autoPickBackUpAlgo();
     }
     else if (operator.getBButton()) {
       setPosition(ArmPosition.AMP);
@@ -131,12 +140,18 @@ public class SuperStructure extends Command {
       // Override Intake mode at any point to be manual
       currentIntake = IntakeMode.MANUAL;
     }
+    else {
+      // Should be running continously
+      // Balancing algo
+      // autoBalancingAlgo();
+    }
 
 
     if(operator.getPOV() == 270){
       intake.useBanner = !intake.useBanner;
     }
-    
+
+
     if (currentPosition == ArmPosition.ALGO && operator.getRightBumper()) {
       shoot.motionMagicVelo(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
@@ -149,8 +164,11 @@ public class SuperStructure extends Command {
      else {
       shoot.motionMagicVelo(0, 0);
      }
+
       arm.setPosition(currentPosition.getPos());
-    }
+    }    
+    SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
+
     SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
      SmartDashboard.putNumber("Algo shoot Output", NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       // shoot.motionMagicVelo(
@@ -177,6 +195,7 @@ public class SuperStructure extends Command {
     this.currentPosition = pos;
   }
  
+
 
   public void setIntakeMode(IntakeMode mode) {
 
@@ -232,6 +251,43 @@ public class SuperStructure extends Command {
     }
   }
 
+  public void autoBalancingAlgo() {
+    double pitch = arm.getGyroPitch();
+    if (Math.abs(pitch) > 25) {
+      currentPosition = Math.signum(pitch) > 0 ? ArmPosition.REVERSE_TIPPING : ArmPosition.HIGH_INTAKE;
+    }
+  }
+  public void autoPickBackUpAlgo() {
+    
+
+    currentPosition = ArmPosition.STOW;
+    autoTippingTimer.purge();
+    
+    autoTippingTimer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+          if (arm.isArmInRange(currentPosition)) {
+            // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
+            // a new comman that is supposed to run the intake till the time expires, or banner sensor is triggered
+            
+            this.cancel();
+
+            double pitch = arm.getGyroPitch();
+            if (pitch > 0) {
+              currentPosition = ArmPosition.LOW_INTAKE;
+            }
+            else {
+              currentPosition = ArmPosition.REVERSE_TIPPING;
+            }
+            
+            this.cancel();
+        
+          }
+        }
+      }, 0, 1);      
+
+    
+  }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

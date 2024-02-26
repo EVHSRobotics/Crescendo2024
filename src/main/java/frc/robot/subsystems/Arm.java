@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -37,6 +38,7 @@ public class Arm extends SubsystemBase {
   private TalonFX right;
   private CANcoder encoder;
   private PIDController rightPID;
+  private Pigeon2 pigeonGyro;
 
   /** Creates a new Arm. */
   // Neg out back to base - for right and left
@@ -50,6 +52,7 @@ public class Arm extends SubsystemBase {
 
     left = new TalonFX(43);
     right = new TalonFX(42);
+    pigeonGyro = new Pigeon2(0, "drivetrain");
     
     rightPID = new PIDController(2, 0, 0);
     
@@ -153,7 +156,7 @@ public class Arm extends SubsystemBase {
       SmartDashboard.updateValues();
         
       right.setControl(new MotionMagicVoltage(
-        MathUtil.clamp(position, ArmPosition.STOW.getPos(), ArmPosition.LOW_INTAKE.getPos())
+        MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
       ));
 
   }    
@@ -183,6 +186,10 @@ public class Arm extends SubsystemBase {
         left.setControl(new StaticBrake());
     }
     
+    public double getGyroPitch() {
+      return pigeonGyro.getPitch().getValueAsDouble();
+      
+    }
     public void manageMotion(double targetPosition) {
         double currentPosition = getArmPosition();
 
