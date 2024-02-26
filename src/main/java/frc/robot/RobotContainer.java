@@ -21,13 +21,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -56,6 +59,7 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
+  private  Timer m_timer = new Timer();
 // private Vision vision;
   // private RunArm runArm;
   // private RunIntake intake;
@@ -116,6 +120,17 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
+
+
+
+    NamedCommands.registerCommand("groundIntake", new FunctionalCommand(null, () -> intakeSub.runIntake(-0.5), interrupted -> intakeSub.runIntake(0), () -> intakeSub.getBanner(), intakeSub));
+    NamedCommands.registerCommand("ShootNote", new FunctionalCommand(
+     null, 
+      () -> arm.ShootNoteAuto(shootSub, intakeSub),
+       interrupted -> arm.resetShootNoteAut(shootSub, intakeSub),
+        () -> m_timer.get() < 1 , 
+        arm));
+
     intakeSub = new Intake();
     arm = new Arm();
     shootSub = new Shooter();
@@ -137,6 +152,8 @@ public class RobotContainer {
     systemsCheck = new SystemsCheck(drivetrain, drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
+
+  
   public enum AutoPaths {
 
     

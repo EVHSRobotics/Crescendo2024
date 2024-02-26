@@ -26,6 +26,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,6 +41,7 @@ public class Arm extends SubsystemBase {
   private CANcoder encoder;
   private PIDController rightPID;
   private Pigeon2 pigeonGyro;
+
 
   /** Creates a new Arm. */
   // Neg out back to base - for right and left
@@ -99,13 +102,30 @@ public class Arm extends SubsystemBase {
       SmartDashboard.putNumber("KG", 0);
       SmartDashboard.updateValues();
   }
+public void ShootNoteAuto (Shooter shooter, Intake intake){
+    shooter.motionMagicVelo(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+      setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+          .getDouble(ArmPosition.HIGH_INTAKE.getPos()));
 
+          intake.setIntakeSpeed(1);
+  }
+
+
+
+  public void resetShootNoteAut (Shooter shooter, Intake intake){
+    shooter.motionMagicVelo(0);
+      setPosition(ArmPosition.STOW.getPos());
+
+          intake.setIntakeSpeed(0);
+  }
   public void goPosMotionMagic(double pos){
     if(pos > 0.06){
       right.setControl(new VoltageOut(0));
     }else {
       right.setControl(new MotionMagicVoltage(pos));
   }
+
+  
 }
 
 
