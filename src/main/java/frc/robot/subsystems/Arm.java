@@ -103,23 +103,7 @@ public class Arm extends SubsystemBase {
       SmartDashboard.putNumber("KG", 0);
       SmartDashboard.updateValues();
   }
-public void ShootNoteAuto (Shooter shooter, Intake intake){
-    shooter.motionMagicVelo(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-      setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
-          .getDouble(ArmPosition.HIGH_INTAKE.getPos()));
 
-          intake.setIntakeSpeed(1);
-  }
- 
-
-
-
-  public void resetShootNoteAut (Shooter shooter, Intake intake){
-    shooter.motionMagicVelo(0);
-      setPosition(ArmPosition.STOW.getPos());
-
-          intake.setIntakeSpeed(0);
-  }
   public void goPosMotionMagic(double pos){
     if(pos > 0.06){
       right.setControl(new VoltageOut(0));
