@@ -49,6 +49,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 
@@ -71,6 +72,7 @@ public class RobotContainer {
   private Shooter shootSub;
   private Intake intakeSub;
   private Arm arm;
+  private Leds ledSub;
 
   private FeedForwardCharacterization armCharacterization;
   private FeedForwardCharacterization shootTopCharacterization;
@@ -128,30 +130,14 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
-<<<<<<< HEAD
-
-
-
-    NamedCommands.registerCommand("groundIntake", new FunctionalCommand(null, () -> intakeSub.runIntake(-0.5), interrupted -> intakeSub.runIntake(0), () -> intakeSub.getBanner(), intakeSub));
-    NamedCommands.registerCommand("shootNote", new FunctionalCommand(
-     () -> m_timer.reset(), 
-      () -> arm.ShootNoteAuto(shootSub, intakeSub),
-       interrupted -> arm.resetShootNoteAut(shootSub, intakeSub),
-        () -> m_timer.get() < 1 , 
-        arm));
-=======
-    HashMap<String, Command> eventMap = new HashMap<>();
-    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub));
-    eventMap.put("Outake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub));
-    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub));
->>>>>>> 36bf5a19cf80da1b40d3a615053b32fd53f0ca0c
 
     intakeSub = new Intake();
     arm = new Arm();
     shootSub = new Shooter();
+    ledSub = new Leds();
     shoot = new Shoot(shootSub, operator);
 
-    superStructure = new SuperStructure(arm, intakeSub, shootSub, operator);
+    superStructure = new SuperStructure(arm, intakeSub, shootSub, ledSub, operator);
     // runArm = new RunArm(arm, operator);
     // intake = new RunIntake(intakeSub, operator, runArm);
     // shoot = new Shoot(shootSub, operator, runArm);
@@ -208,6 +194,14 @@ public class RobotContainer {
   public Command[] getTeleCommand() {
     Command[] commands = { superStructure };
     return commands;
+  }
+  public void setUpAutoCommands() {
+    HashMap<String, Command> eventMap = new HashMap<String, Command>();
+    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub));
+    eventMap.put("Outake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub));
+    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub));
+
+    NamedCommands.registerCommands(eventMap);
   }
 
   public Command getAutonomousCommand() {
@@ -295,6 +289,7 @@ public class RobotContainer {
                                                                       // the blue alliance)
         drivetrain // The subsystem(s) to require, typically your drive subsystem only
     );
+
     return swerveCommand;
 
   }

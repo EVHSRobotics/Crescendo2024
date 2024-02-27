@@ -15,14 +15,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Leds.SparkLEDColors;
 
 
 public class SuperStructure extends Command {
 
   private Arm arm;
   private Intake intake;
+  private Leds ledSub;
   private Shooter shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
   private IntakeMode currentIntake = IntakeMode.MANUAL;
@@ -77,12 +80,13 @@ public class SuperStructure extends Command {
   }
 
   /** Creates a new SuperStructure. */
-  public SuperStructure(Arm arm, Intake intake, Shooter shoot, XboxController operator) {
+  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController operator) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.arm = arm;
     this.intake = intake;
     this.shoot = shoot;
+    this.ledSub = led;
 
     this.operator = operator;
 
@@ -96,6 +100,7 @@ public class SuperStructure extends Command {
   public void initialize() {
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
+    ledSub.setLED(SparkLEDColors.RAINBOW);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -104,16 +109,16 @@ public class SuperStructure extends Command {
     SmartDashboard.putNumber("AP", arm.getArmPosition());
     SmartDashboard.updateValues();
 
-
-    
-
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
+      ledSub.setLED(SparkLEDColors.ALGO_AIM);
     } 
     else if (operator.getRightBumperReleased()) {
       if (!cancelAlgoShoot) {
         setIntakeMode(IntakeMode.OUTTAKE);
+        ledSub.setLED(SparkLEDColors.ALGO_SHOOT);
+
       }
     }
     else if (operator.getXButton()) {
@@ -124,8 +129,9 @@ public class SuperStructure extends Command {
       }
     }
     else if (operator.getAButton()) {
+      
       setPosition(ArmPosition.LOW_INTAKE);
-
+      ledSub.setLED(SparkLEDColors.LOW_INTAKE);
     }
     else if (operator.getStartButton()) {
       // Tipping algo
@@ -133,18 +139,25 @@ public class SuperStructure extends Command {
     }
     else if (operator.getBButton()) {
       setPosition(ArmPosition.AMP);
+      ledSub.setLED(SparkLEDColors.AMP);
+
       
     } else if (operator.getYButton()) {
       setPosition(ArmPosition.STOW);
       setIntakeMode(IntakeMode.MANUAL);
+      ledSub.setLED(SparkLEDColors.RAINBOW);
+
 
     } else if (operator.getLeftBumper()) {
       setPosition(ArmPosition.HIGH_INTAKE);
       setIntakeMode(IntakeMode.INTAKE);
+      ledSub.setLED(SparkLEDColors.HIGH_INTAKE);
+
 
     }
     else if (operator.getPOV() == 270) {
       setPosition(ArmPosition.STAGEFIT);
+
     }
     else if (MathUtil.applyDeadband(operator.getRightY(), 0.1) != 0) {
       // Override Intake mode at any point to be manual
@@ -162,7 +175,7 @@ public class SuperStructure extends Command {
     }
 
 
-    if (currentPosition == ArmPosition.ALGO && operator.getRightBumper()) {
+    if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
       shoot.motionMagicVelo(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
           .getDouble(ArmPosition.HIGH_INTAKE.getPos()));
@@ -221,6 +234,8 @@ public class SuperStructure extends Command {
             public void run() {
               // Sets intake mode back to manual
               currentIntake = IntakeMode.MANUAL;
+              setPosition(ArmPosition.STOW); // Moves it to Stow
+              ledSub.setLED(SparkLEDColors.RAINBOW);
               this.cancel();
             }
           }, mode.getTime());
@@ -247,6 +262,7 @@ public class SuperStructure extends Command {
                     // Sets intake mode back to manual
 
                     currentIntake = IntakeMode.MANUAL;
+
                     this.cancel();
                   }
                 }, mode.getTime());

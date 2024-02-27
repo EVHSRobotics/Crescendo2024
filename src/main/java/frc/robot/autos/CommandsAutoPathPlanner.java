@@ -5,6 +5,8 @@
 package frc.robot.autos;
 
 import java.sql.Time;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.SuperStructure.ArmPosition;
+import frc.robot.commands.SuperStructure.IntakeMode;
 import frc.robot.commands.Vision;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -27,10 +30,10 @@ public class CommandsAutoPathPlanner extends Command {
 
   }
 
-  
   private Arm arm;
   private Intake intake;
   private Shooter shoot;
+  private Timer shootTimer;
   public AutoCommandsType commandAction;
 
   /** Creates a new AutoCommands. */
@@ -45,8 +48,10 @@ public class CommandsAutoPathPlanner extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
+    arm.setPosition(ArmPosition.STOW.getPos());
     intake.runIntake(0);
+    shoot.motionMagicVelo(0);
+    shootTimer = new Timer();
 
   }
 
@@ -55,15 +60,23 @@ public class CommandsAutoPathPlanner extends Command {
   public void execute() {
     switch (commandAction) {
       case GROUND_INTAKE:
-        intake.runIntake(-1);
+        intake.runIntake(IntakeMode.INTAKE.getSpeed());
         break;
 
       case SHOOT_NOTE:
-        intake.runIntake(1);
+
         shoot.motionMagicVelo(
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
         arm.setPosition(
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+            shootTimer.purge();
+            shootTimer.schedule(new TimerTask() {
+              @Override
+              public void run() {
+                this.cancel();
+                intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+              }
+            }, 1000);
         break;
 
       case HANG:
@@ -78,21 +91,11 @@ public class CommandsAutoPathPlanner extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    switch (commandAction) {
-      case GROUND_INTAKE:
+
         arm.setPosition(ArmPosition.STOW.getPos());
         shoot.motionMagicVelo(0);
         intake.runIntake(0);
-        break;
-      case SHOOT_NOTE:
-        arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
-        shoot.motionMagicVelo(0);
-        intake.runIntake(0);
-        break;
-      default:
-        break;
-
-    }
+   
   }
 
   // Returns true when the command should end.
