@@ -58,7 +58,7 @@ public class SuperStructure extends Command {
   }
 
   public enum ArmPosition {
-    REVERSE_TIPPING(-0.35),
+    REVERSE_TIPPING(-0.3),
     STOW(-0.25),
     LOW_INTAKE(0.06),
     HIGH_INTAKE(-0.15),

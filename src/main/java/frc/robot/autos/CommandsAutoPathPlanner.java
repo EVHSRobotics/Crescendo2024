@@ -10,8 +10,6 @@ import java.util.TimerTask;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

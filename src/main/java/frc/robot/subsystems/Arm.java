@@ -72,13 +72,13 @@ public class Arm extends SubsystemBase {
           configs.kS = 0;
           configs.kV = 0;
           configs.kA = 0;
-          configs.kG = 0.5;
+          configs.kG = 1;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 120;
+          configs.kP = 87;
           
           configs.kI = 0;
-          configs.kD = 5;
+          configs.kD = 2.854;
 
 
       // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
