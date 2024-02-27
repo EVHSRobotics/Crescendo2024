@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix6.Utils;
@@ -15,6 +17,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import frc.robot.autos.CommandsAutoPathPlanner;
+import frc.robot.autos.CommandsAutoPathPlanner.AutoCommandsType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,7 +53,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
-  
+
   private double MaxSpeed = 6; // 6 meters per second desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -57,8 +62,8 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SendableChooser<String> autoChooser;
-  private  Timer m_timer = new Timer();
-// private Vision vision;
+  private Timer m_timer = new Timer();
+  // private Vision vision;
   // private RunArm runArm;
   // private RunIntake intake;
   private Shoot shoot;
@@ -74,38 +79,43 @@ public class RobotContainer {
 
   private SystemsCheck systemsCheck;
 
-  private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle().withTargetDirection(Rotation2d.fromDegrees(45)).withVelocityX(0.75*MaxSpeed).withVelocityY(0.75*MaxSpeed);
+  private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle()
+      .withTargetDirection(Rotation2d.fromDegrees(45)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+  SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
+      .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private void configureBindings() {
 
-    
-  
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-    drivetrain.applyRequest(() -> drive.withVelocityX((Math.signum(joystick.getLeftY()) * -(Math.abs(joystick.getLeftY()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftY(), 2)) + 0.1 : 0)) * MaxSpeed) // Drive forward with
-                                                                                       // negative Y (forward)
-        .withVelocityY((Math.signum(joystick.getLeftX()) * -(Math.abs(joystick.getLeftX()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftX(), 2)) + 0.1 : 0)) * MaxSpeed) // Drive left with negative X (left)
-        .withRotationalRate((Math.signum(joystick.getRightX()) * -(Math.abs(joystick.getRightX()) > 0.15 ? Math.abs(Math.pow(joystick.getRightX(), 2)) + 0.1 : 0)) * MaxAngularRate) // Drive counterclockwise with negative X (left)
-    ));
+        drivetrain.applyRequest(() -> drive
+            .withVelocityX((Math.signum(joystick.getLeftY())
+                * -(Math.abs(joystick.getLeftY()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftY(), 2)) + 0.1 : 0))
+                * MaxSpeed) // Drive forward with
+            // negative Y (forward)
+            .withVelocityY((Math.signum(joystick.getLeftX())
+                * -(Math.abs(joystick.getLeftX()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftX(), 2)) + 0.1 : 0))
+                * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate((Math.signum(joystick.getRightX())
+                * -(Math.abs(joystick.getRightX()) > 0.15 ? Math.abs(Math.pow(joystick.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
 
-    
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-        
+
     joystick.x().whileTrue(drivetrain.applyRequest(() -> sourceAngle));
     // reset the field-centric heading on right bumper press
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-    
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -118,6 +128,7 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
+<<<<<<< HEAD
 
 
 
@@ -128,6 +139,12 @@ public class RobotContainer {
        interrupted -> arm.resetShootNoteAut(shootSub, intakeSub),
         () -> m_timer.get() < 1 , 
         arm));
+=======
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub));
+    eventMap.put("Outake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub));
+    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub));
+>>>>>>> 36bf5a19cf80da1b40d3a615053b32fd53f0ca0c
 
     intakeSub = new Intake();
     arm = new Arm();
@@ -145,18 +162,19 @@ public class RobotContainer {
     configureBindings();
 
     armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
-    // shootBottomCharacterization = new FeedForwardCharacterization(shootSub, shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
-    shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer, shootSub::topGetVelocity);
+    // shootBottomCharacterization = new FeedForwardCharacterization(shootSub,
+    // shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
+    shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer,
+        shootSub::topGetVelocity);
     systemsCheck = new SystemsCheck(drivetrain, drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
 
-  
   public enum AutoPaths {
 
-    
     BackupHPAuto("Backup_HP_Auto"),
     BackupPathPlannerHPAuto("New Auto");
+
     private String pathName;
 
     AutoPaths(String pathName) {
@@ -171,73 +189,70 @@ public class RobotContainer {
   interface AutoCommands {
     public Command action();
   }
-  
-  public FeedForwardCharacterization getFFShooterTop(){
+
+  public FeedForwardCharacterization getFFShooterTop() {
     return shootTopCharacterization;
   }
 
-  //   public FeedForwardCharacterization getFFShooterBottom(){
-  //   return shootBottomCharacterization;
+  // public FeedForwardCharacterization getFFShooterBottom(){
+  // return shootBottomCharacterization;
   // }
-    public FeedForwardCharacterization getFFArm(){
+  public FeedForwardCharacterization getFFArm() {
     return armCharacterization;
   }
-    public FeedForwardCharacterization getFFDrive(){
+
+  public FeedForwardCharacterization getFFDrive() {
     return driveCharacterization;
   }
 
+  public Command[] getTeleCommand() {
+    Command[] commands = { superStructure };
+    return commands;
+  }
 
-public Command[] getTeleCommand() {
-  Command[] commands = {superStructure};
-  return commands;
-}
-
- 
   public Command getAutonomousCommand() {
 
     // Command straightLineCommand = genAutoScript(new AutoCommands[] {
-    //   new AutoCommands() {
-    //     public Command action() {
-    //       return genChoreoCommand(AutoPaths.StraightPath);
-    //     }
-    //   }
+    // new AutoCommands() {
+    // public Command action() {
+    // return genChoreoCommand(AutoPaths.StraightPath);
+    // }
+    // }
     // });
 
-    
     // return straightLineCommand;
     // return genChoreoCommand(AutoPaths.StraightPath);
 
-    // easiest way: running auto through PathPlannerLib while using choreo trajectories
+    // easiest way: running auto through PathPlannerLib while using choreo
+    // trajectories
     drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected()));
     return drivetrain.getAutoPath(autoChooser.getSelected());
     // drivetrain.setPose(null);
     // Command chooser = autoChooser.getSelected().;
     // return autoChooser.getSelected();
-  } 
+  }
 
-
-
-  // Choreo path command using pathplanner: not needed when using auto straight off of pathplanner
-  public Command choreoPathPlannerGen(AutoPaths path){
+  // Choreo path command using pathplanner: not needed when using auto straight
+  // off of pathplanner
+  public Command choreoPathPlannerGen(AutoPaths path) {
     PathPlannerPath PPpath = PathPlannerPath.fromChoreoTrajectory(path.getPath());
     drivetrain.setPose(PPpath.getStartingDifferentialPose());
     return AutoBuilder.followPath(PPpath);
   }
 
-
-
-public Command getSystemsCheck() {
-  return systemsCheck;
-}
-
+  public Command getSystemsCheck() {
+    return systemsCheck;
+  }
 
   // Deprecated
-    // Creates an auto script filled with commands and paths
+  // Creates an auto script filled with commands and paths
   public Command genAutoScript(AutoCommands... comms) {
-    if (comms.length == 0) { return null; }
+    if (comms.length == 0) {
+      return null;
+    }
     Command script = comms[0].action();
 
-    for (int i = 1; i<comms.length; i++) {
+    for (int i = 1; i < comms.length; i++) {
       script.andThen(comms[i].action());
 
     }
@@ -245,38 +260,42 @@ public Command getSystemsCheck() {
   }
 
   // Creates the path auto command
-  // note: was not working so moved on to using pathplanner one instead but with choreo paths
+  // note: was not working so moved on to using pathplanner one instead but with
+  // choreo paths
   public Command genChoreoCommand(AutoPaths path) {
-    
+
     ChoreoTrajectory pathTraj = Choreo.getTrajectory(path.getPath());
     drivetrain.setPose(pathTraj.getInitialPose());
     /* First put the drivetrain into auto run mode, then run the auto */
     var thetaController = new PIDController(5, 0, 0);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    
-
-      Command swerveCommand = Choreo.choreoSwerveCommand(
+    Command swerveCommand = Choreo.choreoSwerveCommand(
         pathTraj, // Choreo trajectory from above
         drivetrain::getPose, // A function that returns the current field-relative pose of the robot: your
-                               // wheel or vision odometry
+                             // wheel or vision odometry
         new PIDController(5, 0.0, 0.0), // PIDController for field-relative X
-                                                                                   // translation (input: X error in meters,
-                                                                                   // output: m/s).
+                                        // translation (input: X error in meters,
+                                        // output: m/s).
         new PIDController(5, 0.0, 0.0), // PIDController for field-relative Y
-                                                                                   // translation (input: Y error in meters,
-                                                                                   // output: m/s).
+                                        // translation (input: Y error in meters,
+                                        // output: m/s).
         thetaController, // PID constants to correct for rotation
                          // error
-        (ChassisSpeeds speeds) -> drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-speeds.vxMetersPerSecond * MaxSpeed) // Drive forward with
-                                                                                           // negative Y (forward)
-            .withVelocityY(-speeds.vyMetersPerSecond * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-speeds.omegaRadiansPerSecond * MaxAngularRate) // Drive counterclockwise with negative X (left)
-          ).ignoringDisable(true),
-        () ->  DriverStation.getAlliance().get().equals(Alliance.Red), // Whether or not to mirror the path based on alliance (this assumes the path is created for the blue alliance)
+        (ChassisSpeeds speeds) -> drivetrain
+            .applyRequest(() -> forwardStraight.withVelocityX(-speeds.vxMetersPerSecond * MaxSpeed) // Drive forward
+                                                                                                    // with
+                // negative Y (forward)
+                .withVelocityY(-speeds.vyMetersPerSecond * MaxSpeed) // Drive left with negative X (left)
+                .withRotationalRate(-speeds.omegaRadiansPerSecond * MaxAngularRate) // Drive counterclockwise with
+                                                                                    // negative X (left)
+            ).ignoringDisable(true),
+        () -> DriverStation.getAlliance().get().equals(Alliance.Red), // Whether or not to mirror the path based on
+                                                                      // alliance (this assumes the path is created for
+                                                                      // the blue alliance)
         drivetrain // The subsystem(s) to require, typically your drive subsystem only
     );
     return swerveCommand;
-    
+
   }
 }
