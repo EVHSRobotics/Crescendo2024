@@ -104,33 +104,6 @@ public class Arm extends SubsystemBase {
       SmartDashboard.updateValues();
   }
 
-<<<<<<< HEAD
-          intake.setIntakeSpeed(1);
-  }
- 
-
-
-
-  public void resetShootNoteAut (Shooter shooter, Intake intake){
-    shooter.motionMagicVelo(0);
-      setPosition(ArmPosition.STOW.getPos());
-
-          intake.setIntakeSpeed(0);
-  }
- 
-=======
-  public void goPosMotionMagic(double pos){
-    if(pos > 0.06){
-      right.setControl(new VoltageOut(0));
-    }else {
-      right.setControl(new MotionMagicVoltage(pos));
-  }
->>>>>>> 36bf5a19cf80da1b40d3a615053b32fd53f0ca0c
-
-  
-
-
-
   public double getArmPosition() {
       return encoder.getAbsolutePosition().getValueAsDouble();
   }
