@@ -120,15 +120,10 @@ public void ShootNoteAuto (Shooter shooter, Intake intake){
 
           intake.setIntakeSpeed(0);
   }
-  public void goPosMotionMagic(double pos){
-    if(pos > 0.06){
-      right.setControl(new VoltageOut(0));
-    }else {
-      right.setControl(new MotionMagicVoltage(pos));
-  }
+ 
 
   
-}
+
 
 
   public double getArmPosition() {
@@ -144,31 +139,7 @@ public void ShootNoteAuto (Shooter shooter, Intake intake){
     right.setPosition(0);
   }
 
-   public void holdPosition() {
-
-                right.setControl(new MotionMagicDutyCycle(getArmPosition()));
-
-         
-    }
-
-    public void slowlyGoDown() {
-                      right.setControl(new MotionMagicVoltage(getArmPosition() - 0.025));
-
-            
-    }
-
-    public void slowyGoUp() {
-      SmartDashboard.putString("val12", new MotionMagicVoltage(getArmPosition() + 0.05).toString());
-      SmartDashboard.updateValues();
-      
-                      right.setControl(new MotionMagicVoltage(getArmPosition() + 0.025));
-
-    }
-
-    public void stop() {
-        right.setControl(new DutyCycleOut(0));
-    }
-
+     
     public void resetSensor() {
         
     }
@@ -187,72 +158,19 @@ public void ShootNoteAuto (Shooter shooter, Intake intake){
       SmartDashboard.putNumber("armVoltageFFChar", voltage);
       SmartDashboard.updateValues();
       // feedforward as needed
-      right.setControl(new VoltageOut(voltage));
+      right.setControl(new VoltageOut(-voltage));
     }
 
-    public void movePosPController(double setpoint){
-
-      double error = setpoint - encoder.getAbsolutePosition().getValueAsDouble();
-      System.out.println("eroor" + error);
-      System.out.println("p" + (error) *1.2* 12);
-
-      right.setControl(new VoltageOut((error) *1.2* 12));
-
-    }
 
     public double getVelocity(){
       return right.getVelocity().getValueAsDouble();
-    }
-    public void setBreak() {
-        right.setControl(new StaticBrake());
-        left.setControl(new StaticBrake());
-    }
+        }
     
     public double getGyroPitch() {
       return pigeonGyro.getPitch().getValueAsDouble();
       
     }
-    public void manageMotion(double targetPosition) {
-        double currentPosition = getArmPosition();
-
-       
-
-
-        // going up
-        if(currentPosition < targetPosition) {
-    
-          MotionMagicConfigs motionMagic = new MotionMagicConfigs();
-          motionMagic.MotionMagicCruiseVelocity = 13360*0.2;
-          motionMagic.MotionMagicAcceleration = 13360*0.20;
-          motionMagic.MotionMagicJerk = 1600;
-          left.getConfigurator().apply(motionMagic);
-          right.getConfigurator().apply(motionMagic);
-          // right.configMotionAcceleration(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_UP, 0);
-          // right.configMotionCruiseVelocity(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_UP, 0);
-    
-          // select the up gains
-          // armMotorMaster.selectProfileSlot(0, 0);
-          SmartDashboard.putBoolean("Going Up or Down", true);
-    
-        } else {
-           MotionMagicConfigs motionMagic = new MotionMagicConfigs();
-          motionMagic.MotionMagicCruiseVelocity = 8090*0.2;
-          motionMagic.MotionMagicAcceleration = 8090*0.2;
-          motionMagic.MotionMagicJerk = 1600;
-          left.getConfigurator().apply(motionMagic);
-          right.getConfigurator().apply(motionMagic);
   
-          // set accel and velocity for going down
-          // armMotorMaster.configMotionAcceleration(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_DOWN, 0);
-          // armMotorMaster.configMotionCruiseVelocity(Constants.ArmConstants.CRUISE_VELOCITY_ACCEL_DOWN, 0);
-    
-          // // select the down gains
-          // armMotorMaster.selectProfileSlot(1, 0);
-          SmartDashboard.putBoolean("Going Up or Down", false);
-
-        }
-    
-      }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -35,8 +35,6 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.GroundIntake;
-import frc.robot.commands.RunArm;
-import frc.robot.commands.RunIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.SuperStructure;
 import frc.robot.commands.SystemsCheck;
@@ -124,7 +122,7 @@ public class RobotContainer {
 
 
     NamedCommands.registerCommand("groundIntake", new FunctionalCommand(null, () -> intakeSub.runIntake(-0.5), interrupted -> intakeSub.runIntake(0), () -> intakeSub.getBanner(), intakeSub));
-    NamedCommands.registerCommand("ShootNote", new FunctionalCommand(
+    NamedCommands.registerCommand("shootNote", new FunctionalCommand(
      () -> m_timer.reset(), 
       () -> arm.ShootNoteAuto(shootSub, intakeSub),
        interrupted -> arm.resetShootNoteAut(shootSub, intakeSub),
