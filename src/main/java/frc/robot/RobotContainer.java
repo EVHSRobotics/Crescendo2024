@@ -125,7 +125,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("groundIntake", new FunctionalCommand(null, () -> intakeSub.runIntake(-0.5), interrupted -> intakeSub.runIntake(0), () -> intakeSub.getBanner(), intakeSub));
     NamedCommands.registerCommand("ShootNote", new FunctionalCommand(
-     null, 
+     () -> m_timer.reset(), 
       () -> arm.ShootNoteAuto(shootSub, intakeSub),
        interrupted -> arm.resetShootNoteAut(shootSub, intakeSub),
         () -> m_timer.get() < 1 , 

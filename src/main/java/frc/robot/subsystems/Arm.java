@@ -43,6 +43,7 @@ public class Arm extends SubsystemBase {
   private Pigeon2 pigeonGyro;
 
 
+
   /** Creates a new Arm. */
   // Neg out back to base - for right and left
   // Pos out to talon fx arm - for right and left
@@ -109,6 +110,7 @@ public void ShootNoteAuto (Shooter shooter, Intake intake){
 
           intake.setIntakeSpeed(1);
   }
+ 
 
 
 
