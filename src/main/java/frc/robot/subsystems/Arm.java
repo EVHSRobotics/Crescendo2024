@@ -72,10 +72,10 @@ public class Arm extends SubsystemBase {
           configs.kS = 0;
           configs.kV = 0;
           configs.kA = 0;
-          configs.kG = 1;
+          configs.kG = 0.2;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 87;
+          configs.kP = 84;
           
           configs.kI = 0;
           configs.kD = 2.854;

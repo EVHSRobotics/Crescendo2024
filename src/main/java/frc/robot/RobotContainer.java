@@ -61,9 +61,11 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final XboxController operator = new XboxController(1);
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final XboxController driver = new XboxController(0);
   private final SendableChooser<String> autoChooser;
   private Timer m_timer = new Timer();
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+
   // private Vision vision;
   // private RunArm runArm;
   // private RunIntake intake;
@@ -97,19 +99,7 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive
-            .withVelocityX((Math.signum(joystick.getLeftY())
-                * -(Math.abs(joystick.getLeftY()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftY(), 2)) + 0.1 : 0))
-                * MaxSpeed) // Drive forward with
-            // negative Y (forward)
-            .withVelocityY((Math.signum(joystick.getLeftX())
-                * -(Math.abs(joystick.getLeftX()) > 0.1 ? Math.abs(Math.pow(joystick.getLeftX(), 2)) + 0.1 : 0))
-                * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate((Math.signum(joystick.getRightX())
-                * -(Math.abs(joystick.getRightX()) > 0.15 ? Math.abs(Math.pow(joystick.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+    
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
@@ -137,7 +127,7 @@ public class RobotContainer {
     ledSub = new Leds();
     shoot = new Shoot(shootSub, operator);
 
-    superStructure = new SuperStructure(arm, intakeSub, shootSub, ledSub, operator);
+    superStructure = new SuperStructure(arm, intakeSub, shootSub, ledSub, driver, operator);
     // runArm = new RunArm(arm, operator);
     // intake = new RunIntake(intakeSub, operator, runArm);
     // shoot = new Shoot(shootSub, operator, runArm);
@@ -146,6 +136,7 @@ public class RobotContainer {
     SmartDashboard.updateValues();
 
     configureBindings();
+    setUpAutoCommands();
 
     armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
     // shootBottomCharacterization = new FeedForwardCharacterization(shootSub,
@@ -158,7 +149,7 @@ public class RobotContainer {
 
   public enum AutoPaths {
 
-    BackupHPAuto("Backup_HP_Auto"),
+    BackupHPAuto("Backup_Middle"),
     BackupPathPlannerHPAuto("New Auto");
 
     private String pathName;
@@ -197,9 +188,12 @@ public class RobotContainer {
   }
   public void setUpAutoCommands() {
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
-    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub));
-    eventMap.put("Outake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub));
-    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub));
+        eventMap.put("Arm_Ground", new CommandsAutoPathPlanner(AutoCommandsType.ARM_GROUND, intakeSub, shootSub, arm));
+
+    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub, arm));
+    eventMap.put("Outtake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub, arm));
+    // eventMap.put("Outtake", new PrintCommand("pathplanenr auto"));
+    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub, arm));
 
     NamedCommands.registerCommands(eventMap);
   }
@@ -219,8 +213,10 @@ public class RobotContainer {
 
     // easiest way: running auto through PathPlannerLib while using choreo
     // trajectories
-    drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected()));
-    return drivetrain.getAutoPath(autoChooser.getSelected());
+    
+    String auto = "BackUp_Middle";
+    drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
+    return drivetrain.getAutoPath(auto);
     // drivetrain.setPose(null);
     // Command chooser = autoChooser.getSelected().;
     // return autoChooser.getSelected();

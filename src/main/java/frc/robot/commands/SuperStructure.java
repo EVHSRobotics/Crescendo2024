@@ -6,6 +6,12 @@ package frc.robot.commands;
 
 // import java.util.Ti/mer;
 import java.util.TimerTask;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,7 +19,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LimelightHelpers;
@@ -22,7 +30,16 @@ import frc.robot.subsystems.Leds.SparkLEDColors;
 
 
 public class SuperStructure extends Command {
+  private double MaxSpeed = 6; // 6 meters per second desired top speed
+  private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
+
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+ private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
+                                                               // driving in open loop
+  private Supplier<Double> driveTrainSupplier;
   private Arm arm;
   private Intake intake;
   private Leds ledSub;
@@ -35,10 +52,11 @@ public class SuperStructure extends Command {
   private Timer timer = new Timer();
   private java.util.Timer intakeTimer = new java.util.Timer();
   private java.util.Timer autoTippingTimer = new java.util.Timer();
+  private XboxController driver;
 
   public enum IntakeMode {
     OUTTAKE(1, 1000), // for algo shoot and amp shoot
-    INTAKE(1, 750), // for high intake shoot
+    INTAKE(0.5, 750), // for high intake shoot
     MANUAL(0, 1000);
 
     private double speed;
@@ -80,15 +98,20 @@ public class SuperStructure extends Command {
   }
 
   /** Creates a new SuperStructure. */
-  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController operator) {
+  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController driver, XboxController operator) {
     // Use addRequirements() here to declare subsystem dependencies.
-
     this.arm = arm;
     this.intake = intake;
     this.shoot = shoot;
     this.ledSub = led;
 
+    this.driver = driver;
+
     this.operator = operator;
+
+    driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
 
     addRequirements(arm);
     addRequirements(intake);
@@ -101,6 +124,19 @@ public class SuperStructure extends Command {
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
+
+// Sets up Swerve
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(() -> drive
+            .withVelocityX((Math.signum(driver.getLeftY())
+                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+                * MaxSpeed) // Drive forward with
+            // negative Y (forward)
+            .withVelocityY((Math.signum(driver.getLeftX())
+                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+                * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
+        ));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -108,18 +144,23 @@ public class SuperStructure extends Command {
   public void execute() {
     SmartDashboard.putNumber("AP", arm.getArmPosition());
     SmartDashboard.updateValues();
-
+   
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
+      driveTrainSupplier = () -> Vision.aimLimelightAprilTags() * MaxAngularRate;
     } 
     else if (operator.getRightBumperReleased()) {
       if (!cancelAlgoShoot) {
         setIntakeMode(IntakeMode.OUTTAKE);
         ledSub.setLED(SparkLEDColors.ALGO_SHOOT);
+        
 
       }
+         driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
     }
     else if (operator.getXButton()) {
       // Cancel button for algo shoot
@@ -189,6 +230,8 @@ public class SuperStructure extends Command {
      }
 
       arm.setPosition(currentPosition.getPos());
+          // arm.setPosition(arm.getArmPosition() - MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
+
     }    
     SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
 
@@ -202,7 +245,7 @@ public class SuperStructure extends Command {
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.runIntake(operator.getRightY() * 0.75);
+      intake.pushIntake(operator.getRightY() * 0.75);
 
     }
     else if (currentIntake == IntakeMode.INTAKE) {

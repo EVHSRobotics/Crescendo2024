@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "BackUp_Left"

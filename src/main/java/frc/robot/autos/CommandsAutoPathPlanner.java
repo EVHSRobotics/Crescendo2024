@@ -24,10 +24,10 @@ import frc.robot.subsystems.Shooter;
 
 public class CommandsAutoPathPlanner extends Command {
   public static enum AutoCommandsType {
-    GROUND_INTAKE, SHOOT_NOTE, HANG;
+    ARM_GROUND, GROUND_INTAKE, SHOOT_NOTE, HANG;
 
   }
-
+  private boolean isFinished = false;
   private Arm arm;
   private Intake intake;
   private Shooter shoot;
@@ -35,10 +35,14 @@ public class CommandsAutoPathPlanner extends Command {
   public AutoCommandsType commandAction;
 
   /** Creates a new AutoCommands. */
-  public CommandsAutoPathPlanner(AutoCommandsType commandAction, Intake intake, Shooter shoot) {
+  public CommandsAutoPathPlanner(AutoCommandsType commandAction, Intake intake, Shooter shoot, Arm arm) {
     this.commandAction = commandAction;
     this.intake = intake;
+    this.arm = arm;
     this.shoot = shoot;
+    addRequirements(intake);
+    addRequirements(shoot);
+    addRequirements(arm);
   }
 
   // Use addRequirements() here to declare subsystem dependencies.
@@ -46,10 +50,59 @@ public class CommandsAutoPathPlanner extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setPosition(ArmPosition.STOW.getPos());
-    intake.runIntake(0);
-    shoot.motionMagicVelo(0);
+    // arm.setPosition(ArmPosition.STOW.getPos());
+    // intake.runIntake(0);
+    // shoot.motionMagicVelo(0);
     shootTimer = new Timer();
+
+    switch (commandAction) {
+      case ARM_GROUND:
+       shootTimer.purge();
+            shootTimer.schedule(new TimerTask() {
+              @Override
+              public void run() {
+                this.cancel();
+                
+                intake.pushIntake(IntakeMode.INTAKE.getSpeed());
+                isFinished = true;                
+              }
+            }, 1000);
+        break;
+      case GROUND_INTAKE:
+        break;
+      case HANG:
+        break;
+      case SHOOT_NOTE:
+       shoot.motionMagicVelo(
+            NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+        arm.setPosition(
+            NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+           
+       shootTimer.purge();
+            shootTimer.schedule(new TimerTask() {
+              @Override
+              public void run() {
+                this.cancel();
+                intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+                shootTimer.schedule(new TimerTask() {
+
+                  @Override
+                  public void run() {
+                    this.cancel();
+                intake.pushIntake(0);
+                    shoot.motionMagicVelo(0);
+                    // TODO Auto-generated method stub
+                    isFinished = true;
+                  }
+
+                }, 750);
+              }
+            }, 2000);
+        break;
+      default:
+        break;
+      
+    }
 
   }
 
@@ -57,6 +110,12 @@ public class CommandsAutoPathPlanner extends Command {
   @Override
   public void execute() {
     switch (commandAction) {
+      case ARM_GROUND:
+        arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
+        if (arm.isArmInRange(ArmPosition.LOW_INTAKE)) {
+          isFinished = true;
+        }
+        
       case GROUND_INTAKE:
         intake.runIntake(IntakeMode.INTAKE.getSpeed());
         break;
@@ -67,14 +126,7 @@ public class CommandsAutoPathPlanner extends Command {
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
         arm.setPosition(
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-            shootTimer.purge();
-            shootTimer.schedule(new TimerTask() {
-              @Override
-              public void run() {
-                this.cancel();
-                intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
-              }
-            }, 1000);
+           
         break;
 
       case HANG:
@@ -90,15 +142,14 @@ public class CommandsAutoPathPlanner extends Command {
   @Override
   public void end(boolean interrupted) {
 
-        arm.setPosition(ArmPosition.STOW.getPos());
-        shoot.motionMagicVelo(0);
-        intake.runIntake(0);
+    // intake.pushIntake(0);
+    //     shoot.motionMagicVelo(0);
    
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isFinished;
   }
 }

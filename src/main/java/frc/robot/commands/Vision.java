@@ -41,10 +41,10 @@ public class Vision extends Command {
   NetworkTable table1;
   NetworkTableEntry tx, tv;
 
-  double errorsum = 0;
-  double lasterror = 0;
-  double error;
-  double lastTimestamp = 0;
+  static double errorsum = 0;
+  static double lasterror = 0;
+   static double error;
+  static double lastTimestamp = 0;
 
   
 
@@ -88,9 +88,10 @@ public class Vision extends Command {
 
 
   
-  public void aimLimelightAprilTags() {
+  public static double aimLimelightAprilTags() {
 
     double x = LimelightHelpers.getTX("limelight");
+  
     errorsum = 0;
     error = x;
 
@@ -99,14 +100,14 @@ public class Vision extends Command {
     if(Math.abs(x) < 0.1){
         errorsum += dt *  x;
     }
-    double output = MathUtil.clamp(error*0.045 + errorrate *0+errorsum*0.0, -1, 1);
+    double output = MathUtil.clamp(error*0.02 + errorrate *0+errorsum*0.0, -1, 1);
 
     SmartDashboard.putNumber("limelight", ( output));
     SmartDashboard.updateValues();
     lastTimestamp = Timer.getFPGATimestamp();
     lasterror = error;
     
- 
+    return -output;
   }
   
 
