@@ -48,6 +48,8 @@ public class SuperStructure extends Command {
   private IntakeMode currentIntake = IntakeMode.MANUAL;
   private boolean cancelAlgoShoot = false;
 
+  private double theta = 0.0;
+  private double speedFly = 0.0;
   private XboxController operator;
   private Timer timer = new Timer();
   private java.util.Timer intakeTimer = new java.util.Timer();
@@ -79,7 +81,7 @@ public class SuperStructure extends Command {
     REVERSE_TIPPING(-0.3),
     STOW(-0.25),
     LOW_INTAKE(0.06),
-    HIGH_INTAKE(-0.15),
+    HIGH_INTAKE(-0.1645),
     AMP(0.01),
     SHOOT(-0.02),
     STAGEFIT(0.01),
@@ -121,6 +123,12 @@ public class SuperStructure extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // SmartDashboard.putNumber("setArm", 0);
+    // SmartDashboard.putNumber("setRPM", 0);
+    // SmartDashboard.updateValues();
+
+    speedFly = 0.0;
+    theta = 0.0;
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
@@ -142,15 +150,26 @@ public class SuperStructure extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("AP", arm.getArmPosition());
-    SmartDashboard.updateValues();
-   
+    // arm.setPosition(SmartDashboard.getNumber("setArm", 0));
+    // shoot.motionMagicVelo(SmartDashboard.getNumber("setRPM", 0));
+    // intake.pushIntake(operator.getLeftY());
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
-      driveTrainSupplier = () -> Vision.aimLimelightAprilTags() * MaxAngularRate;
     } 
+    else if (operator.getRightBumper()) {
+      if (MathUtil.applyDeadband(Math.abs(driver.getRightX()), 0.1) > 0) {
+ driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
+      }
+      else {
+              driveTrainSupplier = () -> Vision.aimLimelightAprilTags() * MaxAngularRate;
+
+      }
+     
+    }
     else if (operator.getRightBumperReleased()) {
       if (!cancelAlgoShoot) {
         setIntakeMode(IntakeMode.OUTTAKE);
@@ -166,7 +185,7 @@ public class SuperStructure extends Command {
       // Cancel button for algo shoot
       if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
-        setPosition(ArmPosition.STOW);
+        setPosition(ArmPosition.STAGEFIT);
       }
     }
     else if (operator.getAButton()) {
@@ -217,9 +236,16 @@ public class SuperStructure extends Command {
 
 
     if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
-      shoot.motionMagicVelo(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-      arm.setPosition(NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
-          .getDouble(ArmPosition.HIGH_INTAKE.getPos()));
+
+      double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
+      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+          .getDouble(0);
+          if (LimelightHelpers.getTV("limelight")) {
+            theta = tempTheta;
+            speedFly = tempSpeed;
+          }
+      shoot.motionMagicVelo(tempSpeed);
+      arm.setPosition(theta);
     } 
     else {
      if (currentPosition == ArmPosition.AMP) {
@@ -245,7 +271,7 @@ public class SuperStructure extends Command {
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.pushIntake(operator.getRightY() * 0.75);
+      intake.pushIntake(operator.getLeftY() * 0.8);
 
     }
     else if (currentIntake == IntakeMode.INTAKE) {
@@ -277,7 +303,7 @@ public class SuperStructure extends Command {
             public void run() {
               // Sets intake mode back to manual
               currentIntake = IntakeMode.MANUAL;
-              setPosition(ArmPosition.STOW); // Moves it to Stow
+              setPosition(ArmPosition.STAGEFIT); // Moves it to Stow
               ledSub.setLED(SparkLEDColors.RAINBOW);
               this.cancel();
             }

@@ -7,12 +7,12 @@ class ShootModelDriver:
     def __init__(self):
         print("Initializing TFLite runtime interpreter")
         try:
-            model_path = "ShootModel_Lite_2D_NEW_TEN.tflite"
+            model_path = "ShootModel_Lite_2D_FINAL.tflite"
             self.interpreter = tflite.Interpreter(model_path, experimental_delegates=[tflite.load_delegate('libedgetpu.so.1')])
             self.hardware_type = "Coral Edge TPU"
         except:
             print("Failed to create Interpreter with Coral, switching to unoptimized")
-            model_path = "ShootModel_Lite_2D_NEW_TEN.tflite"
+            model_path = "ShootModel_Lite_2D_FINAL.tflite"
             self.interpreter = tflite.Interpreter(model_path)
             self.hardware_type = "Unoptimized"
 
@@ -48,7 +48,7 @@ class ShootModelDriver:
             NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedDist", predictedTheta)
 
             # Predicts every 1 seconds
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
     def set_input(self):
         

@@ -6,8 +6,6 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import com.choreo.lib.Choreo;
-import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -252,41 +250,41 @@ public class RobotContainer {
   // Creates the path auto command
   // note: was not working so moved on to using pathplanner one instead but with
   // choreo paths
-  public Command genChoreoCommand(AutoPaths path) {
+  // public Command genChoreoCommand(AutoPaths path) {
 
-    ChoreoTrajectory pathTraj = Choreo.getTrajectory(path.getPath());
-    drivetrain.setPose(pathTraj.getInitialPose());
-    /* First put the drivetrain into auto run mode, then run the auto */
-    var thetaController = new PIDController(5, 0, 0);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+  //   ChoreoTrajectory pathTraj = Choreo.getTrajectory(path.getPath());
+  //   drivetrain.setPose(pathTraj.getInitialPose());
+  //   /* First put the drivetrain into auto run mode, then run the auto */
+  //   var thetaController = new PIDController(5, 0, 0);
+  //   thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    Command swerveCommand = Choreo.choreoSwerveCommand(
-        pathTraj, // Choreo trajectory from above
-        drivetrain::getPose, // A function that returns the current field-relative pose of the robot: your
-                             // wheel or vision odometry
-        new PIDController(5, 0.0, 0.0), // PIDController for field-relative X
-                                        // translation (input: X error in meters,
-                                        // output: m/s).
-        new PIDController(5, 0.0, 0.0), // PIDController for field-relative Y
-                                        // translation (input: Y error in meters,
-                                        // output: m/s).
-        thetaController, // PID constants to correct for rotation
-                         // error
-        (ChassisSpeeds speeds) -> drivetrain
-            .applyRequest(() -> forwardStraight.withVelocityX(-speeds.vxMetersPerSecond * MaxSpeed) // Drive forward
-                                                                                                    // with
-                // negative Y (forward)
-                .withVelocityY(-speeds.vyMetersPerSecond * MaxSpeed) // Drive left with negative X (left)
-                .withRotationalRate(-speeds.omegaRadiansPerSecond * MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
-            ).ignoringDisable(true),
-        () -> DriverStation.getAlliance().get().equals(Alliance.Red), // Whether or not to mirror the path based on
-                                                                      // alliance (this assumes the path is created for
-                                                                      // the blue alliance)
-        drivetrain // The subsystem(s) to require, typically your drive subsystem only
-    );
+  //   Command swerveCommand = Choreo.choreoSwerveCommand(
+  //       pathTraj, // Choreo trajectory from above
+  //       drivetrain::getPose, // A function that returns the current field-relative pose of the robot: your
+  //                            // wheel or vision odometry
+  //       new PIDController(5, 0.0, 0.0), // PIDController for field-relative X
+  //                                       // translation (input: X error in meters,
+  //                                       // output: m/s).
+  //       new PIDController(5, 0.0, 0.0), // PIDController for field-relative Y
+  //                                       // translation (input: Y error in meters,
+  //                                       // output: m/s).
+  //       thetaController, // PID constants to correct for rotation
+  //                        // error
+  //       (ChassisSpeeds speeds) -> drivetrain
+  //           .applyRequest(() -> forwardStraight.withVelocityX(-speeds.vxMetersPerSecond * MaxSpeed) // Drive forward
+  //                                                                                                   // with
+  //               // negative Y (forward)
+  //               .withVelocityY(-speeds.vyMetersPerSecond * MaxSpeed) // Drive left with negative X (left)
+  //               .withRotationalRate(-speeds.omegaRadiansPerSecond * MaxAngularRate) // Drive counterclockwise with
+  //                                                                                   // negative X (left)
+  //           ).ignoringDisable(true),
+  //       () -> DriverStation.getAlliance().get().equals(Alliance.Red), // Whether or not to mirror the path based on
+  //                                                                     // alliance (this assumes the path is created for
+  //                                                                     // the blue alliance)
+  //       drivetrain // The subsystem(s) to require, typically your drive subsystem only
+  //   );
 
-    return swerveCommand;
+  //   return swerveCommand;
 
-  }
+  // }
 }

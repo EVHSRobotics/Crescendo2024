@@ -53,6 +53,8 @@ public class Intake implements Subsystem {
   }
 
   public boolean getBanner() {
+    SmartDashboard.putBoolean("banner", bannerSensor.get());
+    SmartDashboard.updateValues();
     return bannerSensor.get();
   }
 
