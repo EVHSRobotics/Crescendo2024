@@ -16,8 +16,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import frc.robot.autos.CommandsAutoPathPlanner;
-import frc.robot.autos.CommandsAutoPathPlanner.AutoCommandsType;
+import frc.robot.autos.GroundArm;
+import frc.robot.autos.ShootNoteAuto;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.GroundIntake;
+import frc.robot.autos.GroundIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.SuperStructure;
 import frc.robot.commands.SystemsCheck;
@@ -81,8 +81,10 @@ public class RobotContainer {
 
   private SystemsCheck systemsCheck;
 
+  private FieldCentricFacingAngle ampAngle = new FieldCentricFacingAngle()
+      .withTargetDirection(Rotation2d.fromDegrees(270)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
   private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle()
-      .withTargetDirection(Rotation2d.fromDegrees(45)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
+      .withTargetDirection(Rotation2d.fromDegrees(38)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -102,6 +104,8 @@ public class RobotContainer {
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+       
+   joystick.pov(90).whileTrue(drivetrain.applyRequest(() -> ampAngle));
 
     joystick.x().whileTrue(drivetrain.applyRequest(() -> sourceAngle));
     // reset the field-centric heading on right bumper press
@@ -186,12 +190,9 @@ public class RobotContainer {
   }
   public void setUpAutoCommands() {
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
-        eventMap.put("Arm_Ground", new CommandsAutoPathPlanner(AutoCommandsType.ARM_GROUND, intakeSub, shootSub, arm));
-
-    eventMap.put("Intake", new CommandsAutoPathPlanner(AutoCommandsType.GROUND_INTAKE, intakeSub, shootSub, arm));
-    eventMap.put("Outtake", new CommandsAutoPathPlanner(AutoCommandsType.SHOOT_NOTE, intakeSub, shootSub, arm));
-    // eventMap.put("Outtake", new PrintCommand("pathplanenr auto"));
-    eventMap.put("Hang", new CommandsAutoPathPlanner(AutoCommandsType.HANG, intakeSub, shootSub, arm));
+    eventMap.put("Arm_Ground", new GroundArm(arm));
+    eventMap.put("Intake", new GroundIntake(intakeSub));
+    eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
 
     NamedCommands.registerCommands(eventMap);
   }

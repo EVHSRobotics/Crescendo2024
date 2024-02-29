@@ -171,21 +171,23 @@ public class SuperStructure extends Command {
      
     }
     else if (operator.getRightBumperReleased()) {
+      // Resets rotation back to driver control
+      driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
       if (!cancelAlgoShoot) {
         setIntakeMode(IntakeMode.OUTTAKE);
         ledSub.setLED(SparkLEDColors.ALGO_SHOOT);
         
 
       }
-         driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
+         
     }
     else if (operator.getXButton()) {
       // Cancel button for algo shoot
       if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
-        setPosition(ArmPosition.STAGEFIT);
+        setPosition(ArmPosition.STOW);
       }
     }
     else if (operator.getAButton()) {
