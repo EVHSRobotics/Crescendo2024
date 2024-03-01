@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.1545087099075315,
-      "y": 6.59296989440918
+      "x": 1.078704595565796,
+      "y": 4.553201675415039
     },
-    "rotation": -128.65980628556426
+    "rotation": 123.17155611291896
   },
   "command": {
     "type": "sequential",
@@ -36,10 +36,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BackUp_Right"
+                  "pathName": "Left_Middle_Ring"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left_Middle_Ring_Back"
           }
         },
         {

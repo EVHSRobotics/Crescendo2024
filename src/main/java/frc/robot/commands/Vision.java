@@ -100,7 +100,7 @@ public class Vision extends Command {
     if(Math.abs(x) < 0.1){
         errorsum += dt *  x;
     }
-    double output = MathUtil.clamp(error*0.0175 + errorrate *0.005+errorsum*0, -1, 1);
+    double output = MathUtil.clamp(error*0.014 + errorrate *0.0025+errorsum*0, -1, 1);
 
     SmartDashboard.putNumber("limelight", ( output));
     SmartDashboard.updateValues();

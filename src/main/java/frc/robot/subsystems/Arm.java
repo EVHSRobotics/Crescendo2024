@@ -125,6 +125,7 @@ public class Arm extends SubsystemBase {
     public void setPosition(double position) {
       SmartDashboard.putNumber("setpos", position);
       SmartDashboard.updateValues();
+      position += 0.0045;
         
       right.setControl(new MotionMagicVoltage(
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())

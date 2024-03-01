@@ -102,8 +102,8 @@ public class RobotContainer {
     
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // joystick.b().whileTrue(drivetrain
+        // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
        
    joystick.pov(90).whileTrue(drivetrain.applyRequest(() -> ampAngle));
 
@@ -152,7 +152,7 @@ public class RobotContainer {
   public enum AutoPaths {
 
     BackupHPAuto("Backup_Middle"),
-    BackupPathPlannerHPAuto("New Auto");
+    BackupPathPlannerHPAuto("BackUp");
 
     private String pathName;
 
@@ -213,7 +213,7 @@ public class RobotContainer {
     // easiest way: running auto through PathPlannerLib while using choreo
     // trajectories
     
-    String auto = "BackUp_Middle";
+    String auto = "BackUp_Middle_Left";
     drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
     return drivetrain.getAutoPath(auto);
     // drivetrain.setPose(null);

@@ -58,8 +58,9 @@ public class SuperStructure extends Command {
 
   public enum IntakeMode {
     OUTTAKE(1, 1000), // for algo shoot and amp shoot
-    INTAKE(0.5, 750), // for high intake shoot
-    MANUAL(0, 1000);
+    INTAKE(1, 750), // for high intake shoot
+    MANUAL(0, 1000),
+    REVERSE(-0.4, 1000);
 
     private double speed;
     private long time; // IN MS
@@ -82,6 +83,7 @@ public class SuperStructure extends Command {
     STOW(-0.25),
     LOW_INTAKE(0.06),
     HIGH_INTAKE(-0.1645),
+    // 0.01 amp
     AMP(0.01),
     SHOOT(-0.02),
     STAGEFIT(0.01),
@@ -158,7 +160,7 @@ public class SuperStructure extends Command {
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
     } 
-    else if (operator.getRightBumper()) {
+    else if (operator.getRightBumper() || driver.getBButton()) {
       if (MathUtil.applyDeadband(Math.abs(driver.getRightX()), 0.1) > 0) {
  driveTrainSupplier = () -> (Math.signum(driver.getRightX())
                 * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
@@ -170,6 +172,7 @@ public class SuperStructure extends Command {
       }
      
     }
+ 
     else if (operator.getRightBumperReleased()) {
       // Resets rotation back to driver control
       driveTrainSupplier = () -> (Math.signum(driver.getRightX())
@@ -185,10 +188,12 @@ public class SuperStructure extends Command {
     }
     else if (operator.getXButton()) {
       // Cancel button for algo shoot
-      if (currentPosition == ArmPosition.ALGO) {
+      // if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
-        setPosition(ArmPosition.STOW);
-      }
+        shoot.motionMagicVelo(0);
+
+        // setPosition(ArmPosition.STOW);
+      // }
     }
     else if (operator.getAButton()) {
       
@@ -229,6 +234,10 @@ public class SuperStructure extends Command {
       // Should be running continously
       // Balancing algo
       // autoBalancingAlgo();
+
+      driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
     }
 
 
@@ -277,7 +286,10 @@ public class SuperStructure extends Command {
 
     }
     else if (currentIntake == IntakeMode.INTAKE) {
-      intake.runIntake(currentIntake.getSpeed());
+
+              intake.runIntake(currentIntake.getSpeed());
+
+      
     }
     else if (currentIntake == IntakeMode.OUTTAKE) {
 
@@ -333,7 +345,7 @@ public class SuperStructure extends Command {
                     // Sets intake mode back to manual
 
                     currentIntake = IntakeMode.MANUAL;
-
+                    
                     this.cancel();
                   }
                 }, mode.getTime());

@@ -39,6 +39,8 @@ public class Intake implements Subsystem {
         } else {
           intake.set(ControlMode.PercentOutput, 0);
         }
+
+
       
     } else {
       intake.set(ControlMode.PercentOutput, power);
