@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
@@ -155,19 +156,38 @@ public class SuperStructure extends Command {
     // arm.setPosition(SmartDashboard.getNumber("setArm", 0));
     // shoot.motionMagicVelo(SmartDashboard.getNumber("setRPM", 0));
     // intake.pushIntake(operator.getLeftY());
+    if (operator.getXButton()) {
+      // Cancel button for algo shoot
+      // if (currentPosition == ArmPosition.ALGO) {
+        cancelAlgoShoot = true;
+        shoot.motionMagicVelo(0);
+
+        // setPosition(ArmPosition.STOW);
+      // }
+    }
+
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
+
     } 
-    else if (operator.getRightBumper() || driver.getBButton()) {
+    else if (operator.getRightBumper()) {
       if (MathUtil.applyDeadband(Math.abs(driver.getRightX()), 0.1) > 0) {
- driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+        driveTrainSupplier = () -> (Math.signum(driver.getRightX())
                 * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
                 * MaxAngularRate;
       }
       else {
-              driveTrainSupplier = () -> Vision.aimLimelightAprilTags() * MaxAngularRate;
+        driveTrainSupplier = () -> Vision.aimLimelightObject("limelight") * MaxAngularRate;
+
+      }
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 2) != 0 || shoot.getVelocity() <= speedFly-5) {
+        operator.setRumble(RumbleType.kBothRumble, 1);
+
+      }
+      else {
+        operator.setRumble(RumbleType.kBothRumble, 0);
 
       }
      
@@ -185,15 +205,6 @@ public class SuperStructure extends Command {
 
       }
          
-    }
-    else if (operator.getXButton()) {
-      // Cancel button for algo shoot
-      // if (currentPosition == ArmPosition.ALGO) {
-        cancelAlgoShoot = true;
-        shoot.motionMagicVelo(0);
-
-        // setPosition(ArmPosition.STOW);
-      // }
     }
     else if (operator.getAButton()) {
       
@@ -234,23 +245,40 @@ public class SuperStructure extends Command {
       // Should be running continously
       // Balancing algo
       // autoBalancingAlgo();
+      operator.setRumble(RumbleType.kBothRumble, 0);
 
       driveTrainSupplier = () -> (Math.signum(driver.getRightX())
                 * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
                 * MaxAngularRate;
     }
 
+    if (driver.getBButton()) {
+      if (Vision.doesSeeLimelightGamePiece()) {
+        driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") * MaxAngularRate;
+      }
+      else {
+        driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+        * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+        * MaxAngularRate;
+      }
+    }
+    else {
+      driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+                * MaxAngularRate;
+    }
 
     if(operator.getPOV() == 180){
       intake.useBanner = !intake.useBanner;
     }
 
-
     if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
 
       double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
-      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
-          .getDouble(0);
+      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0);
+
+    
+
           if (LimelightHelpers.getTV("limelight")) {
             theta = tempTheta;
             speedFly = tempSpeed;
@@ -275,7 +303,9 @@ public class SuperStructure extends Command {
     SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
      SmartDashboard.putNumber("Algo shoot Output", NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
       // shoot.motionMagicVelo(
-          // );
+          // );    
+          SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV("limelight"));
+
           SmartDashboard.putBoolean("bnanner", intake.getBanner());
                 SmartDashboard.putNumber("Algo shoot theta", NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
       SmartDashboard.updateValues();

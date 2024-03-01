@@ -44,9 +44,9 @@ public class Vision extends Command {
   static double errorsum = 0;
   static double lasterror = 0;
    static double error;
+
   static double lastTimestamp = 0;
 
-  
 
   public Vision(XboxController operatorController) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -87,10 +87,24 @@ public class Vision extends Command {
  
 
 
+  public static boolean doesSeeLimelightGamePiece() {
+    double classData = LimelightHelpers.getNeuralClassID("limelight-intake");
+    SmartDashboard.putNumber("detectedValue", classData);
+    SmartDashboard.updateValues();
+    if (classData == 0 || classData == 1) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
   
-  public static double aimLimelightAprilTags() {
+  public static double getLimelightAprilTagTXError() {
+    return LimelightHelpers.getTX("limelight");
+  }
+  public static double aimLimelightObject(String limelightName) {
 
-    double x = LimelightHelpers.getTX("limelight");
+    double x = LimelightHelpers.getTX(limelightName);
   
     errorsum = 0;
     error = x;
