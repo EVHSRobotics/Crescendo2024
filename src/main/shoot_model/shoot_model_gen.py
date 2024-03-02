@@ -31,13 +31,13 @@ def genShootModel():
     shootModel.add(Dense(2))
 
     shootModel.compile(loss="mse", optimizer=Adam())
-    shootModel.fit(shootDataX, shootDataY, epochs=1000)
+    shootModel.fit(shootDataX, shootDataY, epochs=500)
 
-    shootModel.save("ShootModel_2D_NEW_TEN.keras")
+    shootModel.save("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/ShootModel_2D.keras")
 
     convertedTFLiteModel = tf.lite.TFLiteConverter.from_keras_model(shootModel).convert()
     
-    with open("ShootModel_Lite_2D_NEW_TEN.tflite", "wb") as shootTflite:
+    with open("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/ShootModel_Lite_2D.tflite", "wb") as shootTflite:
         shootTflite.write(convertedTFLiteModel)
 
 # Loads the shoot model using tflite for more efficiency
@@ -57,12 +57,31 @@ def loadShootModelTFLite(inputVals):
 
 
 # Loads the more accurate model using keras
-def loadShootModelKeras(inputVals):
+def loadShootModelKeras(inputVals, oldInput, actual):
 
-    shootModel = load_model("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/src/main/shoot_model/ShootModel_2D_NEW_TEN.keras")
+    shootModel = load_model("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/ShootModel_2D_NEW_TEN.keras")
+    shootModelFinal = load_model("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/src/main/shoot_model/Models/V2/ShootModel_2D_FINAL.keras")
+    shootModelNormalized = load_model("/Users/krishiyengar/AKRS_Apps/Robo/Crescendo2024/src/main/shoot_model/Models/V4/ShootModel_2D_NORMALIZED.keras")
+    # print(shootModel.get_config())
+    shootModelNewPrediction = shootModel.predict(np.array([inputVals]))
+    print(shootModelNewPrediction)
+    shootModelFinalPrediction = shootModelFinal.predict(np.array([oldInput]))
+    print(shootModelFinalPrediction)
+    shootModelNormalizedPrediction = shootModelNormalized.predict(np.array([inputVals]))
+    print(shootModelNormalizedPrediction)
+    # Corrected percent error calculation for the first parameter
+    outputPerErrorNewModel = abs((shootModelNewPrediction[0][0]*100 - actual[0]) / actual[0]) * 100
+    outputPerErrorFinalModel = abs((shootModelFinalPrediction[0][0] - actual[0]) / actual[0]) * 100
+    outputPerErrorNormalizedModel = abs((shootModelNormalizedPrediction[0][0]*100 - actual[0]) / actual[0]) * 100
+    print("Output Per Error of New Model: {:.2f}% vs. {:.2f}% vs. {:.2f}%".format(outputPerErrorNewModel, outputPerErrorFinalModel, outputPerErrorNormalizedModel))
 
-    shootModelPrediction = shootModel.predict(np.array([inputVals]))
-    print(shootModelPrediction)
+    # Corrected percent error calculation for the second parameter
+    thetaErrorNewModel = abs((shootModelNewPrediction[0][1] - actual[1]) / actual[1]) * 100
+    thetaErrorFinalModel = abs((shootModelFinalPrediction[0][1] - actual[1]) / actual[1]) * 100
+    thetaErrorNormalizedModel = abs((shootModelNormalizedPrediction[0][1] - actual[1]) / actual[1]) * 100
+    print("Theta Error of New Model: {:.2f}% vs. {:.2f}% vs. {:.2f}%".format(thetaErrorNewModel, thetaErrorFinalModel, thetaErrorNormalizedModel))
 
-# genShootModel()
-loadShootModelKeras([-5.5, 0.13])
+
+genShootModel()
+
+# loadShootModelKeras([-0.0414, 0.2], [-4.14, 0.2], [70, -0.02])
