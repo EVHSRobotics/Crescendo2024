@@ -127,6 +127,7 @@ public class Arm extends SubsystemBase {
       SmartDashboard.updateValues();
       
       // position += 0.0045 // Bell
+      // tuned to EVHS 2854 robotics
         
       right.setControl(new MotionMagicVoltage(
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())

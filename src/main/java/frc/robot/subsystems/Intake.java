@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -7,6 +10,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.commands.SuperStructure.IntakeMode;
 
 public class Intake implements Subsystem {
   // private final static ColorSensorV3 m_colorSensor = new
@@ -37,7 +41,10 @@ public class Intake implements Subsystem {
         if (!getBanner() || power < 0) {
           intake.set(ControlMode.PercentOutput, power);
         } else {
+
           intake.set(ControlMode.PercentOutput, 0);
+
+          
         }
 
 
@@ -55,9 +62,8 @@ public class Intake implements Subsystem {
   }
 
   public boolean getBanner() {
-    SmartDashboard.putBoolean("banner", bannerSensor.get());
-    SmartDashboard.updateValues();
-    return bannerSensor.get();
+
+    return !bannerSensor.get();
   }
 
   public void setIntakeSpeed(double percentOutput) {

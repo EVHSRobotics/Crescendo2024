@@ -160,11 +160,20 @@ public class SuperStructure extends Command {
       // Cancel button for algo shoot
       // if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
+        setPosition(ArmPosition.STAGEFIT);
         shoot.motionMagicVelo(0);
 
         // setPosition(ArmPosition.STOW);
       // }
     }
+    // We only want it to be set to false nto to true
+    // if (intake.didSeeNote && intake.getBanner()) {
+    //   intake.didSeeNote = false;
+    // }
+      
+    SmartDashboard.putBoolean("bannerNEW", intake.getBanner());
+    SmartDashboard.updateValues();
+    
 
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;
@@ -238,7 +247,7 @@ public class SuperStructure extends Command {
       setPosition(ArmPosition.STAGEFIT);
 
     }
-    else if (MathUtil.applyDeadband(operator.getRightY(), 0.1) != 0) {
+    else if (MathUtil.applyDeadband(operator.getLeftY(), 0.1) != 0) {
       // Override Intake mode at any point to be manual
       currentIntake = IntakeMode.MANUAL;
     }
@@ -292,7 +301,8 @@ public class SuperStructure extends Command {
       shoot.motionMagicVelo(25, 13);
      }
      else {
-      shoot.motionMagicVelo(0, 0);
+      System.out.println("HELLOE");
+      shoot.stopShooters();
      }
 
       arm.setPosition(currentPosition.getPos());
@@ -316,12 +326,13 @@ public class SuperStructure extends Command {
       intake.pushIntake(operator.getLeftY() * 0.8);
 
     }
-    else if (currentIntake == IntakeMode.INTAKE) {
+    else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {
 
               intake.runIntake(currentIntake.getSpeed());
 
       
     }
+   
     else if (currentIntake == IntakeMode.OUTTAKE) {
 
       intake.pushIntake(currentIntake.getSpeed());
@@ -358,32 +369,46 @@ public class SuperStructure extends Command {
         // This is if it is not in algo mode
         // First continously check if the arm is at the setpoint
         // intakeTimer.cancel();
-        intakeTimer.purge();
-        intakeTimer.scheduleAtFixedRate(new TimerTask() {
-          @Override
-          public void run() {
-            if (arm.isArmInRange(currentPosition)) {
-              // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
-              // a new comman that is supposed to run the intake till the time expires, or banner sensor is triggered
+        
+        // intakeTimer.purge();
+
+        // intakeTimer.scheduleAtFixedRate(new TimerTask() {
+        //   @Override
+        //   public void run() {
+        //     if (arm.isArmInRange(currentPosition)) {
+        //       // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
+        //       // a new comman that is supposed to run the intake till the time expires, or banner sensor is triggered
               
-              this.cancel();
+        //       this.cancel();
 
-              currentIntake = mode;
+        //       currentIntake = mode;
 
-              intakeTimer.schedule(new TimerTask() {
-                  @Override
-                  public void run() {
-                    // Sets intake mode back to manual
+        //       intakeTimer.schedule(new TimerTask() {
+        //           @Override
+        //           public void run() {
+        //             // Sets intake mode back to manual
 
-                    currentIntake = IntakeMode.MANUAL;
+          currentIntake = mode;
+          // if (intake.getBanner()) {
+          //   intakeTimer.purge();
+          //   currentIntake = IntakeMode.REVERSE;
+          //   intakeTimer.schedule(new TimerTask() {
+          //     @Override
+          //     public void run() {
+          //       this.cancel();
+          //       currentIntake = IntakeMode.MANUAL;
+          //     }
+              
+          //   }, 750);
+          // }
                     
-                    this.cancel();
-                  }
-                }, mode.getTime());
+        //             this.cancel();
+        //           }
+        //         }, mode.getTime());
                   
-            }
-          }
-        }, 0, 1);      
+        //     }
+        //   }
+        // }, 0, 1);      
       }
     }
     else {

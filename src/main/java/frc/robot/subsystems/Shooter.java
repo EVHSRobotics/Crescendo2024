@@ -100,6 +100,7 @@ public class Shooter extends SubsystemBase {
     // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
     top.setControl(new MotionMagicVelocityVoltage(percentOutput));
     bottom.setControl(new MotionMagicVelocityVoltage(percentOutput));
+    
 
   }
 
@@ -117,8 +118,10 @@ public class Shooter extends SubsystemBase {
 
   }
   
-  public void setPerOut(double percentOutput) {
-    top.setControl(new DutyCycleOut(percentOutput));
+  
+  public void stopShooters() {
+    top.setControl(new DutyCycleOut(0));
+    bottom.setControl(new DutyCycleOut(0));
   }
 
 
