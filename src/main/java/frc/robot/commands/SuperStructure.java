@@ -29,14 +29,14 @@ import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Leds.SparkLEDColors;
 
-
 public class SuperStructure extends Command {
   private double MaxSpeed = 6; // 6 meters per second desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-
+  private Timer m_timer;
+  public boolean bannerSeen = false;
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
- private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
@@ -74,7 +74,8 @@ public class SuperStructure extends Command {
     public double getSpeed() {
       return this.speed;
     }
-     public long getTime() {
+
+    public long getTime() {
       return this.time;
     }
   }
@@ -103,7 +104,8 @@ public class SuperStructure extends Command {
   }
 
   /** Creates a new SuperStructure. */
-  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController driver, XboxController operator) {
+  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController driver,
+      XboxController operator) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.intake = intake;
@@ -115,8 +117,8 @@ public class SuperStructure extends Command {
     this.operator = operator;
 
     driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
+        * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+        * MaxAngularRate;
 
     addRequirements(arm);
     addRequirements(intake);
@@ -136,7 +138,7 @@ public class SuperStructure extends Command {
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
 
-// Sets up Swerve
+    // Sets up Swerve
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive
             .withVelocityX((Math.signum(driver.getLeftY())
@@ -163,7 +165,7 @@ public class SuperStructure extends Command {
         setPosition(ArmPosition.STAGEFIT);
         shoot.motionMagicVelo(0);
 
-        // setPosition(ArmPosition.STOW);
+      // setPosition(ArmPosition.STOW);
       // }
     }
     // We only want it to be set to false nto to true
@@ -180,69 +182,82 @@ public class SuperStructure extends Command {
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
 
-    } 
-    else if (operator.getRightBumper()) {
+    } else if (operator.getRightBumper()) {
       if (MathUtil.applyDeadband(Math.abs(driver.getRightX()), 0.1) > 0) {
         driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
-      }
-      else {
+            * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+            * MaxAngularRate;
+      } else {
         driveTrainSupplier = () -> Vision.aimLimelightObject("limelight") * MaxAngularRate;
 
       }
-      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || shoot.getVelocity() <= speedFly-5) {
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || shoot.getVelocity() <= speedFly - 5) {
         operator.setRumble(RumbleType.kBothRumble, 0.5);
 
-      }
-      else {
+      } else {
         operator.setRumble(RumbleType.kBothRumble, 0);
 
       }
-     
+
     }
- 
+
     else if (operator.getRightBumperReleased()) {
       // Resets rotation back to driver control
       driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
+          * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+          * MaxAngularRate;
       if (!cancelAlgoShoot) {
         setIntakeMode(IntakeMode.OUTTAKE);
         ledSub.setLED(SparkLEDColors.ALGO_SHOOT);
-        
 
       }
-         
-    }
-    else if (operator.getAButton()) {
-      
+
+    } else if (operator.getAButton()) {
+
       setPosition(ArmPosition.LOW_INTAKE);
       setIntakeMode(IntakeMode.INTAKE);
       ledSub.setLED(SparkLEDColors.LOW_INTAKE);
+      if (intake.getBanner()) {
+        bannerSeen = true;
+      }
+      if (bannerSeen) {
+        if (m_timer.get() < 0.3) {
+          intake.intakePushOut();
+        }
+
+      }
     }
+
+    else if (operator.getAButtonReleased()) {
+      m_timer.reset();
+      bannerSeen = false;
+    } 
+
     else if (operator.getStartButton()) {
       // Tipping algo
       // autoPickBackUpAlgo();
     }
+    
     else if (operator.getBButton()) {
       setPosition(ArmPosition.AMP);
       ledSub.setLED(SparkLEDColors.AMP);
 
-      
-    } else if (operator.getYButton()) {
+    }
+    
+    else if (operator.getYButton()) {
       setPosition(ArmPosition.STOW);
       setIntakeMode(IntakeMode.MANUAL);
       ledSub.setLED(SparkLEDColors.RAINBOW);
 
-
-    } else if (operator.getLeftBumper()) {
+    } 
+    
+    else if (operator.getLeftBumper()) {
       setPosition(ArmPosition.HIGH_INTAKE);
       setIntakeMode(IntakeMode.INTAKE);
       ledSub.setLED(SparkLEDColors.HIGH_INTAKE);
 
-
-    }
+    } 
+    
     else if (operator.getPOV() == 270) {
       setPosition(ArmPosition.STAGEFIT);
 
@@ -250,7 +265,8 @@ public class SuperStructure extends Command {
     else if (MathUtil.applyDeadband(operator.getLeftY(), 0.1) != 0) {
       // Override Intake mode at any point to be manual
       currentIntake = IntakeMode.MANUAL;
-    }
+    } 
+    
     else {
       // Should be running continously
       // Balancing algo
@@ -258,41 +274,44 @@ public class SuperStructure extends Command {
       operator.setRumble(RumbleType.kBothRumble, 0);
 
       driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
+          * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+          * MaxAngularRate;
     }
 
     // if (driver.getBButton()) {
-    //   if (Vision.doesSeeLimelightGamePiece()) {
-    //     driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") * MaxAngularRate;
-    //   }
-    //   else {
-    //     driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-    //     * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-    //     * MaxAngularRate;
-    //   }
+    // if (Vision.doesSeeLimelightGamePiece()) {
+    // driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") *
+    // MaxAngularRate;
     // }
     // else {
-    //   driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-    //             * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-    //             * MaxAngularRate;
+    // driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+    // * -(Math.abs(driver.getRightX()) > 0.15 ?
+    // Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+    // * MaxAngularRate;
+    // }
+    // }
+    // else {
+    // driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+    // * -(Math.abs(driver.getRightX()) > 0.15 ?
+    // Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+    // * MaxAngularRate;
     // }
 
-    if(operator.getPOV() == 180){
+    if (operator.getPOV() == 180) {
       intake.useBanner = !intake.useBanner;
     }
 
     if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
 
-      double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0);
-      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0);
+      double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut")
+          .getDouble(0);
+      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+          .getDouble(0);
 
-    
-
-          if (LimelightHelpers.getTV("limelight")) {
-            theta = tempTheta;
-            speedFly = tempSpeed;
-          }
+      if (LimelightHelpers.getTV("limelight")) {
+        theta = tempTheta;
+        speedFly = tempSpeed;
+      }
       shoot.motionMagicVelo(tempSpeed);
       arm.setPosition(theta);
     } 
@@ -306,20 +325,23 @@ public class SuperStructure extends Command {
      }
 
       arm.setPosition(currentPosition.getPos());
-          // arm.setPosition(arm.getArmPosition() - MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
+      // arm.setPosition(arm.getArmPosition() -
+      // MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
 
-    }    
+    }
     SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
 
     SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
-     SmartDashboard.putNumber("Algo shoot Output", NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-      // shoot.motionMagicVelo(
-          // );    
-          SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV("limelight"));
+    SmartDashboard.putNumber("Algo shoot Output",
+        NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+    // shoot.motionMagicVelo(
+    // );
+    SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV("limelight"));
 
-          SmartDashboard.putBoolean("bnanner", intake.getBanner());
-                SmartDashboard.putNumber("Algo shoot theta", NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-      SmartDashboard.updateValues();
+    SmartDashboard.putBoolean("bnanner", intake.getBanner());
+    SmartDashboard.putNumber("Algo shoot theta",
+        NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+    SmartDashboard.updateValues();
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
@@ -328,12 +350,9 @@ public class SuperStructure extends Command {
     }
     else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {
 
-              intake.runIntake(currentIntake.getSpeed());
+      intake.runIntake(currentIntake.getSpeed());
 
-      
-    }
-   
-    else if (currentIntake == IntakeMode.OUTTAKE) {
+    } else if (currentIntake == IntakeMode.OUTTAKE) {
 
       intake.pushIntake(currentIntake.getSpeed());
     }
@@ -342,8 +361,6 @@ public class SuperStructure extends Command {
   public void setPosition(ArmPosition pos) {
     this.currentPosition = pos;
   }
- 
-
 
   public void setIntakeMode(IntakeMode mode) {
 
@@ -355,20 +372,30 @@ public class SuperStructure extends Command {
         currentIntake = mode;
         intakeTimer.purge();
         intakeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-              // Sets intake mode back to manual
-              currentIntake = IntakeMode.MANUAL;
-              setPosition(ArmPosition.STAGEFIT); // Moves it to Stow
-              ledSub.setLED(SparkLEDColors.RAINBOW);
-              this.cancel();
-            }
-          }, mode.getTime());
-      }
-      else {
+          @Override
+          public void run() {
+            // Sets intake mode back to manual
+            currentIntake = IntakeMode.MANUAL;
+            setPosition(ArmPosition.STAGEFIT); // Moves it to Stow
+            ledSub.setLED(SparkLEDColors.RAINBOW);
+            this.cancel();
+          }
+        }, mode.getTime());
+      } else {
         // This is if it is not in algo mode
         // First continously check if the arm is at the setpoint
         // intakeTimer.cancel();
+        intakeTimer.purge();
+        intakeTimer.scheduleAtFixedRate(new TimerTask() {
+          @Override
+          public void run() {
+            if (arm.isArmInRange(currentPosition)) {
+              // Once it is, we can cancel this timer and set the currentIntake mode to the
+              // specified mode, and schedule
+              // a new comman that is supposed to run the intake till the time expires, or
+              // banner sensor is triggered
+
+              this.cancel();
         
         // intakeTimer.purge();
 
@@ -388,30 +415,24 @@ public class SuperStructure extends Command {
         //           public void run() {
         //             // Sets intake mode back to manual
 
-          currentIntake = mode;
-          // if (intake.getBanner()) {
-          //   intakeTimer.purge();
-          //   currentIntake = IntakeMode.REVERSE;
-          //   intakeTimer.schedule(new TimerTask() {
-          //     @Override
-          //     public void run() {
-          //       this.cancel();
-          //       currentIntake = IntakeMode.MANUAL;
-          //     }
-              
-          //   }, 750);
-          // }
+              currentIntake = mode;
+
+              intakeTimer.schedule(new TimerTask() {
+                  @Override
+                  public void run() {
+                    // Sets intake mode back to manual
+
+                    currentIntake = IntakeMode.MANUAL;
                     
-        //             this.cancel();
-        //           }
-        //         }, mode.getTime());
+                    this.cancel();
+                  }
+                }, mode.getTime());
                   
-        //     }
-        //   }
-        // }, 0, 1);      
+            }
+          }
+        }, 0, 1);      
       }
-    }
-    else {
+    } else {
       this.currentIntake = mode;
     }
   }
@@ -422,42 +443,42 @@ public class SuperStructure extends Command {
       currentPosition = Math.signum(pitch) > 0 ? ArmPosition.REVERSE_TIPPING : ArmPosition.HIGH_INTAKE;
     }
   }
+
   public void autoPickBackUpAlgo() {
-    
 
     currentPosition = ArmPosition.STOW;
     autoTippingTimer.purge();
-    
+
     autoTippingTimer.scheduleAtFixedRate(new TimerTask() {
-        @Override
-        public void run() {
-          if (arm.isArmInRange(currentPosition)) {
-            // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
-            // a new comman that is supposed to run the intake till the time expires, or banner sensor is triggered
-            
-            this.cancel();
+      @Override
+      public void run() {
+        if (arm.isArmInRange(currentPosition)) {
+          // Once it is, we can cancel this timer and set the currentIntake mode to the
+          // specified mode, and schedule
+          // a new comman that is supposed to run the intake till the time expires, or
+          // banner sensor is triggered
 
-            double pitch = arm.getGyroPitch();
-            if (pitch > 0) {
-              currentPosition = ArmPosition.LOW_INTAKE;
-            }
-            else {
-              currentPosition = ArmPosition.REVERSE_TIPPING;
-            }
-            
-            this.cancel();
-        
+          this.cancel();
+
+          double pitch = arm.getGyroPitch();
+          if (pitch > 0) {
+            currentPosition = ArmPosition.LOW_INTAKE;
+          } else {
+            currentPosition = ArmPosition.REVERSE_TIPPING;
           }
-        }
-      }, 0, 1);      
 
-    
+          this.cancel();
+
+        }
+      }
+    }, 0, 1);
+
   }
 
-  
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
