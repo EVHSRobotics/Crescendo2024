@@ -65,7 +65,7 @@ public class Vision extends Command {
   }
 
 
-  public double getAimRotation() {
+  public static double getAimRotation() {
     double distance = LimelightHelpers.getTX("limelight");
     double error = 0.1; 
     double p_constant = -0.028; 

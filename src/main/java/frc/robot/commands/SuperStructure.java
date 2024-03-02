@@ -182,8 +182,8 @@ public class SuperStructure extends Command {
         driveTrainSupplier = () -> Vision.aimLimelightObject("limelight") * MaxAngularRate;
 
       }
-      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 2) != 0 || shoot.getVelocity() <= speedFly-5) {
-        operator.setRumble(RumbleType.kBothRumble, 1);
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || shoot.getVelocity() <= speedFly-5) {
+        operator.setRumble(RumbleType.kBothRumble, 0.5);
 
       }
       else {
@@ -209,6 +209,7 @@ public class SuperStructure extends Command {
     else if (operator.getAButton()) {
       
       setPosition(ArmPosition.LOW_INTAKE);
+      setIntakeMode(IntakeMode.INTAKE);
       ledSub.setLED(SparkLEDColors.LOW_INTAKE);
     }
     else if (operator.getStartButton()) {
@@ -252,21 +253,21 @@ public class SuperStructure extends Command {
                 * MaxAngularRate;
     }
 
-    if (driver.getBButton()) {
-      if (Vision.doesSeeLimelightGamePiece()) {
-        driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") * MaxAngularRate;
-      }
-      else {
-        driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-        * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-        * MaxAngularRate;
-      }
-    }
-    else {
-      driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-                * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-                * MaxAngularRate;
-    }
+    // if (driver.getBButton()) {
+    //   if (Vision.doesSeeLimelightGamePiece()) {
+    //     driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") * MaxAngularRate;
+    //   }
+    //   else {
+    //     driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+    //     * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+    //     * MaxAngularRate;
+    //   }
+    // }
+    // else {
+    //   driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+    //             * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
+    //             * MaxAngularRate;
+    // }
 
     if(operator.getPOV() == 180){
       intake.useBanner = !intake.useBanner;

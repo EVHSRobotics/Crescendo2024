@@ -75,7 +75,7 @@ public class Arm extends SubsystemBase {
           configs.kG = 0.2;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 90;
+          configs.kP = 80;
           
           configs.kI = 0;
           configs.kD = 2.854;
@@ -125,7 +125,8 @@ public class Arm extends SubsystemBase {
     public void setPosition(double position) {
       SmartDashboard.putNumber("setpos", position);
       SmartDashboard.updateValues();
-      position += 0.0045;
+      
+      // position += 0.0045 // Bell
         
       right.setControl(new MotionMagicVoltage(
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
