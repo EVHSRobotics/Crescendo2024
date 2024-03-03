@@ -83,8 +83,16 @@ public class Vision extends Command {
     
    
   }
-
+  public static double getObjectDistanceNote() {
+    double testArea = 1.46, testDis = 68.0;
+    double d = Math.sqrt(testArea/LimelightHelpers.getTA("limelight-intake")) * testDis;
+    return d; 
+    // return ((lensHeight) / Math.abs(Math.tan(Math.toRadians(getY())))/2.0);
+  }
  
+  public static  double getObjectDistanceOutputVert() {
+    return MathUtil.clamp(((-getObjectDistanceNote()) * 0.02), -1, 1);
+  }
 
 
   public static boolean doesSeeLimelightGamePiece() {
@@ -114,7 +122,7 @@ public class Vision extends Command {
     if(Math.abs(x) < 0.1){
         errorsum += dt *  x;
     }
-    double output = MathUtil.clamp(error*0.014 + errorrate *0.0025+errorsum*0, -1, 1);
+    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.0165 + errorrate *0.005+errorsum*0, -1, 1), 0.05);
 
     SmartDashboard.putNumber("limelight", ( output));
     SmartDashboard.updateValues();

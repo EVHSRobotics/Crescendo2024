@@ -41,6 +41,10 @@ public class SuperStructure extends Command {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private Supplier<Double> driveTrainSupplier;
+
+    private Supplier<Double> driveTrainXSupplier;
+  private Supplier<Double> driveTrainYSupplier;
+
   private Arm arm;
   private Intake intake;
   private Leds ledSub;
@@ -120,6 +124,13 @@ public class SuperStructure extends Command {
         * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
         * MaxAngularRate;
 
+    driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
+                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+      driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
+                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+
     addRequirements(arm);
     addRequirements(intake);
     addRequirements(shoot);
@@ -137,17 +148,13 @@ public class SuperStructure extends Command {
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
-
+m_timer = new Timer();
     // Sets up Swerve
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive
-            .withVelocityX((Math.signum(driver.getLeftY())
-                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
-                * MaxSpeed) // Drive forward with
+            .withVelocityX(driveTrainXSupplier.get()) // Drive forward with
             // negative Y (forward)
-            .withVelocityY((Math.signum(driver.getLeftX())
-                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
-                * MaxSpeed) // Drive left with negative X (left)
+            .withVelocityY(driveTrainYSupplier.get()) // Drive left with negative X (left)
             .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
         ));
   }
@@ -191,7 +198,9 @@ public class SuperStructure extends Command {
         driveTrainSupplier = () -> Vision.aimLimelightObject("limelight") * MaxAngularRate;
 
       }
-      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || shoot.getVelocity() <= speedFly - 5) {
+      SmartDashboard.putNumber("predSpeed", speedFly);
+      SmartDashboard.putNumber("velocity", shoot.getVelocity());
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || MathUtil.applyDeadband(speedFly - shoot.getVelocity(), 5) != 0) {
         operator.setRumble(RumbleType.kBothRumble, 0.5);
 
       } else {
@@ -217,21 +226,21 @@ public class SuperStructure extends Command {
       setPosition(ArmPosition.LOW_INTAKE);
       setIntakeMode(IntakeMode.INTAKE);
       ledSub.setLED(SparkLEDColors.LOW_INTAKE);
-      if (intake.getBanner()) {
+     /* if (intake.getBanner()) {
         bannerSeen = true;
       }
       if (bannerSeen) {
-        if (m_timer.get() < 0.3) {
+        if (m_timer.get() < 1) {
           intake.intakePushOut();
         }
 
-      }
+      } */
     }
 
-    else if (operator.getAButtonReleased()) {
-      m_timer.reset();
-      bannerSeen = false;
-    } 
+    // else if (operator.getAButtonReleased()) {
+    //   m_timer.reset();
+    //   bannerSeen = false;
+    // } 
 
     else if (operator.getStartButton()) {
       // Tipping algo
@@ -273,22 +282,28 @@ public class SuperStructure extends Command {
       // autoBalancingAlgo();
       operator.setRumble(RumbleType.kBothRumble, 0);
 
-      driveTrainSupplier = () -> (Math.signum(driver.getRightX())
+    
+        driveTrainSupplier = () -> (Math.signum(driver.getRightX())
           * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
           * MaxAngularRate;
+    
     }
 
-    // if (driver.getBButton()) {
-    // if (Vision.doesSeeLimelightGamePiece()) {
-    // driveTrainSupplier = () -> Vision.aimLimelightObject("limelight-intake") *
-    // MaxAngularRate;
-    // }
-    // else {
-    // driveTrainSupplier = () -> (Math.signum(driver.getRightX())
-    // * -(Math.abs(driver.getRightX()) > 0.15 ?
-    // Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
-    // * MaxAngularRate;
-    // }
+    if (driver.getBButton()) {
+         driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
+                * MaxSpeed * 0.5;
+      driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
+        MaxSpeed * 0.5);
+    }
+    else {
+      driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
+                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+      driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
+                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+    }
+   
     // }
     // else {
     // driveTrainSupplier = () -> (Math.signum(driver.getRightX())
@@ -320,7 +335,7 @@ public class SuperStructure extends Command {
       shoot.motionMagicVelo(25, 13);
      }
      else {
-      System.out.println("HELLOE");
+      // System.out.println("HELLOE");
       shoot.stopShooters();
      }
 
@@ -385,52 +400,8 @@ public class SuperStructure extends Command {
         // This is if it is not in algo mode
         // First continously check if the arm is at the setpoint
         // intakeTimer.cancel();
-        intakeTimer.purge();
-        intakeTimer.scheduleAtFixedRate(new TimerTask() {
-          @Override
-          public void run() {
-            if (arm.isArmInRange(currentPosition)) {
-              // Once it is, we can cancel this timer and set the currentIntake mode to the
-              // specified mode, and schedule
-              // a new comman that is supposed to run the intake till the time expires, or
-              // banner sensor is triggered
-
-              this.cancel();
-        
-        // intakeTimer.purge();
-
-        // intakeTimer.scheduleAtFixedRate(new TimerTask() {
-        //   @Override
-        //   public void run() {
-        //     if (arm.isArmInRange(currentPosition)) {
-        //       // Once it is, we can cancel this timer and set the currentIntake mode to the specified mode, and schedule
-        //       // a new comman that is supposed to run the intake till the time expires, or banner sensor is triggered
-              
-        //       this.cancel();
-
-        //       currentIntake = mode;
-
-        //       intakeTimer.schedule(new TimerTask() {
-        //           @Override
-        //           public void run() {
-        //             // Sets intake mode back to manual
-
-              currentIntake = mode;
-
-              intakeTimer.schedule(new TimerTask() {
-                  @Override
-                  public void run() {
-                    // Sets intake mode back to manual
-
-                    currentIntake = IntakeMode.MANUAL;
-                    
-                    this.cancel();
-                  }
-                }, mode.getTime());
-                  
-            }
-          }
-        }, 0, 1);      
+      currentIntake = mode;
+         
       }
     } else {
       this.currentIntake = mode;

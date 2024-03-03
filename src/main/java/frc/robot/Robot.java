@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
-    m_robotContainer.getSystemsCheck().schedule();
+    // m_robotContainer.getSystemsCheck().schedule();
   }
 
 

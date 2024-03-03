@@ -43,7 +43,7 @@ class ShootModelDriver:
 
             # Uploads the data back along with the timestamp
             NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTimestamp", time.time())
-            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedPerOut", predictedPercentOutput*100.00)
+            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedPerOut", predictedPercentOutput)
             NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTheta", predictedTheta)
 
             # Predicts every 1 seconds

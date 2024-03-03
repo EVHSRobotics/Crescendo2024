@@ -58,7 +58,7 @@ public class Intake implements Subsystem {
   }
 
   public void intakePushOut (){
-    intake.set(ControlMode.PercentOutput, SmartDashboard.getNumber("IntakePushOutSpeed", -0.1));
+    intake.set(ControlMode.PercentOutput, SmartDashboard.getNumber("IntakePushOutSpeed", -0.5));
   }
 
   public void shootAmp() {
