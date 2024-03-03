@@ -88,7 +88,7 @@ public class SuperStructure extends Command {
     REVERSE_TIPPING(-0.3),
     STOW(-0.25),
     LOW_INTAKE(0.06),
-    HIGH_INTAKE(-0.1645),
+    HIGH_INTAKE(-0.167),
     // 0.01 amp
     AMP(0.01),
     SHOOT(-0.02),
@@ -170,6 +170,7 @@ m_timer = new Timer();
       // if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
         setPosition(ArmPosition.STAGEFIT);
+        setIntakeMode(IntakeMode.MANUAL);
         shoot.motionMagicVelo(0);
 
       // setPosition(ArmPosition.STOW);
@@ -268,6 +269,7 @@ m_timer = new Timer();
     } 
     
     else if (operator.getPOV() == 270) {
+      setIntakeMode(IntakeMode.MANUAL);
       setPosition(ArmPosition.STAGEFIT);
 
     }
@@ -288,13 +290,20 @@ m_timer = new Timer();
           * MaxAngularRate;
     
     }
+if (driver.getYButton()) {
+      drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
+    }
+    else if (driver.getBButton()) {
+            drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
 
-    if (driver.getBButton()) {
+    }
+    if (driver.getXButton()) {
          driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
                 * MaxSpeed * 0.5;
       driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
         MaxSpeed * 0.5);
     }
+    
     else {
       driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
                 * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
@@ -330,10 +339,16 @@ m_timer = new Timer();
       shoot.motionMagicVelo(tempSpeed);
       arm.setPosition(theta);
     } 
+
     else {
-     if (currentPosition == ArmPosition.AMP) {
-      shoot.motionMagicVelo(25, 13);
-     }
+      if (currentPosition == ArmPosition.AMP) {
+        // shoot.motionMagicVelo(-0.185*LimelightHelpers.getTY("limelight") +20.8);
+        shoot.motionMagicVelo(25, 13);
+
+      }
+        else if (currentPosition == ArmPosition.HIGH_INTAKE || currentPosition == ArmPosition.LOW_INTAKE) {
+      // shoot.motionMagicVelo(-20+);
+    }
      else {
       // System.out.println("HELLOE");
       shoot.stopShooters();

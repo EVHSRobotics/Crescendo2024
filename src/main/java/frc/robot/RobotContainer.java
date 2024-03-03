@@ -81,10 +81,10 @@ public class RobotContainer {
 
   private SystemsCheck systemsCheck;
 
-  private FieldCentricFacingAngle ampAngle = new FieldCentricFacingAngle()
-      .withTargetDirection(Rotation2d.fromDegrees(270)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
-  private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle()
-      .withTargetDirection(Rotation2d.fromDegrees(38)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
+  // private FieldCentricFacingAngle ampAngle = new FieldCentricFacingAngle()
+  //     .withTargetDirection(Rotation2d.fromDegrees(270)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
+  // private FieldCentricFacingAngle sourceAngle = new FieldCentricFacingAngle()
+  //     .withTargetDirection(Rotation2d.fromDegrees(38)).withVelocityX(0.75 * MaxSpeed).withVelocityY(0.75 * MaxSpeed);
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -105,9 +105,9 @@ public class RobotContainer {
     // joystick.b().whileTrue(drivetrain
         // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
        
-   joystick.pov(90).whileTrue(drivetrain.applyRequest(() -> ampAngle));
+  //  joystick.pov(90).whileTrue(drivetrain.moveToHeading(58, , null));
 
-    joystick.x().whileTrue(drivetrain.applyRequest(() -> sourceAngle));
+    // joystick.x().whileTrue(drivetrain.applyRequest(() -> sourceAngle));
     // reset the field-centric heading on right bumper press
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.FieldCentric;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.SuperStructure.ArmPosition;
 import frc.robot.subsystems.Arm;
@@ -21,7 +22,7 @@ public class SystemsCheck extends Command {
   private Intake intake;
   private Shooter shoot;
 
-  private CHECKS[] checks = new CHECKS[] {CHECKS.ARM_STOW, CHECKS.ARM_SOURCE, CHECKS.ARM_LOW_INTAKE, CHECKS.ARM_AMP, CHECKS.PI_PING, CHECKS.INTAKE, CHECKS.OUTTAKE, CHECKS.SHOOTER};
+  private CHECKS[] checks = new CHECKS[] {CHECKS.ARM_STOW, CHECKS.ARM_SOURCE, CHECKS.ARM_LOW_INTAKE, CHECKS.ARM_AMP, CHECKS.PI_PING, CHECKS.OUTTAKE, CHECKS.SHOOTER};
   private int currentCheck = 0;
   private double checkTimer = -1;
   private boolean checkDone = false;
@@ -85,7 +86,7 @@ public class SystemsCheck extends Command {
         case DRIVE:
           // Run Modules at 40% speed for 3 seconds
             if ((System.currentTimeMillis() - checkTimer) < 3000) {
-              drivetrain.applyRequest(() -> drive.withVelocityX(2.4).withVelocityY(2.4).withRotationalRate(1.884));
+              // drivetrain.applyRequest(() -> drive.withVelocityX(2.4).withVelocityY(2.4).withRotationalRate(1.884));
           }
           else {
             nextSystemCheck();
@@ -98,46 +99,62 @@ public class SystemsCheck extends Command {
           else { 
             nextSystemCheck();
           }
+                    break;
+
         case ARM_LOW_INTAKE:
           if (!arm.isArmInRange(ArmPosition.LOW_INTAKE)) {
             arm.setPosition(ArmPosition.LOW_INTAKE.getPos());
+                        intake.pushIntake(1);
+
           }
           else { 
             nextSystemCheck();
           }
+                    break;
+
         case ARM_SOURCE:
           if (!arm.isArmInRange(ArmPosition.HIGH_INTAKE)) {
             arm.setPosition(ArmPosition.HIGH_INTAKE.getPos());
+                        intake.pushIntake(1);
+
           }
           else { 
             nextSystemCheck();
           }
+                    break;
+
         case ARM_STOW:
+        System.out.println("JEELEL");
+        System.out.println(arm.isArmInRange(ArmPosition.STOW));
           if (!arm.isArmInRange(ArmPosition.STOW)) {
             arm.setPosition(ArmPosition.STOW.getPos());
           }
           else { 
+                    System.out.println("wfe");
+
             nextSystemCheck();
           }
-        case INTAKE:
-          if (intake.getIntakeSpeed() <= 0) {
-            intake.pushIntake(1);
-          }
-          else { 
-            nextSystemCheck();
-          }
+                    break;
+
+     
         case OUTTAKE:
-          if (intake.getIntakeSpeed() >= 0) {
+      
+              if ((System.currentTimeMillis() - checkTimer) < 3000) {
             intake.pushIntake(-1);
           }
-          else { 
+          else {
             nextSystemCheck();
           }
+                    break;
+
         case PI_PING:
           // If it has updated once in the last 5 seconds that means the PI is running
-          if (System.currentTimeMillis() - NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTimestamp").getDouble(0) <= 5000) {
-            nextSystemCheck();
-          }
+          // if (System.currentTimeMillis() - NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTimestamp").getDouble(0) <= 5000) {
+          //   nextSystemCheck();
+          // }
+          nextSystemCheck();
+                    break;
+
         case SHOOTER:
           
           if (shoot.getVelocity() >= 70) {
@@ -146,6 +163,8 @@ public class SystemsCheck extends Command {
           else { 
             nextSystemCheck();
           }
+                    break;
+
         default:
           break;
             
@@ -173,7 +192,7 @@ public class SystemsCheck extends Command {
     drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
 
     System.out.println(checks[currentCheck].getCheckName() + " PASSED");
-
+Timer.delay(1);
     checkTimer = -1;
     currentCheck +=1;
   }

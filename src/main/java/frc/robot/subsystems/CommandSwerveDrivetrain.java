@@ -118,4 +118,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return this.getState().Pose;
     }
 
+    public Command moveToHeading(double angle, Supplier<Double> suppX, Supplier<Double> suppY){
+        SwerveRequest.FieldCentricFacingAngle heading = new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(Rotation2d.fromDegrees(angle)).withVelocityX(suppX.get() * 6).withVelocityY(suppY.get() * 6);
+        heading.HeadingController.setPID(100, 0, 0);
+        return applyRequest(() -> heading);
+    }
 }

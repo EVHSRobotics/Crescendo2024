@@ -1,13 +1,15 @@
 package frc.robot.subsystems;
 
-import java.util.Timer;
-import java.util.TimerTask;
+
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.SuperStructure.IntakeMode;
@@ -18,12 +20,15 @@ public class Intake implements Subsystem {
   private DigitalInput bannerSensor;
   private TalonSRX intake;
   public boolean useBanner;
+  public boolean didSeeNote = false;
+  public Timer noteReverseTimer = new Timer();
 
   public Intake() {
     useBanner = true;
     bannerSensor = new DigitalInput(1); // 1 is the one that works!
     intake = new TalonSRX(44);
-
+    intake.configVoltageCompSaturation(11);
+    intake.enableVoltageCompensation(true);
   }
   public double getIntakeSpeed() {
 
@@ -39,11 +44,29 @@ public class Intake implements Subsystem {
         // Outtaking is ok
         SmartDashboard.putNumber("test", power);
         if (!getBanner() || power < 0) {
+                    didSeeNote = false;
+
           intake.set(ControlMode.PercentOutput, power);
         } else {
+          if (!didSeeNote) {
+                     didSeeNote = true;
 
-          intake.set(ControlMode.PercentOutput, 0);
+            noteReverseTimer.restart();
 
+          }
+          else {
+            System.out.println(noteReverseTimer.get());
+            if (noteReverseTimer.get() < 0.5) {
+            intake.set(ControlMode.PercentOutput, -0.1);
+
+            }
+            else {
+
+             intake.set(ControlMode.PercentOutput, 0);
+
+            }
+
+          }
           
         }
 
