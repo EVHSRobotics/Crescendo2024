@@ -189,7 +189,7 @@ m_timer = new Timer();
       cancelAlgoShoot = false;
       setPosition(ArmPosition.ALGO);
       ledSub.setLED(SparkLEDColors.ALGO_AIM);
-
+      Vision.resetPIDController();
     } else if (operator.getRightBumper()) {
       if (MathUtil.applyDeadband(Math.abs(driver.getRightX()), 0.1) > 0) {
         driveTrainSupplier = () -> (Math.signum(driver.getRightX())

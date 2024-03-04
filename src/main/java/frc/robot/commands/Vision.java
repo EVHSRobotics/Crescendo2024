@@ -16,6 +16,7 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -44,6 +45,7 @@ public class Vision extends Command {
   static double errorsum = 0;
   static double lasterror = 0;
    static double error;
+  static ProfiledPIDController visionPIDController;
 
   static double lastTimestamp = 0;
 
@@ -60,8 +62,9 @@ public class Vision extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    visionPIDController.reset(LimelightHelpers.getTX("limelight"));
+    visionPIDController.enableContinuousInput(-180, 180);
 
-   
   }
 
 
@@ -107,16 +110,23 @@ public class Vision extends Command {
     }
   }
   
+  public static void resetPIDController() {
+
+
+    visionPIDController.reset(LimelightHelpers.getTX("limelight"));
+
+  }
   public static double getLimelightAprilTagTXError() {
     return LimelightHelpers.getTX("limelight");
   }
   public static double aimLimelightObject(String limelightName) {
 
+
+
     double x = LimelightHelpers.getTX(limelightName);
-  
     errorsum = 0;
     error = x;
-
+    double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(error, -1, 1), 0.05);
     double dt = Timer.getFPGATimestamp() - lastTimestamp;
     double errorrate = (error-lasterror)/dt;
     if(Math.abs(x) < 0.1){
@@ -125,6 +135,7 @@ public class Vision extends Command {
     double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.0165 + errorrate *0.005+errorsum*0, -1, 1), 0.05);
 
     SmartDashboard.putNumber("limelight", ( output));
+    SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
     SmartDashboard.updateValues();
     lastTimestamp = Timer.getFPGATimestamp();
     lasterror = error;
