@@ -124,4 +124,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         heading.HeadingController.enableContinuousInput(-180, 180);
         return applyRequest(() -> heading);
     }
+
+    public void driveWithVoltage(double Voltage){
+       applyRequest(() -> new SwerveVoltageRequest().withVoltage(Voltage)).execute();
+    }
+
+    public void steerWithVoltage(double Voltage){
+       applyRequest(() -> new SwerveVoltageRequest(false).withVoltage(Voltage)).execute();
+    }
 }
