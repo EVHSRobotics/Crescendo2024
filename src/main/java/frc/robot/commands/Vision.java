@@ -18,6 +18,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -45,9 +46,9 @@ public class Vision extends Command {
   static double errorsum = 0;
   static double lasterror = 0;
    static double error;
-  static ProfiledPIDController visionPIDController;
+  static ProfiledPIDController visionPIDController = new ProfiledPIDController(4, 0, 0, new Constraints(0.15, 0.25));
 
-  static double lastTimestamp = 0;
+  static double lastTimestamp = 0;  
 
 
   public Vision(XboxController operatorController) {
@@ -62,9 +63,7 @@ public class Vision extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    visionPIDController.reset(LimelightHelpers.getTX("limelight"));
-    visionPIDController.enableContinuousInput(-180, 180);
-
+ 
   }
 
 
@@ -112,8 +111,9 @@ public class Vision extends Command {
   
   public static void resetPIDController() {
 
+   visionPIDController.reset(LimelightHelpers.getTX("limelight"));
+    // visionPIDController.enableContinuousInput(-180, 180);
 
-    visionPIDController.reset(LimelightHelpers.getTX("limelight"));
 
   }
   public static double getLimelightAprilTagTXError() {
@@ -126,21 +126,23 @@ public class Vision extends Command {
     double x = LimelightHelpers.getTX(limelightName);
     errorsum = 0;
     error = x;
-    double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(error, -1, 1), 0.05);
-    double dt = Timer.getFPGATimestamp() - lastTimestamp;
-    double errorrate = (error-lasterror)/dt;
-    if(Math.abs(x) < 0.1){
-        errorsum += dt *  x;
-    }
-    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.0165 + errorrate *0.005+errorsum*0, -1, 1), 0.05);
+    double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
+    // double dt = Timer.getFPGATimestamp() - lastTimestamp;
+    // double errorrate = (error-lasterror)/dt;
+    // if(Math.abs(x) < 0.1){
+    //     errorsum += dt *  x;
+    // }
+    // double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.0165 + errorrate *0.005+errorsum*0, -1, 1), 0.05);
 
-    SmartDashboard.putNumber("limelight", ( output));
+    // SmartDashboard.putNumber("limelight", ( output));
     SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
     SmartDashboard.updateValues();
-    lastTimestamp = Timer.getFPGATimestamp();
-    lasterror = error;
+        return profiledOutput;
+
+    // lastTimestamp = Timer.getFPGATimestamp();
+    // lasterror = error;
     
-    return -output;
+    // return -output;
   }
   
 

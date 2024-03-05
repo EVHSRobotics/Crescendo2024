@@ -124,8 +124,8 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
-    driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
-    steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
+    // driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
+    // steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
 
 
     intakeSub = new Intake();
