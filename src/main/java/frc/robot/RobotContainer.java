@@ -180,8 +180,12 @@ public class RobotContainer {
     return armCharacterization;
   }
 
-  public FeedForwardCharacterization getFFDrive() {
+ public FeedForwardCharacterization getFFDrive() {
     return driveCharacterization;
+  }
+
+  public FeedForwardCharacterization getFFSteer() {
+    return steerCharacterization;
   }
 
   public Command[] getTeleCommand() {
