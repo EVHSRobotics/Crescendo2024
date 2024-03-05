@@ -132,4 +132,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public void steerWithVoltage(double Voltage){
        applyRequest(() -> new SwerveVoltageRequest(false).withVoltage(Voltage)).execute();
     }
+    
+    public double getVeloDrive(){
+        double sum = 0;
+        for(SwerveModule module : Modules){
+            sum += module.getDriveMotor().getVelocity().getValueAsDouble();
+        }
+        return sum/4;
+    }
+
+    public double getVeloSteer(){
+        double sum = 0;
+        for(SwerveModule module : Modules){
+            sum += module.getCANcoder().getVelocity().getValueAsDouble();
+        }
+        return sum/4;
+    }
 }
