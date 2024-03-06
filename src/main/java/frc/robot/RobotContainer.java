@@ -124,8 +124,8 @@ public class RobotContainer {
     autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
     autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
-    // driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
-    // steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
+    driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
+    steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
 
 
     intakeSub = new Intake();
@@ -157,7 +157,10 @@ public class RobotContainer {
   public enum AutoPaths {
 
     BackupHPAuto("Backup_Middle"),
+    AdvancedAuto("BackUp_Right_Middle_Left"),
+
     BackupPathPlannerHPAuto("BackUp");
+    
 
     private String pathName;
 
@@ -222,7 +225,7 @@ public class RobotContainer {
     // easiest way: running auto through PathPlannerLib while using choreo
     // trajectories
     
-    String auto = "BackUp_Middle_Left";
+    String auto = "BackUp_Right_Middle_Left";
     drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
     return drivetrain.getAutoPath(auto);
     // drivetrain.setPose(null);

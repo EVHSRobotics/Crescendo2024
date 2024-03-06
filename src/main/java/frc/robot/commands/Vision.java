@@ -46,7 +46,7 @@ public class Vision extends Command {
   static double errorsum = 0;
   static double lasterror = 0;
    static double error;
-  static ProfiledPIDController visionPIDController = new ProfiledPIDController(4, 0, 0, new Constraints(0.15, 0.25));
+  static ProfiledPIDController visionPIDController = new ProfiledPIDController(0.3, 1, 0, new Constraints(0.15, 0.25));
 
   static double lastTimestamp = 0;  
 
@@ -66,18 +66,6 @@ public class Vision extends Command {
  
   }
 
-
-  public static double getAimRotation() {
-    double distance = LimelightHelpers.getTX("limelight");
-    double error = 0.1; 
-    double p_constant = -0.028; 
-    double output = (distance - error) * p_constant;
-    SmartDashboard.putNumber("distance", distance);
-    SmartDashboard.putNumber("output", output);
-    SmartDashboard.updateValues();
-    return output;
-
-  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -126,23 +114,23 @@ public class Vision extends Command {
     double x = LimelightHelpers.getTX(limelightName);
     errorsum = 0;
     error = x;
-    double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
-    // double dt = Timer.getFPGATimestamp() - lastTimestamp;
-    // double errorrate = (error-lasterror)/dt;
-    // if(Math.abs(x) < 0.1){
-    //     errorsum += dt *  x;
-    // }
-    // double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.0165 + errorrate *0.005+errorsum*0, -1, 1), 0.05);
+    // double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
+    double dt = Timer.getFPGATimestamp() - lastTimestamp;
+    double errorrate = (error-lasterror)/dt;
+    if(Math.abs(x) < 0.1){
+        errorsum += dt *  x;
+    }
+    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.014 + errorrate *0.0025+errorsum*0, -1, 1), 0.05);
 
     // SmartDashboard.putNumber("limelight", ( output));
-    SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
+    // SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
     SmartDashboard.updateValues();
-        return profiledOutput;
+        // return profiledOutput;
 
-    // lastTimestamp = Timer.getFPGATimestamp();
-    // lasterror = error;
+    lastTimestamp = Timer.getFPGATimestamp();
+    lasterror = error;
     
-    // return -output;
+    return -output;
   }
   
 

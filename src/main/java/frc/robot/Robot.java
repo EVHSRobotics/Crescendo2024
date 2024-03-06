@@ -111,13 +111,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopExit() {}
-  TalonFX shoot;
 
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
-    m_robotContainer.getSystemsCheck().schedule();
+    // m_robotContainer.getFFSteer().schedule();
+    // m_robotContainer.getSystemsCheck().schedule();
   }
 
 

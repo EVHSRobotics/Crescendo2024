@@ -425,6 +425,8 @@ if (driver.getYButton()) {
 
   public void autoBalancingAlgo() {
     double pitch = arm.getGyroPitch();
+    SmartDashboard.putNumber("pitchitypitch", pitch);
+    SmartDashboard.updateValues();
     if (Math.abs(pitch) > 25) {
       currentPosition = Math.signum(pitch) > 0 ? ArmPosition.REVERSE_TIPPING : ArmPosition.HIGH_INTAKE;
     }

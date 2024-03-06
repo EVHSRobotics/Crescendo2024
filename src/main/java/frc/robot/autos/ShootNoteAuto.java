@@ -91,7 +91,7 @@ public class ShootNoteAuto extends Command {
   public void execute() {
         drivetrain.applyRequest(() -> drive
       // Drive left with negative X (left)
-      .withRotationalRate(Vision.getAimRotation() * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+      .withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
     shoot.motionMagicVelo(
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
