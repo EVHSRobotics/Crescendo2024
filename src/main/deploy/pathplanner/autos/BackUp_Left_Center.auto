@@ -5,7 +5,7 @@
       "x": 1.078704595565796,
       "y": 4.553201675415039
     },
-    "rotation": 123.17155611291896
+    "rotation": 119.84604318071497
   },
   "command": {
     "type": "sequential",
@@ -36,22 +36,41 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left_Middle_Ring"
+                  "pathName": "BackUp_Left"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Left_Middle_Ring_Back"
+            "name": "Outtake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Outtake"
+            "name": "Arm_Ground"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "BackUp_Left_Middle"
+                }
+              }
+            ]
           }
         }
       ]
