@@ -337,6 +337,7 @@ if (driver.getYButton()) {
         speedFly = tempSpeed;
       }
       shoot.motionMagicVelo(tempSpeed);
+      
       arm.setPosition(theta);
     } 
 
@@ -359,19 +360,19 @@ if (driver.getYButton()) {
       // MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
 
     }
-    SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
+    // SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
 
-    SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
-    SmartDashboard.putNumber("Algo shoot Output",
-        NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-    // shoot.motionMagicVelo(
-    // );
-    SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV("limelight"));
+    // SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
+    // SmartDashboard.putNumber("Algo shoot Output",
+    //     NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+    // // shoot.motionMagicVelo(
+    // // );
+    // SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV("limelight"));
 
-    SmartDashboard.putBoolean("bnanner", intake.getBanner());
-    SmartDashboard.putNumber("Algo shoot theta",
-        NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-    SmartDashboard.updateValues();
+    // SmartDashboard.putBoolean("bnanner", intake.getBanner());
+    // SmartDashboard.putNumber("Algo shoot theta",
+    //     NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+    // SmartDashboard.updateValues();
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
@@ -425,8 +426,8 @@ if (driver.getYButton()) {
 
   public void autoBalancingAlgo() {
     double pitch = arm.getGyroPitch();
-    SmartDashboard.putNumber("pitchitypitch", pitch);
-    SmartDashboard.updateValues();
+    // SmartDashboard.putNumber("pitchitypitch", pitch);
+    // SmartDashboard.updateValues();
     if (Math.abs(pitch) > 25) {
       currentPosition = Math.signum(pitch) > 0 ? ArmPosition.REVERSE_TIPPING : ArmPosition.HIGH_INTAKE;
     }

@@ -74,11 +74,11 @@ public class RobotContainer {
   private Arm arm;
   private Leds ledSub;
 
-  private FeedForwardCharacterization armCharacterization;
-  private FeedForwardCharacterization shootTopCharacterization;
+  // private FeedForwardCharacterization armCharacterization;
+  // private FeedForwardCharacterization shootTopCharacterization;
   // private FeedForwardCharacterization shootBottomCharacterization;
-  private FeedForwardCharacterization driveCharacterization;
-  private FeedForwardCharacterization steerCharacterization;
+  // private FeedForwardCharacterization driveCharacterization;
+  // private FeedForwardCharacterization steerCharacterization;
   
 
   private SystemsCheck systemsCheck;
@@ -98,6 +98,34 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
+
+  public enum AutoPaths {
+
+    BackupMiddleAuto("BackUp_Middle"),
+    BackupLeftAuto("BackUp_Left"),
+    BackupRightAuto("BackUp_Right"),
+    BackupLeftCenterAuto("BackUp_Left_Center"),
+    BackupRightCenterAuto("BackUp_Right_Center"),
+    BackupLeftCenterShootAuto("BackUp_Left_Center_Shoot"),
+    BackupRightCenterShootAuto("BackUp_Right_Center_Shoot"),
+    BackupRight4NoteShootAuto("BackUp_Right_Middle_Left"),
+    BackupLeft4NoteShootAuto("BackUp_Left_Middle_Right"),
+    BackupRight5NoteShootAuto("BackUp_Right_Middle_Left_Center"),   
+    BackupLeft5NoteShootAuto("BackUp_Left_Middle_Right_Center"),
+    Backup_Middle_Left("BackUp_Middle_Left"),  
+    Backup_Middle_Right("Backup_Middle_Right");
+
+
+    private String pathName;
+
+    AutoPaths(String pathName) {
+      this.pathName = pathName;
+    }
+
+    public String getPath() {
+      return this.pathName;
+    }
+  }
 
   private void configureBindings() {
 
@@ -121,11 +149,18 @@ public class RobotContainer {
 
   public RobotContainer() {
     autoChooser = new SendableChooser<String>();
-    autoChooser.addOption(AutoPaths.BackupHPAuto.pathName, AutoPaths.BackupHPAuto.pathName);
-    autoChooser.addOption(AutoPaths.BackupPathPlannerHPAuto.pathName, AutoPaths.BackupPathPlannerHPAuto.pathName);
 
-    driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
-    steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
+    AutoPaths[] allAutoPaths = AutoPaths.values();
+    for (int i=0; i<allAutoPaths.length; i++) 
+    {
+      autoChooser.addOption(allAutoPaths[i].getPath(), allAutoPaths[i].getPath());
+    }
+
+    SmartDashboard.putData(autoChooser);
+    SmartDashboard.updateValues();
+
+    // driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
+    // steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
 
 
     intakeSub = new Intake();
@@ -135,66 +170,43 @@ public class RobotContainer {
     shoot = new Shoot(shootSub, operator);
 
     superStructure = new SuperStructure(arm, intakeSub, shootSub, ledSub, driver, operator);
-    // runArm = new RunArm(arm, operator);
-    // intake = new RunIntake(intakeSub, operator, runArm);
-    // shoot = new Shoot(shootSub, operator, runArm);
-
-    SmartDashboard.putData(autoChooser);
-    SmartDashboard.updateValues();
-
+ 
     configureBindings();
     setUpAutoCommands();
 
-    armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
+    // armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
     // shootBottomCharacterization = new FeedForwardCharacterization(shootSub,
     // shootSub::bottomVoltageConsumer, shootSub::bottomGetVelocity);
-    shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer,
-        shootSub::topGetVelocity);
+    // shootTopCharacterization = new FeedForwardCharacterization(shootSub, shootSub::topVoltageConsumer,
+        // shootSub::topGetVelocity);
     systemsCheck = new SystemsCheck(drivetrain, drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
   }
 
-  public enum AutoPaths {
 
-    BackupHPAuto("Backup_Middle"),
-    AdvancedAuto("BackUp_Right_Middle_Left"),
-
-    BackupPathPlannerHPAuto("BackUp");
-    
-
-    private String pathName;
-
-    AutoPaths(String pathName) {
-      this.pathName = pathName;
-    }
-
-    public String getPath() {
-      return this.pathName;
-    }
-  }
 
   interface AutoCommands {
     public Command action();
   }
 
-  public FeedForwardCharacterization getFFShooterTop() {
-    return shootTopCharacterization;
-  }
+  // public FeedForwardCharacterization getFFShooterTop() {
+  //   return shootTopCharacterization;
+  // }
 
   // public FeedForwardCharacterization getFFShooterBottom(){
   // return shootBottomCharacterization;
   // }
-  public FeedForwardCharacterization getFFArm() {
-    return armCharacterization;
-  }
+//   public FeedForwardCharacterization getFFArm() {
+//     return armCharacterization;
+//   }
 
- public FeedForwardCharacterization getFFDrive() {
-    return driveCharacterization;
-  }
+//  public FeedForwardCharacterization getFFDrive() {
+//     return driveCharacterization;
+//   }
 
-  public FeedForwardCharacterization getFFSteer() {
-    return steerCharacterization;
-  }
+//   public FeedForwardCharacterization getFFSteer() {
+//     return steerCharacterization;
+//   }
 
   public Command[] getTeleCommand() {
     Command[] commands = { superStructure };
@@ -225,9 +237,10 @@ public class RobotContainer {
     // easiest way: running auto through PathPlannerLib while using choreo
     // trajectories
     
-    String auto = "BackUp_Right_Middle_Left";
+    String auto = autoChooser.getSelected();
     drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
     return drivetrain.getAutoPath(auto);
+    
     // drivetrain.setPose(null);
     // Command chooser = autoChooser.getSelected().;
     // return autoChooser.getSelected();

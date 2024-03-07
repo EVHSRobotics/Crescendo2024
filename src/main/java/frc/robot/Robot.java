@@ -56,8 +56,8 @@ public class Robot extends TimedRobot {
     publisher.set(poseA);
     arrayPublisher.set(new Pose2d[] {poseA});
 
-    SmartDashboard.putBoolean("color", DriverStation.getAlliance().get().equals(Alliance.Blue));
-    SmartDashboard.updateValues();
+    // SmartDashboard.putBoolean("color", DriverStation.getAlliance().get().equals(Alliance.Blue));
+    // SmartDashboard.updateValues();
     
     if (isUsingLimelight) {    
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
     // m_robotContainer.getFFSteer().schedule();
-    // m_robotContainer.getSystemsCheck().schedule();
+    m_robotContainer.getSystemsCheck().schedule();
   }
 
 

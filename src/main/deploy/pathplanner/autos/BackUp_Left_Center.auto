@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.078704595565796,
-      "y": 4.553201675415039
+      "x": 1.1545087099075315,
+      "y": 6.59296989440918
     },
-    "rotation": 119.84604318071497
+    "rotation": -117.47443060978397
   },
   "command": {
     "type": "sequential",
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BackUp_Left"
+                  "pathName": "BackUp_Right"
                 }
               }
             ]
@@ -59,15 +59,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Intake"
+                  "pathName": "BackUp_Right_Middle"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "BackUp_Left_Middle"
+                  "name": "Intake"
                 }
               }
             ]

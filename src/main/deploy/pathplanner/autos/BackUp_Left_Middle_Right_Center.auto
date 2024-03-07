@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.1024830341339111,
-      "y": 6.516800403594971
+      "x": 1.1545087099075315,
+      "y": 6.59296989440918
     },
-    "rotation": -122.00535353155136
+    "rotation": -117.47443060978397
   },
   "command": {
     "type": "sequential",
@@ -102,6 +102,43 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm_Ground"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "BackUp_Left_Middle_Right_Center_Note"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BackUp_Left_Middle_Right_Center_Note_Back"
           }
         },
         {
