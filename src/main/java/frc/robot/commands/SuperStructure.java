@@ -14,10 +14,12 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
@@ -46,12 +48,23 @@ public class SuperStructure extends Command {
   private Supplier<Double> driveTrainYSupplier;
 
   private Arm arm;
+  private boolean algoShootBoolean = true;
   private Intake intake;
   private Leds ledSub;
   private Shooter shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
   private IntakeMode currentIntake = IntakeMode.MANUAL;
   private boolean cancelAlgoShoot = false;
+
+  private GenericEntry boardAlgoShoot;
+  private GenericEntry boardBanner;
+  private GenericEntry armPositionEntry;
+  private GenericEntry intakeModeEntry;
+  private GenericEntry flyWheelSpeedEntry;
+  private GenericEntry armThetaEntry;
+  private GenericEntry txEntry;
+  private GenericEntry tyEntry;
+  private GenericEntry taEntry;
 
   private double theta = 0.0;
   private double speedFly = 0.0;
@@ -120,6 +133,7 @@ public class SuperStructure extends Command {
 
     this.operator = operator;
 
+    algoShootBoolean = true;
     driveTrainSupplier = () -> (Math.signum(driver.getRightX())
         * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
         * MaxAngularRate;
@@ -143,12 +157,23 @@ public class SuperStructure extends Command {
     // SmartDashboard.putNumber("setRPM", 0);
     // SmartDashboard.updateValues();
 
+    algoShootBoolean = true;
     speedFly = 0.0;
     theta = 0.0;
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
-m_timer = new Timer();
+    boardAlgoShoot = Shuffleboard.getTab("DriverStation_2024").add("AlgoShoot", true).getEntry();
+    boardBanner = Shuffleboard.getTab("DriverStation_2024").add("Banner", false).getEntry();
+    armPositionEntry = Shuffleboard.getTab("DriverStation_2024").add("ArmPosition", "Stow").getEntry();
+    intakeModeEntry = Shuffleboard.getTab("DriverStation_2024").add("IntakeMode", "Manual").getEntry();
+    flyWheelSpeedEntry = Shuffleboard.getTab("DriverStation_2024").add("FlyWheelSpeed", 0.0).getEntry();
+    armThetaEntry = Shuffleboard.getTab("DriverStation_2024").add("ArmTheta", 0.0).getEntry();
+    tyEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TY", 0.0).getEntry();
+    txEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TX", 0.0).getEntry();
+    taEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TA", 0.0).getEntry();
+
+    m_timer = new Timer();
     // Sets up Swerve
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive
@@ -180,9 +205,6 @@ m_timer = new Timer();
     // if (intake.didSeeNote && intake.getBanner()) {
     //   intake.didSeeNote = false;
     // }
-      
-    SmartDashboard.putBoolean("bannerNEW", intake.getBanner());
-    SmartDashboard.updateValues();
     
 
     if (operator.getRightBumperPressed()) {
@@ -222,7 +244,9 @@ m_timer = new Timer();
 
       }
 
-    } else if (operator.getAButton()) {
+    }
+     
+    else if (operator.getAButton()) {
 
       setPosition(ArmPosition.LOW_INTAKE);
       setIntakeMode(IntakeMode.INTAKE);
@@ -290,28 +314,31 @@ m_timer = new Timer();
           * MaxAngularRate;
     
     }
-if (driver.getYButton()) {
-      drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
-    }
-    else if (driver.getBButton()) {
-            drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
+// if (driver.getYButton()) {
+//       drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
+//     }
+//     else if (driver.getBButton()) {
+//             drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
 
-    }
-    if (driver.getXButton()) {
-         driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
-                * MaxSpeed * 0.5;
-      driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
-        MaxSpeed * 0.5);
-    }
+//     }
+  if (driver.getBButton()) {
+    algoShootBoolean = !algoShootBoolean;
+  }
+    // if (driver.getXButton()) {
+    //      driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
+    //             * MaxSpeed * 0.5;
+    //   driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
+    //     MaxSpeed * 0.5);
+    // }
     
-    else {
-      driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
-                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
-                * MaxSpeed;
-      driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
-                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
-                * MaxSpeed;
-    }
+    // else {
+    //   driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
+    //             * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+    //             * MaxSpeed;
+    //   driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
+    //             * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+    //             * MaxSpeed;
+    // }
    
     // }
     // else {
@@ -326,19 +353,28 @@ if (driver.getYButton()) {
     }
 
     if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
+      if (algoShootBoolean) {
 
-      double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut")
-          .getDouble(0);
-      double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
-          .getDouble(0);
-
-      if (LimelightHelpers.getTV("limelight")) {
-        theta = tempTheta;
-        speedFly = tempSpeed;
-      }
-      shoot.motionMagicVelo(tempSpeed);
       
-      arm.setPosition(theta);
+        double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut")
+            .getDouble(0);
+        double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+            .getDouble(0);
+
+        if (LimelightHelpers.getTV("limelight")) {
+          theta = tempTheta;
+          speedFly = tempSpeed;
+        }
+        shoot.motionMagicVelo(tempSpeed);
+        
+        arm.setPosition(theta);
+      }
+      else {
+        theta = 0.03;
+        speedFly = 70;
+        shoot.motionMagicVelo(speedFly);
+        arm.setPosition(theta);
+      }
     } 
 
     else {
@@ -373,6 +409,7 @@ if (driver.getYButton()) {
     // SmartDashboard.putNumber("Algo shoot theta",
     //     NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
     // SmartDashboard.updateValues();
+  
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
@@ -387,6 +424,77 @@ if (driver.getYButton()) {
 
       intake.pushIntake(currentIntake.getSpeed());
     }
+
+    boardAlgoShoot.setBoolean(algoShootBoolean);
+    boardBanner.setBoolean(intake.getBanner());
+    flyWheelSpeedEntry.setDouble(shoot.getVelocity());
+    taEntry.setDouble(LimelightHelpers.getTA("limelight"));
+    txEntry.setDouble(LimelightHelpers.getTX("limelight"));
+    tyEntry.setDouble(LimelightHelpers.getTY("limelight"));
+    armThetaEntry.setDouble(arm.getArmPosition());
+    switch (currentPosition) {
+      case ALGO:
+          armPositionEntry.setString("ALGO");
+
+        break;
+      case AMP:
+          armPositionEntry.setString("AMP");
+
+        break;
+      case HIGH_INTAKE:
+          armPositionEntry.setString("HIGH_INTAKE");
+
+        break;
+      case HORIZONTAL:
+          armPositionEntry.setString("HORIZONTAL");
+
+        break;
+      case LOW_INTAKE:
+          armPositionEntry.setString("LOW_INTAKE");
+
+        break;
+      case REVERSE_TIPPING:
+          armPositionEntry.setString("REVERSE_TIPPING");
+
+        break;
+      case SHOOT:
+          armPositionEntry.setString("SHOOT");
+
+        break;
+      case STAGEFIT:
+          armPositionEntry.setString("STAGEFIT");
+
+        break;
+      case STOW:
+          armPositionEntry.setString("STOW");
+
+        break;
+      default:
+        break;
+
+    }
+
+    switch (currentIntake) {
+      case INTAKE:
+        intakeModeEntry.setString("INTAKE");
+        break;
+      case MANUAL:
+        intakeModeEntry.setString("MANUAL");
+        break;
+      case OUTTAKE:
+      intakeModeEntry.setString("OUTTAKE");
+        break;
+      case REVERSE:
+      intakeModeEntry.setString("REVERSE");
+        break;
+      default:
+        break;
+      
+    }
+
+    Shuffleboard.update();
+
+
   }
 
   public void setPosition(ArmPosition pos) {

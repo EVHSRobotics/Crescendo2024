@@ -22,6 +22,7 @@ public class Intake implements Subsystem {
   public boolean useBanner;
   public boolean didSeeNote = false;
   public Timer noteReverseTimer = new Timer();
+  
 
   public Intake() {
     useBanner = true;
