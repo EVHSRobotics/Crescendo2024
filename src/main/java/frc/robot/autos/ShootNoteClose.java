@@ -73,7 +73,7 @@ public class ShootNoteClose extends Command {
   
           }, 750);
         }
-      }, 2000);
+      }, 1000);
 
      
     // }
