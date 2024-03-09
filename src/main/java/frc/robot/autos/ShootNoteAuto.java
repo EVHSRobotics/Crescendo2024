@@ -80,7 +80,7 @@ public class ShootNoteAuto extends Command {
 
         }, 750);
       }
-    }, 2000);
+    }, 1500);
   // }
   // }, 1000);
     
