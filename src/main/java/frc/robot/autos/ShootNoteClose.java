@@ -43,7 +43,10 @@ public class ShootNoteClose extends Command {
     }
 
     @Override
-    public void initialize() {
+    public void initialize() 
+    {
+      shoot.motionMagicVelo(60);
+      arm.setPosition(0.03);    
       isAutoFinished = false;
   
   
@@ -52,9 +55,7 @@ public class ShootNoteClose extends Command {
       // shootTimer.schedule(new TimerTask() {
       //   @Override
       //   public void run() {
-        
-        shoot.motionMagicVelo(60);
-        arm.setPosition(0.03);   
+  
       
       shootTimer.schedule(new TimerTask() {
         @Override
@@ -73,9 +74,7 @@ public class ShootNoteClose extends Command {
   
           }, 750);
         }
-      }, 1000);
-
-     
+      }, 2000);
     // }
     // }, 1000);
       
@@ -84,8 +83,8 @@ public class ShootNoteClose extends Command {
     @Override
     public void execute(){
         
-      shoot.motionMagicVelo(60);
-      arm.setPosition(0.03);    
+        shoot.motionMagicVelo(60);
+        arm.setPosition(0.03);    
       }
 
     
