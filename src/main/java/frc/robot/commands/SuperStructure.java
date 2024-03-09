@@ -371,7 +371,7 @@ public class SuperStructure extends Command {
       }
       else {
         theta = 0.03;
-        speedFly = 70;
+        speedFly = 60;
         shoot.motionMagicVelo(speedFly);
         arm.setPosition(theta);
       }
