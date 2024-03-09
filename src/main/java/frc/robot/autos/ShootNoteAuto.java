@@ -97,7 +97,7 @@ public class ShootNoteAuto extends Command {
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
     arm.setPosition(
             NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
-
+            
           }
 
   // Called once the command ends or is interrupted.

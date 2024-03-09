@@ -1,3 +1,18 @@
+package frc.robot.autos;
+
+import java.util.TimerTask;
+
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+
+import java.util.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.SuperStructure.IntakeMode;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+
+
 public class ShootNoteClose extends Command {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -7,7 +22,6 @@ public class ShootNoteClose extends Command {
     private Intake intake;
     private Shooter shoot;
     private Timer shootTimer;
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -15,7 +29,7 @@ public class ShootNoteClose extends Command {
     private boolean isAutoFinished = false;
   
     /** Creates a new ShootNoteAuto. */
-    public ShootNoteAuto(Arm arm, Intake intake, Shooter shoot) {
+    public ShootNoteClose(Arm arm, Intake intake, Shooter shoot) {
       // Use addRequirements() here to declare subsystem dependencies.
       this.arm = arm;
       this.intake = intake;
@@ -27,4 +41,57 @@ public class ShootNoteClose extends Command {
       addRequirements(intake);
       addRequirements(shoot);
     }
+
+    @Override
+    public void initialize() {
+      isAutoFinished = false;
+  
+  
+      shootTimer.purge();
+        
+      // shootTimer.schedule(new TimerTask() {
+      //   @Override
+      //   public void run() {
+  
+      
+      shootTimer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+          this.cancel();
+          intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+          shootTimer.schedule(new TimerTask() {
+  
+            @Override
+            public void run() {
+              this.cancel();
+              intake.pushIntake(0);
+              shoot.motionMagicVelo(0);
+              isAutoFinished = true;
+            }
+  
+          }, 750);
+        }
+      }, 2000);
+    // }
+    // }, 1000);
+      
+    }
+
+    @Override
+    public void execute(){
+        
+        shoot.motionMagicVelo(60);
+        arm.setPosition(0.03);    
+      }
+
+    
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return isAutoFinished;
+  }
 }
