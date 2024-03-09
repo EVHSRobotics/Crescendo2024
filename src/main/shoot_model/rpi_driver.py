@@ -24,27 +24,32 @@ class ShootModelDriver:
         print("Connecting to Network Tables")
        
 
-    def run(self):
+    def run(self):        
+    
         while True:
+            # if (not NetworkTableInstance.getDefault().isConnected()):
+            #     NetworkTableInstance.getDefault().startClient4("RPI_CLIENT")
+            #     NetworkTableInstance.getDefault().setServerTeam(2854)
+            #     NetworkTableInstance.getDefault().startDSClient()
+            # else:    
+                # input
+                self.set_input()
 
-            # input
-            self.set_input()
-
-            # run inference
-            self.interpreter.invoke()
+                # run inference
+                self.interpreter.invoke()
 
 
-            # output
-            outputDetails = self.output_tensor()[0]
-            predictedPercentOutput = outputDetails[0]
-            predictedTheta = outputDetails[1]
-            
-            print("Output: " + str(outputDetails))
+                # output
+                outputDetails = self.output_tensor()[0]
+                predictedPercentOutput = outputDetails[0]
+                predictedTheta = outputDetails[1]
+                
+                print("Output: " + str(outputDetails))
 
-            # Uploads the data back along with the timestamp
-            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTimestamp", time.time())
-            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedPerOut", predictedPercentOutput)
-            NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTheta", predictedTheta)
+                # Uploads the data back along with the timestamp
+                NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTimestamp", time.time())
+                NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedPerOut", predictedPercentOutput)
+                NetworkTableInstance.getDefault().getTable("shootModel").putNumber("predictedTheta", predictedTheta)
 
             # Predicts every 1 seconds
             # time.sleep(0.5)

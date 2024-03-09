@@ -113,7 +113,10 @@ public class RobotContainer {
     BackupRight5NoteShootAuto("BackUp_Right_Middle_Left_Center"),   
     BackupLeft5NoteShootAuto("BackUp_Left_Middle_Right_Center"),
     Backup_Middle_Left("BackUp_Middle_Left"),  
-    Backup_Middle_Right("Backup_Middle_Right");
+    Backup_Middle_Right("Backup_Middle_Right"),  
+    Note_3_Center_Shoot("3_Note_Center_Shoot"),  
+    Note_4_Center_Shoot("4_Note_2_Right_Auto"),
+    Middle_4("middle4");
 
 
     private String pathName;
@@ -160,10 +163,11 @@ public class RobotContainer {
     SmartDashboard.updateValues();
 
     // driveCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::driveWithVoltage, drivetrain::getVeloDrive);
-    // steerCharacterization = new FeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
+    // steerCharacterization = new FPeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
 
 
     intakeSub = new Intake();
+
     arm = new Arm();
     shootSub = new Shooter();
     ledSub = new Leds();
