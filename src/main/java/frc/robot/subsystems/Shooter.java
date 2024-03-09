@@ -89,6 +89,7 @@ public class Shooter extends SubsystemBase {
     top.setControl(new VoltageOut(voltage));
   }
 
+  
   public void motionMagicVelo(double percentOutput){
     // double error = RPM - top.getSelectedSensorVelocity();
     // Multiply velocity units by 600/UnitsPerRotation to obtain RPM.

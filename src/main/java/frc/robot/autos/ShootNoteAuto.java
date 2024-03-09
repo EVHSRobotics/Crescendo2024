@@ -93,11 +93,14 @@ public class ShootNoteAuto extends Command {
       // Drive left with negative X (left)
       .withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
-    shoot.motionMagicVelo(
-            NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
-    arm.setPosition(
-            NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
+    // shoot.motionMagicVelo(
+    //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
+    // arm.setPosition(
+    //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
             
+    arm.setPosition(Vision.getPredTheta());
+    shoot.motionMagicVelo(Vision.getPredVelocity());
+
           }
 
   // Called once the command ends or is interrupted.

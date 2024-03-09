@@ -104,6 +104,14 @@ public class Vision extends Command {
 
 
   }
+  public static double getPredTheta() {
+    double predictedTheta = -0.0103 + 2.38e-03*LimelightHelpers.getTY("limelight") + -3.03e-07*Math.pow(LimelightHelpers.getTY("limelight"), 2) + -3.1e-07*Math.pow(LimelightHelpers.getTY("limelight"), 3);
+    return predictedTheta;
+  }
+  public static double getPredVelocity() {
+    double predictedVelocity = 69.9 + -0.999*LimelightHelpers.getTY("limelight") + 0.0529*Math.pow(LimelightHelpers.getTY("limelight"), 2);
+    return predictedVelocity;
+  }
   public static double getLimelightAprilTagTXError() {
     return LimelightHelpers.getTX("limelight");
   }

@@ -355,11 +355,13 @@ public class SuperStructure extends Command {
     if (currentPosition == ArmPosition.ALGO) { // removed && operator.rightBumper()
       if (algoShootBoolean) {
 
-      
-        double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut")
-            .getDouble(0);
-        double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
-            .getDouble(0);
+        double tempTheta = Vision.getPredTheta();
+        double tempSpeed = Vision.getPredVelocity();
+
+        // double tempSpeed = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut")
+        //     .getDouble(0);
+        // double tempTheta = NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta")
+        //     .getDouble(0);
 
         if (LimelightHelpers.getTV("limelight")) {
           theta = tempTheta;
