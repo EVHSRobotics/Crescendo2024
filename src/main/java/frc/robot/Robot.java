@@ -7,6 +7,9 @@ package frc.robot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -46,6 +49,7 @@ public class Robot extends TimedRobot {
   arrayPublisher = NetworkTableInstance.getDefault()
     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
 
+    Pathfinding.setPathfinder(new LocalADStar());
 
   }
 

@@ -314,13 +314,16 @@ public class SuperStructure extends Command {
           * MaxAngularRate;
     
     }
-// if (driver.getYButton()) {
+if (driver.getYButton()) {
+    drivetrain.generatePathSource().execute();
 //       drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
-//     }
-//     else if (driver.getBButton()) {
+    }
+    else if (driver.getBButton()) {
+      drivetrain.generatePathSpeaker().execute();
 //             drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
 
-//     }
+    }
+
   if (driver.getBButton()) {
     algoShootBoolean = !algoShootBoolean;
   }

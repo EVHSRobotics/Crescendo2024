@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import org.opencv.core.Mat;
 
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.SuperStructure.ArmPosition;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.LimelightHelpers;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -114,6 +116,36 @@ public class Vision extends Command {
   }
   public static double getLimelightAprilTagTXError() {
     return LimelightHelpers.getTX("limelight");
+  }
+
+  public static List<Translation2d> getRobotDetection(Translation2d currentBotPose) {
+    currentBotPose.getX();
+    return null;
+  }
+  public static double getDistanceObject(ArmPosition pos) {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry ty = table.getEntry("ty");
+    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+
+    // how many degrees back is your limelight rotated from perfectly vertical?
+    double limelightMountAngleDegrees = -35.0; 
+
+    // distance from the center of the Limelight lens to the floor
+    double limelightLensHeightInches = 20.0; // Low Intake
+
+    if (pos == ArmPosition.HIGH_INTAKE) {
+      limelightLensHeightInches = 60;
+    }
+
+    // distance from the target to the floor
+    double goalHeightInches = 0.0; 
+
+    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+    //calculate distance
+    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    return distanceFromLimelightToGoalInches * 0.025;
   }
   public static double aimLimelightObject(String limelightName) {
 
