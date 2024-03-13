@@ -113,8 +113,9 @@ public class RobotContainer {
     BackupRight5NoteShootAuto("BackUp_Right_Middle_Left_Center"),   
     BackupLeft5NoteShootAuto("BackUp_Left_Middle_Right_Center"),
     Backup_Middle_Left("BackUp_Middle_Left"),  
-    Backup_Middle_Right("Backup_Middle_Right"),  
-    Note_3_Center_Shoot("3_Note_Center_Shoot"),  
+    Backup_Middle_Right("BackUp_Middle_Right"),  
+    Note_3_Center_Shoot("3_Note_Center_Shoot"),
+    BackUp_Middle_Left_Steal("BackUp_Middle_Left_Steal"), 
     Note_4_Center_Shoot("4_Note_2_Right_Auto"),
     Middle_4("middle4");
 
@@ -235,7 +236,7 @@ public class RobotContainer {
     // return genChoreoCommand(AutoPaths.StraightPath);
     // }
     // }
-    // });
+    // });w
 
     // return straightLineCommand;
     // return genChoreoCommand(AutoPaths.StraightPath);
@@ -262,6 +263,10 @@ public class RobotContainer {
 
   public Command getSystemsCheck() {
     return systemsCheck;
+  }
+
+  public Command getDisabled(){
+    return AutoBuilder.buildAuto("Do Nothing`");
   }
 
   // Deprecated

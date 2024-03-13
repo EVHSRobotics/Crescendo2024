@@ -205,7 +205,11 @@ public class SuperStructure extends Command {
     // if (intake.didSeeNote && intake.getBanner()) {
     //   intake.didSeeNote = false;
     // }
-    
+    SmartDashboard.putNumber("yaw",       TunerConstants.DriveTrain.getPose().getRotation().getDegrees()
+    );
+        // SmartDashboard.putNumber("limelight", ( output));
+        // SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
+        SmartDashboard.updateValues();
 
     if (operator.getRightBumperPressed()) {
       cancelAlgoShoot = false;

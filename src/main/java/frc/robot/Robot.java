@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -121,7 +122,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
     // m_robotContainer.getFFSteer().schedule();
-    // m_robotContainer.getSystemsCheck().schedule();
+    m_robotContainer.getSystemsCheck().schedule();
   }
 
 
