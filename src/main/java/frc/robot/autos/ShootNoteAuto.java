@@ -61,6 +61,9 @@ public class ShootNoteAuto extends Command {
     // shootTimer.schedule(new TimerTask() {
     //   @Override
     //   public void run() {
+                  
+    arm.setPosition(Vision.getPredTheta());
+    shoot.motionMagicVelo(Vision.getPredVelocity());
 
     
     shootTimer.schedule(new TimerTask() {
@@ -80,7 +83,7 @@ public class ShootNoteAuto extends Command {
 
         }, 750);
       }
-    }, 1500);
+    }, 2000);
   // }
   // }, 1000);
     

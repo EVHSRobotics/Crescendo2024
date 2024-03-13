@@ -84,7 +84,7 @@ public class ShootNoteClose extends Command {
     public void execute(){
         
         shoot.motionMagicVelo(60);
-        arm.setPosition(0.03);    
+        arm.setPosition(0.027);    
       }
 
     

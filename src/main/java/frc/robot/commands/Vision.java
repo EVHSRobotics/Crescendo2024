@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 
 import org.opencv.core.Mat;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.LimelightHelpers;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -120,6 +123,9 @@ public class Vision extends Command {
 
 
     double x = LimelightHelpers.getTX(limelightName);
+    boolean tv = LimelightHelpers.getTV(limelightName);
+    
+
     errorsum = 0;
     error = x;
     // double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
@@ -130,14 +136,23 @@ public class Vision extends Command {
     }
     double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.014 + errorrate *0.0025+errorsum*0, -1, 1), 0.05);
 
-    // SmartDashboard.putNumber("limelight", ( output));
-    // SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
-    SmartDashboard.updateValues();
+   
         // return profiledOutput;
 
     lastTimestamp = Timer.getFPGATimestamp();
     lasterror = error;
     
+    if (!tv) {
+     if (TunerConstants.DriveTrain.getPose().getRotation().getDegrees() < -90) {
+      return 0.8;
+     }
+     else {
+      return -0.8;
+     } 
+    }
+    else {
+
+    }
     return -output;
   }
   
