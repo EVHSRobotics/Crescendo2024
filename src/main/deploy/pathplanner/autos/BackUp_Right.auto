@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.078704595565796,
-      "y": 4.553201675415039
+      "x": 0.7474133372306824,
+      "y": 4.397637844085693
     },
-    "rotation": 123.17155611291896
+    "rotation": 119.84604318071497
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Outtake"
+            "name": "ShootMiddleClose"
           }
         },
         {

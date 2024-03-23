@@ -54,6 +54,7 @@ public class Vision extends Command {
   static ProfiledPIDController visionPIDController = new ProfiledPIDController(0.3, 1, 0, new Constraints(0.15, 0.25));
 
   static double lastTimestamp = 0;  
+  static double lastTX = 0.0;
 
 
   public Vision(XboxController operatorController) {
@@ -166,25 +167,25 @@ public class Vision extends Command {
     if(Math.abs(x) < 0.1){
         errorsum += dt *  x;
     }
-    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.014 + errorrate *0.0025+errorsum*0, -1, 1), 0.05);
-
+    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.016 + errorrate *0.0025+errorsum*0, -1, 1), 0.05);
+    System.out.println(output);
    
         // return profiledOutput;
 
     lastTimestamp = Timer.getFPGATimestamp();
     lasterror = error;
     
-    if (!tv) {
-     if (TunerConstants.DriveTrain.getPose().getRotation().getDegrees() < -90) {
-      return 0.8;
-     }
-     else {
-      return -0.8;
-     } 
-    }
-    else {
+    // if (!tv) {
+    //  if (lastTX < 0) {
+    //   return 0.75;
+    //  }
+    //  else {
+    //   return -0.75;
+    //  } 
+    // }
+    // else {
 
-    }
+    // }
     return -output;
   }
   

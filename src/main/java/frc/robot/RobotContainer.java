@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.autos.GroundIntake;
@@ -133,9 +134,9 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    joystick.b().whileTrue(drivetrain.generatePathAmp());
     // joystick.b().whileTrue(drivetrain
         // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
        

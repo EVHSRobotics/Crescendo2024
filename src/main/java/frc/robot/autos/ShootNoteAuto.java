@@ -24,7 +24,7 @@ public class ShootNoteAuto extends Command {
   private double MaxSpeed = 6; // 6 meters per second desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-
+  // private boolean runningInitializeIntake = true;
   private Arm arm;
   private Intake intake;
   private Shooter shoot;
@@ -54,7 +54,7 @@ public class ShootNoteAuto extends Command {
   @Override
   public void initialize() {
     isAutoFinished = false;
-
+// runningInitializeIntake = true;
 
     shootTimer.purge();
       
@@ -63,12 +63,24 @@ public class ShootNoteAuto extends Command {
     //   public void run() {
                   
     arm.setPosition(Vision.getPredTheta());
-    shoot.motionMagicVelo(Vision.getPredVelocity());
+    //shoot.motionMagicVelo(Vision.getPredVelocity());
+    shoot.motionMagicVelo(10);
 
-    
+
+    // if (!intake.getBanner()) {
+    //   intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+    // }
+    // else {
+    //   if (runningInitializeIntake) {
+
+      
+    intake.pushIntake(0);
+    //   }
+    // }
     shootTimer.schedule(new TimerTask() {
       @Override
       public void run() {
+        // runningInitializeIntake = false;
         this.cancel();
         intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
         shootTimer.schedule(new TimerTask() {
@@ -83,7 +95,7 @@ public class ShootNoteAuto extends Command {
 
         }, 750);
       }
-    }, 2000);
+    }, 1500);
   // }
   // }, 1000);
     
@@ -92,9 +104,7 @@ public class ShootNoteAuto extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        drivetrain.applyRequest(() -> drive
-      // Drive left with negative X (left)
-      .withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+        drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
     // shoot.motionMagicVelo(
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
@@ -102,9 +112,9 @@ public class ShootNoteAuto extends Command {
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
             
     arm.setPosition(Vision.getPredTheta());
-    shoot.motionMagicVelo(Vision.getPredVelocity());
+    shoot.motionMagicVelo(10);
 
-          }
+    }
 
   // Called once the command ends or is interrupted.
   @Override

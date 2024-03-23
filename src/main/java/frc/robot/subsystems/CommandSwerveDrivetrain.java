@@ -21,6 +21,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -79,15 +80,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this::seedFieldRelative,  // Consumer for seeding pose against auto
             this::getCurrentRobotChassisSpeeds,
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-            new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
-                                            new PIDConstants(10, 0, 0),
+            new HolonomicPathFollowerConfig(new PIDConstants(4, 0, 0),
+                                            new PIDConstants(4, 0, 0),
                                             0.5,
                                             1,
+
                                             new ReplanningConfig(),
                                             0.004),
                                             () ->  DriverStation.getAlliance().get().equals(Alliance.Red),
                                             
             this); // Subsystem for requirements
+
+                    Pathfinding.setPathfinder(new LocalADStar());
+
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -101,7 +106,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // Since we are using a holonomic drivetrain, the rotation component of this pose
         // represents the goal holonomic rotation
         Pose2d targetPose = new Pose2d(15.26, 1.41, Rotation2d.fromDegrees(300.297));
-        Pathfinding.setPathfinder(new LocalADStar());
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
                 3.0, 4.0,
@@ -115,7 +119,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
         );
 
-        Pathfinding.setDynamicObstacles(null, this.getPose().getTranslation());
+        // Pathfinding.setDynamicObstacles(null, this.getPose().getTranslation());
 
         return pathfindingCommand;
 
@@ -177,9 +181,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void setPose(Pose2d pose){
-        m_odometry.resetPosition(Rotation2d.fromDegrees(m_yawGetter.getValue()), m_modulePositions, pose);
+        m_odometry.resetPosition(Rotation2d.fromDegrees(m_yawGetter.getValue() + pose.getRotation().getDegrees()), m_modulePositions, pose);
     }
 
+    public void setPoseOffset(Pose2d pose){
+        m_odometry = new SwerveDrivePoseEstimator(m_kinematics, Rotation2d.fromDegrees(m_yawGetter.getValue()), m_modulePositions, pose);
+    }   
+
+
+    
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }

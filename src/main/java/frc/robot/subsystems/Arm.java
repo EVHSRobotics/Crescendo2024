@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.MusicTone;
@@ -75,7 +76,7 @@ public class Arm extends SubsystemBase {
           configs.kG = 0.2;
         
           configs.GravityType = GravityTypeValue.Arm_Cosine;
-          configs.kP = 80;
+          configs.kP = 70;
           
           configs.kI = 0;
           configs.kD = 2.854;
@@ -129,7 +130,7 @@ public class Arm extends SubsystemBase {
       // position += 0.0045 // Bell
       // tuned to EVHS 2854 robotics
         
-      right.setControl(new MotionMagicVoltage(
+      right.setControl(new MotionMagicExpoVoltage(
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
       ));
 

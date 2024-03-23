@@ -19,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -205,7 +206,18 @@ public class SuperStructure extends Command {
     // if (intake.didSeeNote && intake.getBanner()) {
     //   intake.didSeeNote = false;
     // }
-    SmartDashboard.putNumber("yaw",       TunerConstants.DriveTrain.getPose().getRotation().getDegrees()
+
+    // if (LimelightHelpers.getTX("limelight") != 0.0) {
+    // Vision.lastTX = LimelightHelpers.getTX("limelight");
+
+    // }
+    // SmartDashboard.putNumber("posedX", TunerConstants.DriveTrain.getPigeon2());
+        // SmartDashboard.putNumber("posedY", TunerConstants.DriveTrain.getPose().getRotation());
+
+        SmartDashboard.putNumber("vx", drive.VelocityX);
+                SmartDashboard.putNumber("vy", drive.VelocityY);
+
+    SmartDashboard.putNumber("yaw",  Vision.lastTX
     );
         // SmartDashboard.putNumber("limelight", ( output));
         // SmartDashboard.putNumber("profiledOuputAlign", profiledOutput);
@@ -319,7 +331,8 @@ public class SuperStructure extends Command {
     
     }
 if (driver.getYButton()) {
-    drivetrain.generatePathSource().execute();
+
+  drivetrain.generatePathAmp().execute();
 //       drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
     }
     else if (driver.getBButton()) {
@@ -374,7 +387,11 @@ if (driver.getYButton()) {
           theta = tempTheta;
           speedFly = tempSpeed;
         }
+        
+        
+        theta += drive.VelocityX * 0.05;
         shoot.motionMagicVelo(tempSpeed);
+        
         
         arm.setPosition(theta);
       }
@@ -405,6 +422,9 @@ if (driver.getYButton()) {
       // MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
 
     }
+    if (currentPosition == ArmPosition.LOW_INTAKE && intake.getBanner()) {
+      setPosition(ArmPosition.STAGEFIT);
+    }
     // SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
 
     // SmartDashboard.putNumber("ty", LimelightHelpers.getTY("limelight"));
@@ -422,7 +442,7 @@ if (driver.getYButton()) {
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.pushIntake(operator.getLeftY() * 0.8);
+      intake.pushIntake(operator.getLeftY() * -0.8);
 
     }
     else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {

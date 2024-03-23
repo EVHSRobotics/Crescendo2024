@@ -62,6 +62,7 @@ public class Shooter extends SubsystemBase {
     slot0Configs.kI = 0; // 0.05
     slot0Configs.kD = 0; // 0.1
     var motionMagic = configuration.MotionMagic;
+    
 
     motionMagic.MotionMagicAcceleration = 200;
     motionMagic.MotionMagicJerk = 2000;

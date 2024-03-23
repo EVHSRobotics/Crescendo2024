@@ -13,7 +13,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 
-public class ShootNoteClose extends Command {
+public class ShootNoteLeft extends Command {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   
@@ -29,7 +29,7 @@ public class ShootNoteClose extends Command {
     private boolean isAutoFinished = false;
   
     /** Creates a new ShootNoteAuto. */
-    public ShootNoteClose(Arm arm, Intake intake, Shooter shoot) {
+    public ShootNoteLeft(Arm arm, Intake intake, Shooter shoot) {
       // Use addRequirements() here to declare subsystem dependencies.
       this.arm = arm;
       this.intake = intake;
