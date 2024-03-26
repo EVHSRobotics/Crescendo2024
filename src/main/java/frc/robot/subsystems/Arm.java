@@ -86,7 +86,12 @@ public class Arm extends SubsystemBase {
       // motionMagicFXConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
       // motionMagicFXConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = true;
 
-        
+            
+    motionMagicFXConfig.CurrentLimits.SupplyCurrentLimit = 80;
+    motionMagicFXConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    motionMagicFXConfig.CurrentLimits.StatorCurrentLimit = 80;
+    motionMagicFXConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    
 
 
     motionMagicFXConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();

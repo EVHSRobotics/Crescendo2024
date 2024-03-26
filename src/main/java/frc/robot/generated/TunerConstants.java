@@ -33,12 +33,16 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
+    // priyanka lakshmi karunakaran 
+    // krish sathyan iyengar
     private static final double kSlipCurrentA = 80;
 
+    // nishant penchala jonnalagadda
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
     public static final double kSpeedAt12VoltsMps = 5.21;
 
+    
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
     private static final double kCoupleRatio = 3.5714285714285716;

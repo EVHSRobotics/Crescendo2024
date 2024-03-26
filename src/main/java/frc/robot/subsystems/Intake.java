@@ -58,7 +58,7 @@ public class Intake implements Subsystem {
           else {
             System.out.println(noteReverseTimer.get());
             if (noteReverseTimer.get() < 0.5) {
-            intake.set(ControlMode.PercentOutput, -0.1);
+            intake.set(ControlMode.PercentOutput, -0.2);
 
             }
             else {

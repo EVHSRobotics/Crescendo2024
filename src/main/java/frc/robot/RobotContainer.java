@@ -46,6 +46,7 @@ import frc.robot.commands.Vision;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
@@ -73,6 +74,7 @@ public class RobotContainer {
   private Shooter shootSub;
   private Intake intakeSub;
   private Arm arm;
+  private Climbers climbers;
   private Leds ledSub;
 
   // private FeedForwardCharacterization armCharacterization;
@@ -174,8 +176,8 @@ public class RobotContainer {
     shootSub = new Shooter();
     ledSub = new Leds();
     shoot = new Shoot(shootSub, operator);
-
-    superStructure = new SuperStructure(arm, intakeSub, shootSub, ledSub, driver, operator);
+    climbers = new Climbers();
+    superStructure = new SuperStructure(arm, intakeSub, shootSub, climbers, ledSub, driver, operator);
  
     configureBindings();
     setUpAutoCommands();
@@ -221,7 +223,7 @@ public class RobotContainer {
   public void setUpAutoCommands() {
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
     eventMap.put("Arm_Ground", new GroundArm(arm));
-    eventMap.put("Intake", new GroundIntake(intakeSub));
+    eventMap.put("Intake", new GroundIntake(intakeSub, shootSub));
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
     eventMap.put("ShootMiddleClose", new ShootNoteClose(arm, intakeSub, shootSub));
 // krish

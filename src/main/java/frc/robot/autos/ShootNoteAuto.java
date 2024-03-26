@@ -63,8 +63,8 @@ public class ShootNoteAuto extends Command {
     //   public void run() {
                   
     arm.setPosition(Vision.getPredTheta());
-    //shoot.motionMagicVelo(Vision.getPredVelocity());
-    shoot.motionMagicVelo(10);
+    shoot.motionMagicVelo(Vision.getPredVelocity());
+    // shoot.motionMagicVelo(10);
 
 
     // if (!intake.getBanner()) {
@@ -86,16 +86,16 @@ public class ShootNoteAuto extends Command {
         shootTimer.schedule(new TimerTask() {
 
           @Override
-          public void run() {
+          public void run() {   
             this.cancel();
             intake.pushIntake(0);
-            shoot.motionMagicVelo(0);
+            shoot.stopShooters();
             isAutoFinished = true;
           }
 
-        }, 750);
+        }, 650);
       }
-    }, 1500);
+    }, 1100);
   // }
   // }, 1000);
     
@@ -112,7 +112,7 @@ public class ShootNoteAuto extends Command {
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
             
     arm.setPosition(Vision.getPredTheta());
-    shoot.motionMagicVelo(10);
+    shoot.motionMagicVelo(Vision.getPredVelocity());
 
     }
 

@@ -61,7 +61,7 @@ publisher = NetworkTableInstance.getDefault()
 
 
     Pathfinding.setPathfinder(new LocalADStar());
-
+    // NetworkTableInstance.getDefault().getEntry("priorityid").getDoubleArray(new Double[4,7]);
   }
 
   @Override
@@ -92,6 +92,7 @@ publisher = NetworkTableInstance.getDefault()
     
   }
   public void updatePoseEstimatorWithVisionBotPose() {
+    try {
           var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
            
           double latency = lastResult.latency_capture;
@@ -135,6 +136,10 @@ publisher = NetworkTableInstance.getDefault()
       TunerConstants.DriveTrain.addVisionMeasurement(visionBotPose,
           Timer.getFPGATimestamp() - latency);
     }
+  }
+  catch (Exception e) {
+    System.out.println("ERROR");
+  }
   }
 
   @Override
@@ -186,16 +191,17 @@ publisher = NetworkTableInstance.getDefault()
 
   @Override
   public void teleopPeriodic() {
-      if (isUsingLimelight) {    
-      var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
+      // if (isUsingLimelight) {    
+      // var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
       
-      Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
+      // Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
 
-      if (lastResult.valid) {
-        // TunerConstants.DriveTrain.setPose(llPose);
-        // TunerConstants.DriveTrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
-      }
-    }
+      // if (lastResult.valid) {
+
+      //   // TunerConstants.DriveTrain.setPose(llPose);
+      //   // TunerConstants.DriveTrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
+      // }
+    // }
   }
 
   @Override
@@ -206,7 +212,7 @@ publisher = NetworkTableInstance.getDefault()
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
     // m_robotContainer.getFFSteer().schedule();
-    m_robotContainer.getSystemsCheck().schedule();
+    // m_robotContainer.getSystemsCheck().schedule();
   }
 
 

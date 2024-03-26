@@ -63,10 +63,19 @@ public class Shooter extends SubsystemBase {
     slot0Configs.kD = 0; // 0.1
     var motionMagic = configuration.MotionMagic;
     
+    
 
     motionMagic.MotionMagicAcceleration = 200;
     motionMagic.MotionMagicJerk = 2000;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    
+    configuration.CurrentLimits.SupplyCurrentLimit = 80;
+    configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
+    configuration.CurrentLimits.StatorCurrentLimit = 80;
+    configuration.CurrentLimits.StatorCurrentLimitEnable = true;
+    
+
+
     top.getConfigurator().apply(configuration);
     bottom.getConfigurator().apply(configuration);
 

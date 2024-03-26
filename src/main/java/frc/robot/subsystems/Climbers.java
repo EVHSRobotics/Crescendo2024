@@ -4,28 +4,28 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Climbers extends SubsystemBase {
 
-  private CANSparkMax spkL;
-  private CANSparkMax spkR;
+  private TalonSRX climberMotor;
 
   /** Creates a new Climbers. */
   public Climbers() {
 
-    spkL = new CANSparkMax(0, MotorType.kBrushless);
-    spkR = new CANSparkMax(1, MotorType.kBrushless);
-    spkL.follow(spkR, true);
+    climberMotor = new TalonSRX(45);
+    climberMotor.configVoltageCompSaturation(11);
+    climberMotor.enableVoltageCompensation(true);
 
   }
 
   public void moveClimbers(double speed) {
-    spkR.set(speed);
+    climberMotor.set(ControlMode.PercentOutput, speed);
   }
 
   @Override

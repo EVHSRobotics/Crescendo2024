@@ -1,20 +1,19 @@
 package frc.robot.autos;
 
+import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
-import java.util.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.SuperStructure.IntakeMode;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-
-public class ShootNoteClose extends Command {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
+public class AdjustArmRpmFar extends Command {
+        private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   
   
@@ -29,7 +28,7 @@ public class ShootNoteClose extends Command {
     private boolean isAutoFinished = false;
   
     /** Creates a new ShootNoteAuto. */
-    public ShootNoteClose(Arm arm, Intake intake, Shooter shoot) {
+    public AdjustArmRpmFar(Arm arm, Intake intake, Shooter shoot) {
       // Use addRequirements() here to declare subsystem dependencies.
       this.arm = arm;
       this.intake = intake;
@@ -45,7 +44,7 @@ public class ShootNoteClose extends Command {
     @Override
     public void initialize() 
     {
-      shoot.motionMagicVelo(55);
+      shoot.motionMagicVelo(40);
       arm.setPosition(0.03);    
       isAutoFinished = false;
   
@@ -68,13 +67,13 @@ public class ShootNoteClose extends Command {
             public void run() {
               this.cancel();
               intake.pushIntake(0);
-              shoot.stopShooters();
+              shoot.motionMagicVelo(0);
               isAutoFinished = true;
             }
   
           }, 750);
         }
-      }, 800);
+      }, 750);
     // }
     // }, 1000);
       
@@ -83,7 +82,7 @@ public class ShootNoteClose extends Command {
     @Override
     public void execute(){
         
-        shoot.motionMagicVelo(50);
+        shoot.motionMagicVelo(60);
         arm.setPosition(0.027);    
       }
 

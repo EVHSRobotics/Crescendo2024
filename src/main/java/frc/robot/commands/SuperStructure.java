@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
@@ -54,6 +55,7 @@ public class SuperStructure extends Command {
   private Leds ledSub;
   private Shooter shoot;
   private ArmPosition currentPosition = ArmPosition.STOW;
+  private Climbers climbers;
   private IntakeMode currentIntake = IntakeMode.MANUAL;
   private boolean cancelAlgoShoot = false;
 
@@ -122,13 +124,14 @@ public class SuperStructure extends Command {
   }
 
   /** Creates a new SuperStructure. */
-  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Leds led, XboxController driver,
+  public SuperStructure(Arm arm, Intake intake, Shooter shoot, Climbers climbers, Leds led, XboxController driver,
       XboxController operator) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.intake = intake;
     this.shoot = shoot;
     this.ledSub = led;
+    this.climbers = climbers;
 
     this.driver = driver;
 
@@ -149,6 +152,7 @@ public class SuperStructure extends Command {
     addRequirements(arm);
     addRequirements(intake);
     addRequirements(shoot);
+    addRequirements(climbers);
   }
 
   // Called when the command is initially scheduled.
@@ -343,6 +347,17 @@ if (driver.getYButton()) {
 
   if (driver.getBButton()) {
     algoShootBoolean = !algoShootBoolean;
+  }
+
+  if (driver.getRightTriggerAxis() > 0.1) {
+    
+    climbers.moveClimbers(driver.getRightTriggerAxis());
+  }
+  else if (driver.getLeftTriggerAxis() > 0.1) {
+    climbers.moveClimbers(-driver.getLeftTriggerAxis());
+  }
+  else {
+    climbers.moveClimbers(0);
   }
     // if (driver.getXButton()) {
     //      driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
