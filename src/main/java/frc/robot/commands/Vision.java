@@ -63,7 +63,7 @@ public class Vision extends Command {
     // this.aprilScanner = aprilScanner;
     // table1 = NetworkTableInstance.getDefault().getTable("limelight-bottom");
     this.operatorController = operatorController;
-   
+
   }
 
   // Called when the command is initially scheduled.
@@ -111,7 +111,11 @@ public class Vision extends Command {
 
   }
   public static double getPredTheta() {
-    double predictedTheta = -0.0103 + 2.38e-03*LimelightHelpers.getTY("limelight") + -3.03e-07*Math.pow(LimelightHelpers.getTY("limelight"), 2) + -3.1e-07*Math.pow(LimelightHelpers.getTY("limelight"), 3) -0.017;
+    
+    // if (LimelightHelpers.getTV("limelight")) {
+// return 0;
+    // }
+    double predictedTheta = -0.0103 + 2.38e-03*LimelightHelpers.getTY("limelight") + -3.03e-07*Math.pow(LimelightHelpers.getTY("limelight"), 2) + -3.1e-07*Math.pow(LimelightHelpers.getTY("limelight"), 3) - 0.025;
     return predictedTheta;
   }
   public static double getPredVelocity() {
@@ -167,7 +171,7 @@ public class Vision extends Command {
     if(Math.abs(x) < 0.1){
         errorsum += dt *  x;
     }
-    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.016 + errorrate *0.0025+errorsum*0, -1, 1), 0.05);
+    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.018  + errorrate *0.002+errorsum*0.000, -1, 1), 0.02);
     System.out.println(output);
    
         // return profiledOutput;

@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
@@ -18,7 +18,7 @@ public class Intake implements Subsystem {
   // private final static ColorSensorV3 m_colorSensor = new
   // ColorSensorV3(I2C.Port.kOnboard);
   private DigitalInput bannerSensor;
-  private TalonSRX intake;
+  private TalonFX intake;
   public boolean useBanner;
   public boolean didSeeNote = false;
   public Timer noteReverseTimer = new Timer();
@@ -27,17 +27,22 @@ public class Intake implements Subsystem {
   public Intake() {
     useBanner = true;
     bannerSensor = new DigitalInput(1); // 1 is the one that works!
-    intake = new TalonSRX(44);
-    intake.configVoltageCompSaturation(11);
-    intake.enableVoltageCompensation(true);
+    intake = new TalonFX(44);
+
+      TalonFXConfiguration configuration = new TalonFXConfiguration();
+configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+    
+    intake.getConfigurator().apply(configuration);
   }
   public double getIntakeSpeed() {
 
-    return intake.getSelectedSensorVelocity();
+    return intake.getVelocity().getValueAsDouble();
   }
   public void pushIntake(double power) {
    
-    intake.set(ControlMode.PercentOutput, power);
+    intake.set(power);
     
   }
   public void runIntake(double power) {
@@ -47,7 +52,7 @@ public class Intake implements Subsystem {
         if (!getBanner() || power < 0) {
                     didSeeNote = false;
 
-          intake.set(ControlMode.PercentOutput, power);
+          intake.set(power);
         } else {
           if (!didSeeNote) {
                      didSeeNote = true;
@@ -57,13 +62,13 @@ public class Intake implements Subsystem {
           }
           else {
             System.out.println(noteReverseTimer.get());
-            if (noteReverseTimer.get() < 0.5) {
-            intake.set(ControlMode.PercentOutput, -0.2);
+            if (noteReverseTimer.get() < 0.25) {
+            intake.set(-0.1);
 
             }
             else {
               
-             intake.set(ControlMode.PercentOutput, 0);
+             intake.set(0);
 
             }
 
@@ -74,7 +79,7 @@ public class Intake implements Subsystem {
 
       
     } else {
-      intake.set(ControlMode.PercentOutput, power);
+      intake.set(power);
     }
     SmartDashboard.putNumber("BannerSeen?", power);
     SmartDashboard.updateValues();
@@ -82,11 +87,11 @@ public class Intake implements Subsystem {
   }
 
   public void intakePushOut (){
-    intake.set(ControlMode.PercentOutput, SmartDashboard.getNumber("IntakePushOutSpeed", -0.5));
+    intake.set(SmartDashboard.getNumber("IntakePushOutSpeed", -0.5));
   }
 
   public void shootAmp() {
-    intake.set(ControlMode.PercentOutput, -1);
+    intake.set(-1);
   }
 
   public boolean getBanner() {
@@ -95,6 +100,6 @@ public class Intake implements Subsystem {
   }
 
   public void setIntakeSpeed(double percentOutput) {
-    intake.set(ControlMode.PercentOutput, percentOutput);
+    intake.set(percentOutput);
   }
 }

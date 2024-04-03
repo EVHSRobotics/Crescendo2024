@@ -67,7 +67,7 @@ public class Shooter extends SubsystemBase {
 
     motionMagic.MotionMagicAcceleration = 200;
     motionMagic.MotionMagicJerk = 2000;
-    configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     
     configuration.CurrentLimits.SupplyCurrentLimit = 80;
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -126,13 +126,14 @@ public class Shooter extends SubsystemBase {
     // SmartDashboard.putNumber("outputPercemtFlyWheel", output);
     top.setControl(new MotionMagicVelocityVoltage(topSpeed));
     bottom.setControl(new MotionMagicVelocityVoltage(bottomSpeed));
+    System.out.println(top.getVelocity().getValueAsDouble() - bottom.getVelocity().getValueAsDouble());
 
   }
   
   
   public void stopShooters() {
-    top.setControl(new DutyCycleOut(0));
-    bottom.setControl(new DutyCycleOut(0));
+    top.setControl(new MotionMagicVelocityVoltage(0));
+    bottom.setControl(new MotionMagicVelocityVoltage(0));
   }
 
 

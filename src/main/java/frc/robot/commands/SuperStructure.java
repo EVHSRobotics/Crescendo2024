@@ -78,13 +78,14 @@ public class SuperStructure extends Command {
   private XboxController driver;
 
   public enum IntakeMode {
-    OUTTAKE(1, 1000), // for algo shoot and amp shoot
-    INTAKE(1, 750), // for high intake shoot
+    OUTTAKE(0.4, 1500), // for algo shoot and amp shoot
+    INTAKE(0.4, 750), // for high intake shoot
     MANUAL(0, 1000),
-    REVERSE(-0.4, 1000);
+    REVERSE(-0.2, 1000);
 
     private double speed;
     private long time; // IN MS
+
 
     IntakeMode(double speed, long time) {
       this.speed = speed;
@@ -103,13 +104,14 @@ public class SuperStructure extends Command {
   public enum ArmPosition {
     REVERSE_TIPPING(-0.3),
     STOW(-0.25),
-    LOW_INTAKE(0.06),
+    LOW_INTAKE(0.055),
     HIGH_INTAKE(-0.167),
     // 0.01 amp
     AMP(0.01),
     SHOOT(-0.02),
     STAGEFIT(0.01),
     ALGO(0),
+    CLIMB(-0.09),
     HORIZONTAL(0);
 
     private double pos;
@@ -137,6 +139,10 @@ public class SuperStructure extends Command {
 
     this.operator = operator;
 
+
+    SmartDashboard.putNumber("offset", 0);
+    SmartDashboard.updateValues();
+   
     algoShootBoolean = true;
     driveTrainSupplier = () -> (Math.signum(driver.getRightX())
         * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
@@ -162,6 +168,7 @@ public class SuperStructure extends Command {
     // SmartDashboard.putNumber("setRPM", 0);
     // SmartDashboard.updateValues();
 
+    
     algoShootBoolean = true;
     speedFly = 0.0;
     theta = 0.0;
@@ -195,6 +202,8 @@ public class SuperStructure extends Command {
     // arm.setPosition(SmartDashboard.getNumber("setArm", 0));
     // shoot.motionMagicVelo(SmartDashboard.getNumber("setRPM", 0));
     // intake.pushIntake(operator.getLeftY());
+    SmartDashboard.putBoolean("pk", intake.getBanner());
+    SmartDashboard.updateValues();
     if (operator.getXButton()) {
       // Cancel button for algo shoot
       // if (currentPosition == ArmPosition.ALGO) {
@@ -243,7 +252,8 @@ public class SuperStructure extends Command {
       }
       SmartDashboard.putNumber("predSpeed", speedFly);
       SmartDashboard.putNumber("velocity", shoot.getVelocity());
-      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 3) != 0 || MathUtil.applyDeadband(speedFly - shoot.getVelocity(), 5) != 0) {
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 2
+      ) != 0 || MathUtil.applyDeadband(speedFly - shoot.getVelocity(), 5) != 0) {
         operator.setRumble(RumbleType.kBothRumble, 0.5);
 
       } else {
@@ -317,6 +327,10 @@ public class SuperStructure extends Command {
       setPosition(ArmPosition.STAGEFIT);
 
     }
+    else if (operator.getPOV() == 0) {
+      setIntakeMode(IntakeMode.MANUAL);
+      setPosition(ArmPosition.CLIMB);
+    }
     else if (MathUtil.applyDeadband(operator.getLeftY(), 0.1) != 0) {
       // Override Intake mode at any point to be manual
       currentIntake = IntakeMode.MANUAL;
@@ -334,16 +348,16 @@ public class SuperStructure extends Command {
           * MaxAngularRate;
     
     }
-if (driver.getYButton()) {
+// if (driver.getYButton()) {
 
-  drivetrain.generatePathAmp().execute();
+//   // drivetrain.generatePathAmp().execute();
 //       drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
-    }
-    else if (driver.getBButton()) {
-      drivetrain.generatePathSpeaker().execute();
+//     }
+//     else if (driver.getBButton()) {
+//       // drivetrain.generatePathSpeaker().execute();
 //             drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
 
-    }
+//     }
 
   if (driver.getBButton()) {
     algoShootBoolean = !algoShootBoolean;
@@ -421,11 +435,11 @@ if (driver.getYButton()) {
     else {
       if (currentPosition == ArmPosition.AMP) {
         // shoot.motionMagicVelo(-0.185*LimelightHelpers.getTY("limelight") +20.8);
-        shoot.motionMagicVelo(25, 13);
+        shoot.motionMagicVelo(23, 9);
 
       }
         else if (currentPosition == ArmPosition.HIGH_INTAKE || currentPosition == ArmPosition.LOW_INTAKE) {
-      // shoot.motionMagicVelo(-20+);
+      // shoot.motionMagicVelo(-20+);  01
     }
      else {
       // System.out.println("HELLOE");
@@ -437,8 +451,13 @@ if (driver.getYButton()) {
       // MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
 
     }
-    if (currentPosition == ArmPosition.LOW_INTAKE && intake.getBanner()) {
-      setPosition(ArmPosition.STAGEFIT);
+    if (currentPosition == ArmPosition.LOW_INTAKE) {
+      if(intake.getBanner()){
+        // setPosition(ArmPosition.STAGEFIT);
+      }else {
+        setPosition(ArmPosition.LOW_INTAKE);
+      }
+      shoot.stopShooters();
     }
     // SmartDashboard.putNumber("pitch gyro", arm.getGyroPitch());
 
@@ -457,7 +476,7 @@ if (driver.getYButton()) {
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.pushIntake(operator.getLeftY() * -0.8);
+      intake.pushIntake(operator.getLeftY() * -0.8  );
 
     }
     else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {

@@ -151,6 +151,10 @@ public class RobotContainer {
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
+    joystick.y().whileTrue(drivetrain.moveToHeading(58, () -> joystick.getLeftX(), () -> joystick.getLeftY()));
+    joystick.b().whileTrue(drivetrain.moveToHeading(270, () -> joystick.getLeftX(), () -> joystick.getLeftY()));
+
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 

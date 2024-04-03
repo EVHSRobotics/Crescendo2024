@@ -60,8 +60,8 @@ publisher = NetworkTableInstance.getDefault()
     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
 
 
-    Pathfinding.setPathfinder(new LocalADStar());
-    // NetworkTableInstance.getDefault().getEntry("priorityid").getDoubleArray(new Double[4,7]);
+    // Pathfinding.setPathfinder(new LocalADStar());
+    NetworkTableInstance.getDefault().getEntry("priorityid").setDoubleArray(new Double[] {4.0,7.0});
   }
 
   @Override
@@ -145,9 +145,9 @@ publisher = NetworkTableInstance.getDefault()
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
-    if(!hasRun)
-      new PathPlannerAuto("InitAuto").ignoringDisable(true).schedule();
-      hasRun = true;
+    // if(!hasRun)
+    //   new PathPlannerAuto("InitAuto").ignoringDisable(true).schedule();
+    //   hasRun = true;
   }
 
   @Override
@@ -212,7 +212,7 @@ publisher = NetworkTableInstance.getDefault()
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
     // m_robotContainer.getFFSteer().schedule();
-    // m_robotContainer.getSystemsCheck().schedule();
+    m_robotContainer.getSystemsCheck().schedule();
   }
 
 

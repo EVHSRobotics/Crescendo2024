@@ -92,7 +92,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             
             this); // Subsystem for requirements
 
-                    Pathfinding.setPathfinder(new LocalADStar());
+                    // Pathfinding.setPathfinder(new LocalADStar());
 
     }
 
@@ -205,8 +205,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command moveToHeading(double angle, Supplier<Double> suppX, Supplier<Double> suppY){
         SwerveRequest.FieldCentricFacingAngle heading = new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(Rotation2d.fromDegrees(angle)).withVelocityX(suppX.get() * 6).withVelocityY(suppY.get() * 6);
-        heading.HeadingController.setPID(0.8, 0.0025, 0);
-        heading.HeadingController.enableContinuousInput(-180, 180);
+        heading.HeadingController.setPID(2, 0.0, 0);
+        heading.HeadingController.enableContinuousInput(0, 360);
+        heading.RotationalDeadband = 5;
+        heading.Deadband = 5;
         return applyRequest(() -> heading);
     }
 

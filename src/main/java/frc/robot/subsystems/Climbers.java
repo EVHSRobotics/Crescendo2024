@@ -6,27 +6,36 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Climbers extends SubsystemBase {
 
-  private TalonSRX climberMotor;
+  private TalonFX climberMotor;
 
   /** Creates a new Climbers. */
   public Climbers() {
 
-    climberMotor = new TalonSRX(45);
-    climberMotor.configVoltageCompSaturation(11);
-    climberMotor.enableVoltageCompensation(true);
 
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
+configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    configuration.CurrentLimits.SupplyCurrentLimit = 80;
+    configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
+    configuration.CurrentLimits.StatorCurrentLimit = 80;
+    configuration.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    climberMotor = new TalonFX(45);
+    
+    climberMotor.getConfigurator().apply(configuration);
   }
 
   public void moveClimbers(double speed) {
-    climberMotor.set(ControlMode.PercentOutput, speed);
+    climberMotor.set(speed);
   }
+  
 
   @Override
   public void periodic() {
