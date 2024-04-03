@@ -11,6 +11,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -48,7 +50,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
-
+    private final SwerveRequest.FieldCentricFacingAngle heading = new SwerveRequest.FieldCentricFacingAngle();
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
@@ -57,6 +59,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         optimize();
+
+        
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -93,6 +97,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this); // Subsystem for requirements
 
                     // Pathfinding.setPathfinder(new LocalADStar());
+
+    this.heading.HeadingController.enableContinuousInput(0, Math.PI * 2);
+    this.heading.HeadingController.setPID(2, 0.0, 0);
+
 
     }
 
@@ -204,12 +212,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command moveToHeading(double angle, Supplier<Double> suppX, Supplier<Double> suppY){
-        SwerveRequest.FieldCentricFacingAngle heading = new SwerveRequest.FieldCentricFacingAngle().withTargetDirection(Rotation2d.fromDegrees(angle)).withVelocityX(suppX.get() * 6).withVelocityY(suppY.get() * 6);
-        heading.HeadingController.setPID(2, 0.0, 0);
-        heading.HeadingController.enableContinuousInput(0, 360);
-        heading.RotationalDeadband = 5;
-        heading.Deadband = 5;
-        return applyRequest(() -> heading);
+        // heading.HeadingController.setPID(2, 0.0, 0);
+        
+        // heading.HeadingController.enableContinuousInput(0, 360);
+        // heading.RotationalDeadband = 5;
+        // heading.Deadband = 5;
+
+
+       return applyRequest(() -> heading
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withTargetDirection(Rotation2d.fromDegrees(angle))
+            .withVelocityX(suppX.get())
+            .withVelocityY(suppY.get()));
+
     }
 
     public void driveWithVoltage(double Voltage){
@@ -234,5 +250,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             sum += module.getCANcoder().getVelocity().getValueAsDouble();
         }
         return sum/4;
+
     }
 }

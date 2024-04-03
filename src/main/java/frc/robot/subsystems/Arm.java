@@ -42,6 +42,7 @@ public class Arm extends SubsystemBase {
   private CANcoder encoder;
   private PIDController rightPID;
   private Pigeon2 pigeonGyro;
+  private double MaxSpeed = 7; // 7 meters per second desired top speed
 
 
 
@@ -92,12 +93,14 @@ public class Arm extends SubsystemBase {
     motionMagicFXConfig.CurrentLimits.StatorCurrentLimit = 80;
     motionMagicFXConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     
+   
 
 
     motionMagicFXConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
     motionMagicFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     motionMagicFXConfig.MotionMagic.MotionMagicAcceleration = 1;
     motionMagicFXConfig.MotionMagic.MotionMagicCruiseVelocity = 0.5;
+    motionMagicFXConfig.MotionMagic.MotionMagicJerk = 0.1;
     motionMagicFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
           motionMagicFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
           // set accel and velocity for going up
@@ -128,19 +131,41 @@ public class Arm extends SubsystemBase {
         
     }
 
-    public void setPosition(double position) {
+    // Calculates the vel based on drive speed
+    public void setPosition(double driveVX, double position) {
       SmartDashboard.putNumber("setpos", position);
       SmartDashboard.updateValues();
       
       // position += 0.0045 // Bell
-      // tuned to EVHS 2854 robotics
+      // tuned to EVHS 2854 robotics 
+    MotionMagicConfigs config = new MotionMagicConfigs();
+    config.MotionMagicCruiseVelocity = 0.5 * ((MaxSpeed-driveVX) / MaxSpeed); 
+
+      left.getConfigurator().apply(config);
+      right.getConfigurator().apply(config);
         
       right.setControl(new MotionMagicExpoVoltage(
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
       ));
 
   }    
+  public void setPosition(double position) {
+    SmartDashboard.putNumber("setpos", position);
+    SmartDashboard.updateValues();
+    
+    // position += 0.0045 // Bell
+    // tuned to EVHS 2854 robotics 
+  MotionMagicConfigs config = new MotionMagicConfigs();
+  config.MotionMagicCruiseVelocity = 0.5; // Calculates the vel based on drive speed
 
+    left.getConfigurator().apply(config);
+    right.getConfigurator().apply(config);
+      
+    right.setControl(new MotionMagicExpoVoltage(
+      MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
+    ));
+
+}    
     public void setVoltage(double voltage) {
       SmartDashboard.putNumber("armVoltageFFChar", voltage);
       SmartDashboard.updateValues();

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climbers;
@@ -48,7 +49,7 @@ public class SuperStructure extends Command {
 
     private Supplier<Double> driveTrainXSupplier;
   private Supplier<Double> driveTrainYSupplier;
-
+private CommandXboxController controller;
   private Arm arm;
   private boolean algoShootBoolean = true;
   private Intake intake;
@@ -127,7 +128,7 @@ public class SuperStructure extends Command {
 
   /** Creates a new SuperStructure. */
   public SuperStructure(Arm arm, Intake intake, Shooter shoot, Climbers climbers, Leds led, XboxController driver,
-      XboxController operator) {
+      XboxController operator, CommandXboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.intake = intake;
@@ -138,6 +139,7 @@ public class SuperStructure extends Command {
     this.driver = driver;
 
     this.operator = operator;
+    this.controller = controller;
 
 
     SmartDashboard.putNumber("offset", 0);
@@ -194,6 +196,11 @@ public class SuperStructure extends Command {
             .withVelocityY(driveTrainYSupplier.get()) // Drive left with negative X (left)
             .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
         ));
+
+
+        controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
+        controller.b().whileTrue(drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier));
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -202,7 +209,7 @@ public class SuperStructure extends Command {
     // arm.setPosition(SmartDashboard.getNumber("setArm", 0));
     // shoot.motionMagicVelo(SmartDashboard.getNumber("setRPM", 0));
     // intake.pushIntake(operator.getLeftY());
-    SmartDashboard.putBoolean("pk", intake.getBanner());
+    SmartDashboard.putBoolean("Banner", intake.getBanner());
     SmartDashboard.updateValues();
     if (operator.getXButton()) {
       // Cancel button for algo shoot
@@ -252,7 +259,7 @@ public class SuperStructure extends Command {
       }
       SmartDashboard.putNumber("predSpeed", speedFly);
       SmartDashboard.putNumber("velocity", shoot.getVelocity());
-      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 2
+      if (MathUtil.applyDeadband(Vision.getLimelightAprilTagTXError(), 1.5
       ) != 0 || MathUtil.applyDeadband(speedFly - shoot.getVelocity(), 5) != 0) {
         operator.setRumble(RumbleType.kBothRumble, 0.5);
 
@@ -348,18 +355,18 @@ public class SuperStructure extends Command {
           * MaxAngularRate;
     
     }
-// if (driver.getYButton()) {
+  //   if (driver.getYButton()) {
 
-//   // drivetrain.generatePathAmp().execute();
-//       drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier).execute();;
-//     }
-//     else if (driver.getBButton()) {
-//       // drivetrain.generatePathSpeaker().execute();
-//             drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier).execute();
+  // // drivetrain.generatePathAmp().execute();
+  //     drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier);
+  //   }
+  //   else if (driver.getBButton()) {
+  //     // drivetrain.generatePathSpeaker().execute();
+  //       drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier);
 
-//     }
+  //   }
 
-  if (driver.getBButton()) {
+  if (driver.getPOV() == 180) {
     algoShootBoolean = !algoShootBoolean;
   }
 
@@ -418,17 +425,18 @@ public class SuperStructure extends Command {
         }
         
         
-        theta += drive.VelocityX * 0.05;
         shoot.motionMagicVelo(tempSpeed);
-        
-        
         arm.setPosition(theta);
+          // arm.setPosition(drive.VelocityX, theta);
+        
       }
       else {
         theta = 0.03;
         speedFly = 60;
         shoot.motionMagicVelo(speedFly);
         arm.setPosition(theta);
+
+        // arm.setPosition(drive.VelocityX, theta);
       }
     } 
 
@@ -438,8 +446,17 @@ public class SuperStructure extends Command {
         shoot.motionMagicVelo(23, 9);
 
       }
-        else if (currentPosition == ArmPosition.HIGH_INTAKE || currentPosition == ArmPosition.LOW_INTAKE) {
+        else if (currentPosition == ArmPosition.HIGH_INTAKE) {
       // shoot.motionMagicVelo(-20+);  01
+      if(intake.getBanner()){
+        // setPosition(ArmPosition.STAGEFIT);
+        driver.setRumble(RumbleType.kBothRumble, 0);
+        operator.setRumble(RumbleType.kBothRumble, 0);
+
+      }else {
+        operator.setRumble(RumbleType.kBothRumble, 0.3);
+        driver.setRumble(RumbleType.kBothRumble, 0.3);
+      }
     }
      else {
       // System.out.println("HELLOE");
@@ -454,8 +471,13 @@ public class SuperStructure extends Command {
     if (currentPosition == ArmPosition.LOW_INTAKE) {
       if(intake.getBanner()){
         // setPosition(ArmPosition.STAGEFIT);
+        driver.setRumble(RumbleType.kBothRumble, 0);
+        operator.setRumble(RumbleType.kBothRumble, 0);
+
       }else {
         setPosition(ArmPosition.LOW_INTAKE);
+        operator.setRumble(RumbleType.kBothRumble, 0.3);
+        driver.setRumble(RumbleType.kBothRumble, 0.3);
       }
       shoot.stopShooters();
     }
@@ -476,12 +498,17 @@ public class SuperStructure extends Command {
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.pushIntake(operator.getLeftY() * -0.8  );
+      intake.pushIntake(operator.getLeftY() * -0.8);
+      if (currentPosition != ArmPosition.ALGO) {
+        operator.setRumble(RumbleType.kBothRumble, 0);
+      }
+      driver.setRumble(RumbleType.kBothRumble, 0);
 
     }
     else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {
 
       intake.runIntake(currentIntake.getSpeed());
+     
 
     } else if (currentIntake == IntakeMode.OUTTAKE) {
 
