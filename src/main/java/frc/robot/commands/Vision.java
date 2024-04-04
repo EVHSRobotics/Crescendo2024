@@ -155,6 +155,8 @@ public class Vision extends Command {
     double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
     return distanceFromLimelightToGoalInches * 0.025;
   }
+
+
   public static double aimLimelightObject(String limelightName) {
 
 
@@ -165,12 +167,10 @@ public class Vision extends Command {
     if(Math.abs(x) > 1){
       errorsum = 0;
       error = x;
-      // double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
+
       double dt = Timer.getFPGATimestamp() - lastTimestamp;
       double errorrate = (error-lasterror)/dt;
-      if(Math.abs(x) < 0.1){
-          errorsum += dt *  x;
-      }
+ 
       // double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.018  + errorrate *0.002+errorsum*0.000, -1, 1), 0.02);
       // System.out.println(output);
     
@@ -178,7 +178,7 @@ public class Vision extends Command {
 
       lastTimestamp = Timer.getFPGATimestamp();
       lasterror = error;
-      return -(error*0.018  + errorrate *0.003 + 0.05 * Math.signum(error));
+      return -(error*0.018+errorrate *0.003 + 0.05 * Math.signum(error));
   }
     
     // if (!tv) {

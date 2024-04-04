@@ -391,21 +391,21 @@ cancelAlgoShoot = false;
   else {
     climbers.moveClimbers(0);
   }
-    // if (driver.getXButton()) {
-    //      driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
-    //             * MaxSpeed * 0.5;
-    //   driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
-    //     MaxSpeed * 0.5);
-    // }
+    if (driver.getAButton()) {
+         driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
+                * MaxSpeed * 0.5;
+      driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
+        MaxSpeed * 0.5);
+    }
     
-    // else {
-    //   driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
-    //             * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
-    //             * MaxSpeed;
-    //   driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
-    //             * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
-    //             * MaxSpeed;
-    // }
+    else {
+      driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
+                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+      driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
+                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+                * MaxSpeed;
+    }
    
     // }
     // else {
