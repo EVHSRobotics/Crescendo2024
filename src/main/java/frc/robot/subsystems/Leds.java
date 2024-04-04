@@ -13,7 +13,7 @@ public class Leds extends SubsystemBase {
 
     public enum SparkLEDColors {
 
-      RAINBOW(-0.99), ALGO_AIM(-0.63), ALGO_SHOOT(-0.57), AMP(-0.17), LOW_INTAKE(-0.11), HIGH_INTAKE(-0.07), CLIMBING(-0.91);
+      RAINBOW(-0.99), ALGO_AIM(-0.63), ALGO_SHOOT(-0.57), AMP(-0.23), LOW_INTAKE(-0.05), HIGH_INTAKE(-0.07), CLIMBING(-0.91);
     
       private double ledColorValue;
     
