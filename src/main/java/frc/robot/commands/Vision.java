@@ -160,24 +160,26 @@ public class Vision extends Command {
 
 
     double x = LimelightHelpers.getTX(limelightName);
-    boolean tv = LimelightHelpers.getTV(limelightName);
     
 
-    errorsum = 0;
-    error = x;
-    // double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
-    double dt = Timer.getFPGATimestamp() - lastTimestamp;
-    double errorrate = (error-lasterror)/dt;
-    if(Math.abs(x) < 0.1){
-        errorsum += dt *  x;
-    }
-    double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.018  + errorrate *0.002+errorsum*0.000, -1, 1), 0.02);
-    System.out.println(output);
-   
-        // return profiledOutput;
+    if(Math.abs(x) > 1){
+      errorsum = 0;
+      error = x;
+      // double profiledOutput = MathUtil.applyDeadband(MathUtil.clamp(visionPIDController.calculate(error, 0), -1, 1), 0.05);
+      double dt = Timer.getFPGATimestamp() - lastTimestamp;
+      double errorrate = (error-lasterror)/dt;
+      if(Math.abs(x) < 0.1){
+          errorsum += dt *  x;
+      }
+      // double output = MathUtil.applyDeadband(MathUtil.clamp(error*0.018  + errorrate *0.002+errorsum*0.000, -1, 1), 0.02);
+      // System.out.println(output);
+    
+          // return profiledOutput;
 
-    lastTimestamp = Timer.getFPGATimestamp();
-    lasterror = error;
+      lastTimestamp = Timer.getFPGATimestamp();
+      lasterror = error;
+      return -(error*0.018  + errorrate *0.003 + 0.05 * Math.signum(error));
+  }
     
     // if (!tv) {
     //  if (lastTX < 0) {
@@ -190,7 +192,7 @@ public class Vision extends Command {
     // else {
 
     // }
-    return -output;
+    return 0;
   }
   
 

@@ -46,8 +46,12 @@ public class Robot extends TimedRobot {
   Pose2d poseA;
   StructArrayPublisher<Pose2d> arrayPublisher;
 
+  Timer timer = new Timer();
+  double tagId;
+  
   @Override
   public void robotInit() {
+   
     m_robotContainer = new RobotContainer();
   // WPILib
   limelightPublisher = NetworkTableInstance.getDefault().getTable("pose")
@@ -59,15 +63,17 @@ publisher = NetworkTableInstance.getDefault()
     arrayPublisher = NetworkTableInstance.getDefault()
     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
 
-
+    timer.start();
     // Pathfinding.setPathfinder(new LocalADStar());
-    NetworkTableInstance.getDefault().getEntry("priorityid").setDoubleArray(new Double[] {4.0,7.0});
+    // LimelightHelpers.setI
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
-
+    if(timer.advanceIfElapsed(5)){
+      System.gc();
+    }
     publisher.set(poseA);
 
     arrayPublisher.set(new Pose2d[] {poseA});
@@ -162,8 +168,14 @@ publisher = NetworkTableInstance.getDefault()
      if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    if(DriverStation.getAlliance().get() == Alliance.Blue){
+      tagId = 7;
+    } else{
+      tagId = 4;
+    }
+        NetworkTableInstance.getDefault().getEntry("priorityid").setDouble(tagId);
 
-    m_autonomousCommand = new WaitCommand(0.01).andThen(m_robotContainer.getAutonomousCommand());
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     if (m_autonomousCommand != null) {
@@ -183,10 +195,19 @@ publisher = NetworkTableInstance.getDefault()
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    if(DriverStation.getAlliance().get() == Alliance.Blue){
+      tagId = 7;
+    } else{
+      tagId = 4;
+    }
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("priorityid").setDouble(tagId);
+
     teleCommands = m_robotContainer.getTeleCommand();
     for(Command command : teleCommands){
       command.schedule();
     }
+
+    
   }
 
   @Override

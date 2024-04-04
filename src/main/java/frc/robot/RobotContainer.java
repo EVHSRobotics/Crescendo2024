@@ -76,7 +76,6 @@ public class RobotContainer {
   private Arm arm;
   private Climbers climbers;
   private Leds ledSub;
-
   // private FeedForwardCharacterization armCharacterization;
   // private FeedForwardCharacterization shootTopCharacterization;
   // private FeedForwardCharacterization shootBottomCharacterization;
@@ -191,6 +190,9 @@ public class RobotContainer {
         // shootSub::topGetVelocity);
     systemsCheck = new SystemsCheck(drivetrain, drive, arm, intakeSub, shootSub);
     // driveCharacterization = new FeedForwardCharacterization(null, null, null);
+  
+
+   
   }
 
 

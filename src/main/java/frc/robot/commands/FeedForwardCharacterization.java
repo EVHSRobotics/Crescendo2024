@@ -10,7 +10,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.generated.PolynomialRegression;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -82,21 +81,21 @@ public class FeedForwardCharacterization extends Command {
     }
 
     public void print() {
-      if (velocityData.size() == 0 || voltageData.size() == 0) {
-        return;
-      }
+      // if (velocityData.size() == 0 || voltageData.size() == 0) {
+      //   return;
+      // }
 
-      PolynomialRegression regression =
-          new PolynomialRegression(
-              velocityData.stream().mapToDouble(Double::doubleValue).toArray(),
-              voltageData.stream().mapToDouble(Double::doubleValue).toArray(),
-              1);
+      // PolynomialRegression regression =
+      //     new PolynomialRegression(
+      //         velocityData.stream().mapToDouble(Double::doubleValue).toArray(),
+      //         voltageData.stream().mapToDouble(Double::doubleValue).toArray(),
+      //         1);
 
-      System.out.println("FF Characterization Results:");
-      System.out.println("\tCount=" + Integer.toString(velocityData.size()) + "");
-      System.out.println(String.format("\tR2=%.5f", regression.R2()));
-      System.out.println(String.format("\tkS=%.5f", regression.beta(0)));
-      System.out.println(String.format("\tkV=%.5f", regression.beta(1)));
+      // System.out.println("FF Characterization Results:");
+      // System.out.println("\tCount=" + Integer.toString(velocityData.size()) + "");
+      // System.out.println(String.format("\tR2=%.5f", regression.R2()));
+      // System.out.println(String.format("\tkS=%.5f", regression.beta(0)));
+      // System.out.println(String.format("\tkV=%.5f", regression.beta(1)));
     }
   }
 }

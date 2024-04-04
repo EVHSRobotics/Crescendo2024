@@ -113,6 +113,7 @@ private CommandXboxController controller;
     STAGEFIT(0.01),
     ALGO(0),
     CLIMB(-0.09),
+    FEEDER(0.05),
     HORIZONTAL(0);
 
     private double pos;
@@ -211,7 +212,7 @@ private CommandXboxController controller;
     // intake.pushIntake(operator.getLeftY());
     SmartDashboard.putBoolean("Banner", intake.getBanner());
     SmartDashboard.updateValues();
-    if (operator.getXButton()) {
+    if (operator.getXButton() || operator.getLeftTriggerAxis() >= 0.3) {
       // Cancel button for algo shoot
       // if (currentPosition == ArmPosition.ALGO) {
         cancelAlgoShoot = true;
@@ -219,8 +220,6 @@ private CommandXboxController controller;
         setIntakeMode(IntakeMode.MANUAL);
         shoot.motionMagicVelo(0);
 
-      // setPosition(ArmPosition.STOW);
-      // }
     }
     // We only want it to be set to false nto to true
     // if (intake.didSeeNote && intake.getBanner()) {
@@ -304,26 +303,38 @@ private CommandXboxController controller;
     //   bannerSeen = false;
     // } 
 
-    else if (operator.getStartButton()) {
-      // Tipping algo
-      // autoPickBackUpAlgo();
-    }
     
-    else if (operator.getBButton()) {
+    else if (operator.getLeftBumper()) {
+cancelAlgoShoot = false;
       setPosition(ArmPosition.AMP);
       ledSub.setLED(SparkLEDColors.AMP);
 
     }
-    
+   
+    else if (operator.getLeftBumperReleased()) {
+            if (!cancelAlgoShoot) {
+
+             setIntakeMode(IntakeMode.OUTTAKE);
+            }
+    }    
     else if (operator.getYButton()) {
       setPosition(ArmPosition.STOW);
       setIntakeMode(IntakeMode.MANUAL);
       ledSub.setLED(SparkLEDColors.RAINBOW);
 
     } 
-    
-    else if (operator.getLeftBumper()) {
-      setPosition(ArmPosition.HIGH_INTAKE);
+    else if (operator.getStartButton()) {
+      cancelAlgoShoot = false;
+
+      setPosition(ArmPosition.FEEDER);
+    }
+    else if (operator.getStartButtonReleased()) {
+      if (!cancelAlgoShoot) {
+        setIntakeMode(IntakeMode.OUTTAKE);
+      }
+    }
+    else if (operator.getBButton()) {
+      setPosition(ArmPosition.HIGH_INTAKE); 
       setIntakeMode(IntakeMode.INTAKE);
       ledSub.setLED(SparkLEDColors.HIGH_INTAKE);
 
@@ -443,8 +454,11 @@ private CommandXboxController controller;
     else {
       if (currentPosition == ArmPosition.AMP) {
         // shoot.motionMagicVelo(-0.185*LimelightHelpers.getTY("limelight") +20.8);
-        shoot.motionMagicVelo(23, 9);
+        shoot.motionMagicVelo(20, 10);
 
+      }
+      else if (currentPosition == ArmPosition.FEEDER) {
+        shoot.motionMagicVelo(70);
       }
         else if (currentPosition == ArmPosition.HIGH_INTAKE) {
       // shoot.motionMagicVelo(-20+);  01
@@ -596,7 +610,7 @@ private CommandXboxController controller;
     // If mode isn't manual
     if (mode != IntakeMode.MANUAL) {
       // if the arm is in algo mode
-      if (currentPosition == ArmPosition.ALGO) {
+      if (currentPosition == ArmPosition.ALGO || currentPosition == ArmPosition.AMP || currentPosition == ArmPosition.FEEDER) {
         // We can immediately shoot it
         currentIntake = mode;
         intakeTimer.purge();
@@ -610,7 +624,8 @@ private CommandXboxController controller;
             this.cancel();
           }
         }, mode.getTime());
-      } else {
+      } 
+      else {
         // This is if it is not in algo mode
         // First continously check if the arm is at the setpoint
         // intakeTimer.cancel();

@@ -62,8 +62,8 @@ configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
           }
           else {
             System.out.println(noteReverseTimer.get());
-            if (noteReverseTimer.get() < 0.25) {
-            intake.set(-0.1);
+            if (noteReverseTimer.get() < 0.5) {
+            intake.set(-0.05);
 
             }
             else {
@@ -72,7 +72,7 @@ configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
             }
 
-          }
+          } 
           
         }
 

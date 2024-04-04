@@ -35,7 +35,7 @@ public class TunerConstants {
     // This needs to be tuned to your individual robot
     // priyanka lakshmi karunakaran 
     // krish sathyan iyengar
-    private static final double kSlipCurrentA = 80;
+    private static final double kSlipCurrentA = 45;
 
     // nishant penchala jonnalagadda
     // Theoretical free speed (m/s) at 12v applied output;

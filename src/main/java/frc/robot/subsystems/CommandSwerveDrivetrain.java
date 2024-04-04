@@ -98,8 +98,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
                     // Pathfinding.setPathfinder(new LocalADStar());
 
-    this.heading.HeadingController.enableContinuousInput(0, Math.PI * 2);
-    this.heading.HeadingController.setPID(2, 0.0, 0);
+    this.heading.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    this.heading.HeadingController.setPID(3, 0.0, 1);
 
 
     }
@@ -114,7 +114,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command generatePathSource() {
         // Since we are using a holonomic drivetrain, the rotation component of this pose
         // represents the goal holonomic rotation
-        Pathfinding.setStartPosition(getPose().getTranslation());
+        // Pathfinding.setStartPosition(getPose().getTranslation());
         Pose2d targetPose = new Pose2d(15.26, 1.41, Rotation2d.fromDegrees(300.297));
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
