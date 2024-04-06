@@ -53,31 +53,6 @@
           "data": {
             "name": "Outtake"
           }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2nd_BackUp_Left_Middle_Back"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "2nd_Left_Middle_Ring_Back"
-          }
         }
       ]
     }
