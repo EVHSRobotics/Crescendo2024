@@ -33,6 +33,7 @@ import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Leds.SparkLEDColors;
+import pabeles.concurrency.IntOperatorTask.Max;
 
 public class SuperStructure extends Command {
   private double MaxSpeed = 6; // 6 meters per second desired top speed
@@ -40,12 +41,22 @@ public class SuperStructure extends Command {
   private Timer m_timer;
   public boolean bannerSeen = false;
 
+  boolean robotCentricBool = false;
+
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-                                                               // driving in open loop
-  private Supplier<Double> driveTrainSupplier;
+   
+   
+      // driving in open loop
+  
+  private final SwerveRequest.RobotCentric robotCentric = new SwerveRequest.RobotCentric()
+        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+      
+      private Supplier<Double> driveTrainSupplier;
 
     private Supplier<Double> driveTrainXSupplier;
   private Supplier<Double> driveTrainYSupplier;
@@ -81,8 +92,10 @@ private CommandXboxController controller;
   public enum IntakeMode {
     OUTTAKE(0.4, 1500), // for algo shoot and amp shoot
     INTAKE(0.4, 750), // for high intake shoot
+    INTAKE_HIGH(0.3, 750),
     MANUAL(0, 1000),
-    REVERSE(-0.2, 1000);
+    REVERSE(-0.2, 1000),
+    INTAKE_AUTO(0.5, 1000);
 
     private double speed;
     private long time; // IN MS
@@ -112,7 +125,7 @@ private CommandXboxController controller;
     SHOOT(-0.02),
     STAGEFIT(0.01),
     ALGO(0),
-    CLIMB(-0.09),
+    CLIMB(-0.43),
     FEEDER(0.05),
     HORIZONTAL(0);
 
@@ -233,6 +246,7 @@ private CommandXboxController controller;
     // SmartDashboard.putNumber("posedX", TunerConstants.DriveTrain.getPigeon2());
         // SmartDashboard.putNumber("posedY", TunerConstants.DriveTrain.getPose().getRotation());
 
+        SmartDashboard.putNumber("climbArm", arm.getArmPosition());
         SmartDashboard.putNumber("vx", drive.VelocityX);
                 SmartDashboard.putNumber("vy", drive.VelocityY);
 
@@ -335,7 +349,7 @@ cancelAlgoShoot = false;
     }
     else if (operator.getBButton()) {
       setPosition(ArmPosition.HIGH_INTAKE); 
-      setIntakeMode(IntakeMode.INTAKE);
+      setIntakeMode(IntakeMode.INTAKE_HIGH);
       ledSub.setLED(SparkLEDColors.HIGH_INTAKE);
 
     } 
@@ -391,22 +405,31 @@ cancelAlgoShoot = false;
   else {
     climbers.moveClimbers(0);
   }
-    if (driver.getAButton()) {
-         driveTrainXSupplier = () -> (Vision.getObjectDistanceOutputVert())
-                * MaxSpeed * 0.5;
-      driveTrainYSupplier = () -> (Vision.aimLimelightObject("limelight-intake") *
-        MaxSpeed * 0.5);
-    }
-    
-    else {
-      driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
-                * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
-                * MaxSpeed;
-      driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
-                * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
-                * MaxSpeed;
-    }
-   
+    // if (driver.getXButton()) {
+      
+      // double y = (Vision.aimLimelightObject("limelight-intake") *
+      //   MaxAngularRate);
+      //   SmartDashboard.putNumber("limelight intake", Vision.aimLimelightObject("limelight-intake") *
+      //   MaxSpeed * 0.5);
+      //   SmartDashboard.updateValues();
+      //   double x = Math.signum(driver.getLeftY())
+      //           * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0)
+      //           * MaxSpeed;
+              
+      //   drivetrain.applyRequest(() -> robotCentric
+      //   .withVelocityX(x)
+      //   .withRotationalRate(y)).execute();
+    // }
+    // else if (driver.getRightBumper()) {
+    //   Vision.caliOffset -= 0.01;
+    // }
+    // else if (driver.getLeftBumper()) {
+    //   Vision.caliOffset += 0.01;
+    // }
+
+    SmartDashboard.putNumber("Calibration Offset", Vision.caliOffset);
+    SmartDashboard.updateValues();
+  
     // }
     // else {
     // driveTrainSupplier = () -> (Math.signum(driver.getRightX())
@@ -437,6 +460,7 @@ cancelAlgoShoot = false;
         
         
         shoot.motionMagicVelo(tempSpeed);
+      
         arm.setPosition(theta);
           // arm.setPosition(drive.VelocityX, theta);
         
@@ -457,6 +481,7 @@ cancelAlgoShoot = false;
         shoot.motionMagicVelo(20, 10);
 
       }
+     
       else if (currentPosition == ArmPosition.FEEDER) {
         shoot.motionMagicVelo(70);
       }
@@ -477,7 +502,15 @@ cancelAlgoShoot = false;
       shoot.stopShooters();
      }
 
+     if (currentPosition == ArmPosition.CLIMB) {
+arm.setPositionClimb();
+     }
+    
+     else {
+
+     
       arm.setPosition(currentPosition.getPos());
+     }
       // arm.setPosition(arm.getArmPosition() -
       // MathUtil.applyDeadband(operator.getLeftY() / 10, 0.005));
 
@@ -512,19 +545,29 @@ cancelAlgoShoot = false;
 
     if (currentIntake == IntakeMode.MANUAL) {
       // intake.runIntake(MathUtil.applyDeadband(operator.getRightY(), 0.1));
-      intake.pushIntake(operator.getLeftY() * -0.8);
+      // if (currentPosition == ArmPosition.STAGEFIT) {
+      //   intake.runIntake(MaxAngularRate);
+      // }
+      // else {
+        if (currentPosition == ArmPosition.STAGEFIT) {
+          intake.keepNote();
+        }
+        else {
+          intake.pushIntake(MathUtil.applyDeadband(operator.getLeftY() * -0.8, 0.1));
+      }
       if (currentPosition != ArmPosition.ALGO) {
         operator.setRumble(RumbleType.kBothRumble, 0);
       }
       driver.setRumble(RumbleType.kBothRumble, 0);
 
     }
-    else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE) {
+    else if (currentIntake == IntakeMode.INTAKE || currentIntake == IntakeMode.REVERSE || currentIntake == IntakeMode.INTAKE_HIGH) {
 
       intake.runIntake(currentIntake.getSpeed());
      
 
-    } else if (currentIntake == IntakeMode.OUTTAKE) {
+    } 
+    else if (currentIntake == IntakeMode.OUTTAKE) {
 
       intake.pushIntake(currentIntake.getSpeed());
     }

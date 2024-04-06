@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.commands.SuperStructure.ArmPosition;
 import frc.robot.commands.SuperStructure.IntakeMode;
 
 public class Intake implements Subsystem {
@@ -30,13 +31,22 @@ public class Intake implements Subsystem {
     intake = new TalonFX(44);
 
       TalonFXConfiguration configuration = new TalonFXConfiguration();
-configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     
     intake.getConfigurator().apply(configuration);
   }
-  public double getIntakeSpeed() {
+
+  public void keepNote() {
+    if (!getBanner()) {
+      intake.set(0.15);
+    }
+    else {
+      intake.set(0);
+    }
+  } 
+   public double getIntakeSpeed() {
 
     return intake.getVelocity().getValueAsDouble();
   }
@@ -63,7 +73,10 @@ configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
           else {
             System.out.println(noteReverseTimer.get());
             if (noteReverseTimer.get() < 0.5) {
-            intake.set(-0.05);
+
+             
+                intake.set(-0.075);
+              
 
             }
             else {

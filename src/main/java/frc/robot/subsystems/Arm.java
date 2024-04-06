@@ -99,7 +99,7 @@ public class Arm extends SubsystemBase {
     motionMagicFXConfig.Feedback.FeedbackRemoteSensorID = encoder.getDeviceID();
     motionMagicFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     motionMagicFXConfig.MotionMagic.MotionMagicAcceleration = 1;
-    motionMagicFXConfig.MotionMagic.MotionMagicCruiseVelocity = 0.5;
+    motionMagicFXConfig.MotionMagic.MotionMagicCruiseVelocity = 0.7;
     motionMagicFXConfig.MotionMagic.MotionMagicJerk = 0.1;
     motionMagicFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
           motionMagicFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -148,10 +148,9 @@ public class Arm extends SubsystemBase {
         MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())
       ));
 
-  }    
-  public void setPosition(double position) {
-    SmartDashboard.putNumber("setpos", position);
-    SmartDashboard.updateValues();
+  }
+    public void setPositionClimb() {
+    
     
     // position += 0.0045 // Bell
     // tuned to EVHS 2854 robotics 
@@ -160,6 +159,23 @@ public class Arm extends SubsystemBase {
 
     left.getConfigurator().apply(config);
     right.getConfigurator().apply(config);
+      
+    right.setControl(new MotionMagicExpoVoltage(
+      ArmPosition.CLIMB.getPos()
+    ));
+
+}        
+  public void setPosition(double position) {
+    SmartDashboard.putNumber("setpos", position);
+    SmartDashboard.updateValues();
+    
+    // position += 0.0045 // Bell
+    // tuned to EVHS 2854 robotics 
+  // MotionMagicConfigs config = new MotionMagicConfigs();
+  // config.MotionMagicCruiseVelocity = 0.5; // Calculates the vel based on drive speed
+
+  //   left.getConfigurator().apply(config);
+  //   right.getConfigurator().apply(config);
       
     right.setControl(new MotionMagicExpoVoltage(
       MathUtil.clamp(position, ArmPosition.REVERSE_TIPPING.getPos(), ArmPosition.LOW_INTAKE.getPos())

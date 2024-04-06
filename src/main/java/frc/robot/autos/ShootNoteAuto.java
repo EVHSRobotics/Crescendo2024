@@ -95,7 +95,7 @@ public class ShootNoteAuto extends Command {
 
         }, 650);
       }
-    }, 1100);
+    }, 1300);
   // }
   // }, 1000);
     

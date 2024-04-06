@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Leds extends SubsystemBase {
 
     private Spark sparkLights;
+    // private Spark sparkLightsBottom;
 
     public enum SparkLEDColors {
 
@@ -30,12 +31,14 @@ public class Leds extends SubsystemBase {
     /** Creates a new Leds. */
     public Leds() {
       sparkLights = new Spark(0);
+      // sparkLightsBottom = new Spark(1);
 
     }
 
     public void setLED(SparkLEDColors ledColor) {
     
       sparkLights.set(ledColor.getColor());
+      // sparkLightsBottom.set(ledColor.getColor());
     }
 
     @Override

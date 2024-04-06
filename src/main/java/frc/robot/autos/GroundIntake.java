@@ -33,7 +33,7 @@ public class GroundIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.runIntake(IntakeMode.INTAKE.getSpeed());
+    intake.runIntake(IntakeMode.INTAKE_AUTO.getSpeed());
     shooter.stopShooters();
 
   }

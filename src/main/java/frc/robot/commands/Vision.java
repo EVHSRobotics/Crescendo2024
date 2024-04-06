@@ -55,7 +55,7 @@ public class Vision extends Command {
 
   static double lastTimestamp = 0;  
   static double lastTX = 0.0;
-
+static public double caliOffset = -0.025;
 
   public Vision(XboxController operatorController) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -79,29 +79,29 @@ public class Vision extends Command {
     
    
   }
-  public static double getObjectDistanceNote() {
-    double testArea = 1.46, testDis = 68.0;
-    double d = Math.sqrt(testArea/LimelightHelpers.getTA("limelight-intake")) * testDis;
-    return d; 
-    // return ((lensHeight) / Math.abs(Math.tan(Math.toRadians(getY())))/2.0);
-  }
+  // public static double getObjectDistanceNote() {
+  //   double testArea = 1.46, testDis = 68.0;
+  //   double d = Math.sqrt(testArea/LimelightHelpers.getTA("limelight-intake")) * testDis;
+  //   return d; 
+  //   // return ((lensHeight) / Math.abs(Math.tan(Math.toRadians(getY())))/2.0);
+  // }
  
-  public static  double getObjectDistanceOutputVert() {
-    return MathUtil.clamp(((-getObjectDistanceNote()) * 0.02), -1, 1);
-  }
+  // public static  double getObjectDistanceOutputVert() {
+  //   return MathUtil.clamp(((-getDistanceObject(ArmPosition.LOW_INTAKE)) * 0.05), -1, 1);
+  // }
 
 
-  public static boolean doesSeeLimelightGamePiece() {
-    double classData = LimelightHelpers.getNeuralClassID("limelight-intake");
-    SmartDashboard.putNumber("detectedValue", classData);
-    SmartDashboard.updateValues();
-    if (classData == 0 || classData == 1) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
+  // public static boolean doesSeeLimelightGamePiece() {
+  //   double classData = LimelightHelpers.getNeuralClassID("limelight-intake");
+  //   SmartDashboard.putNumber("detectedValue", classData);
+  //   SmartDashboard.updateValues();
+  //   if (classData == 0 || classData == 1) {
+  //     return true;
+  //   }
+  //   else {
+  //     return false;
+  //   }
+  // }
   
   public static void resetPIDController() {
 
@@ -115,7 +115,7 @@ public class Vision extends Command {
     // if (LimelightHelpers.getTV("limelight")) {
 // return 0;
     // }
-    double predictedTheta = -0.0103 + 2.38e-03*LimelightHelpers.getTY("limelight") + -3.03e-07*Math.pow(LimelightHelpers.getTY("limelight"), 2) + -3.1e-07*Math.pow(LimelightHelpers.getTY("limelight"), 3) - 0.025;
+    double predictedTheta = -0.0103 + 2.38e-03*LimelightHelpers.getTY("limelight") + -3.03e-07*Math.pow(LimelightHelpers.getTY("limelight"), 2) + -3.1e-07*Math.pow(LimelightHelpers.getTY("limelight"), 3) + caliOffset;
     return predictedTheta;
   }
   public static double getPredVelocity() {
@@ -130,31 +130,31 @@ public class Vision extends Command {
     currentBotPose.getX();
     return null;
   }
-  public static double getDistanceObject(ArmPosition pos) {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry ty = table.getEntry("ty");
-    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+  // public static double getDistanceObject(ArmPosition pos) {
+  //   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-intake");
+  //   NetworkTableEntry ty = table.getEntry("ty");
+  //   double targetOffsetAngle_Vertical = ty.getDouble(0.0);
 
-    // how many degrees back is your limelight rotated from perfectly vertical?
-    double limelightMountAngleDegrees = -35.0; 
+  //   // how many degrees back is your limelight rotated from perfectly vertical?
+  //   double limelightMountAngleDegrees = -35.0; 
 
-    // distance from the center of the Limelight lens to the floor
-    double limelightLensHeightInches = 20.0; // Low Intake
+  //   // distance from the center of the Limelight lens to the floor
+  //   double limelightLensHeightInches = 20.0; // Low Intake
 
-    if (pos == ArmPosition.HIGH_INTAKE) {
-      limelightLensHeightInches = 60;
-    }
+  //   if (pos == ArmPosition.HIGH_INTAKE) {
+  //     limelightLensHeightInches = 60;
+  //   }
 
-    // distance from the target to the floor
-    double goalHeightInches = 0.0; 
+  //   // distance from the target to the floor
+  //   double goalHeightInches = 0.0; 
 
-    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+  //   double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+  //   double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
-    //calculate distance
-    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-    return distanceFromLimelightToGoalInches * 0.025;
-  }
+  //   //calculate distance
+  //   double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+  //   return distanceFromLimelightToGoalInches * 0.025;
+  // }
 
 
   public static double aimLimelightObject(String limelightName) {
@@ -178,7 +178,14 @@ public class Vision extends Command {
 
       lastTimestamp = Timer.getFPGATimestamp();
       lasterror = error;
-      return -(error*0.018+errorrate *0.003 + 0.05 * Math.signum(error));
+      // if (limelightName.equals("limelight-intake")) {
+      // return -(error*0.3+errorrate *0.003 + 0.05 * Math.signum(error));
+
+      // }
+      // else {
+      return -(error*0.016+errorrate *0.003 + 0.05 * Math.signum(error));
+
+      // }
   }
     
     // if (!tv) {

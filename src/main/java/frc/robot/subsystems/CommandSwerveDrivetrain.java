@@ -99,13 +99,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     // Pathfinding.setPathfinder(new LocalADStar());
 
     this.heading.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    this.heading.HeadingController.setPID(3, 0.0, 1);
+    this.heading.HeadingController.setPID(5, 0.0, 1);
 
 
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    public Command applyRequestOnce(Supplier<SwerveRequest> requestSupplier) {
+        return runOnce(() -> this.setControl(requestSupplier.get()));
     }
 
      public PathPlannerAuto getAutoPath(String pathName) {
@@ -252,4 +256,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return sum/4;
 
     }
+
+    public double getRate(){
+        return m_pigeon2.getRate();
+    }
+
 }

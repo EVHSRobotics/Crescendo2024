@@ -51,6 +51,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+
+ 
    
     m_robotContainer = new RobotContainer();
   // WPILib
@@ -70,6 +72,7 @@ publisher = NetworkTableInstance.getDefault()
 
   @Override
   public void robotPeriodic() {
+    boolean doRejectUpdate = false;
     CommandScheduler.getInstance().run(); 
     if(timer.advanceIfElapsed(5)){
       System.gc();
@@ -81,8 +84,22 @@ publisher = NetworkTableInstance.getDefault()
     // SmartDashboard.putBoolean("color", DriverStation.getAlliance().get().equals(Alliance.Blue));
     // SmartDashboard.updateValues();
     
+    // 2024.4.0
+
+  //   if(isUsingLimelight){
+  //      LimelightHelpers.SetRobotOrientation("limelight", TunerConstants.DriveTrain.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+  //     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+  //     if(Math.abs(TunerConstants.DriveTrain.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+  //     {
+  //       doRejectUpdate = true;
+  //     }
+  //     if(!doRejectUpdate)
+  //     {
+  //       updatePoseEstimatorWithVisionBotPose();
+  //   }
+  // }
     if (isUsingLimelight) {   
-      updatePoseEstimatorWithVisionBotPose(); 
+      updatePoseEstimatorWithVisionBotPose1(); 
       // var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
       
       // Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
@@ -97,7 +114,8 @@ publisher = NetworkTableInstance.getDefault()
     }
     
   }
-  public void updatePoseEstimatorWithVisionBotPose() {
+
+  public void updatePoseEstimatorWithVisionBotPose1() {
     try {
           var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
            
@@ -119,6 +137,57 @@ publisher = NetworkTableInstance.getDefault()
       double degStds;
       // multiple targets detected
       if (lastResult.targets_Fiducials.length >= 2) {
+        xyStds = 0.5;
+        degStds = 6;
+      }
+      // 1 target with large area and close to estimated pose
+      else if (LimelightHelpers.getTA("limelight") > 0.8 && poseDifference < 0.5) {
+        xyStds = 1.0;
+        degStds = 12;
+      }
+      // 1 target farther away and estimated pose is close
+      else if (LimelightHelpers.getTA("limelight") > 0.1 && poseDifference < 0.3) {
+        xyStds = 2.0;
+        degStds = 30;
+      }
+      // conditions don't match to add a vision measurement
+      else {
+        return;
+      }
+
+      TunerConstants.DriveTrain.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+      TunerConstants.DriveTrain.addVisionMeasurement(visionBotPose,
+          Timer.getFPGATimestamp() - latency);
+    }
+  }
+  catch (Exception e) {
+    System.out.println("ERROR");
+  }
+  }
+
+  public void updatePoseEstimatorWithVisionBotPose() {
+    try {
+          var lastResult = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+           
+          double latency = lastResult.latency;
+          Pose2d visionBotPose = lastResult.pose;
+
+    limelightPublisher.set(visionBotPose);
+          // invalid LL data
+    if (visionBotPose.getX() == 0.0) {
+      return;
+    }
+
+    // distance from current pose to vision estimated pose
+    double poseDifference = TunerConstants.DriveTrain.getPose().getTranslation()
+        .getDistance(visionBotPose.getTranslation());
+
+    if (LimelightHelpers.getTV("limelight")) {
+      double xyStds;
+      double degStds;
+      // multiple targets detected
+      if (lastResult.rawFiducials.length >= 2) {
         xyStds = 0.5;
         degStds = 6;
       }
@@ -232,8 +301,8 @@ publisher = NetworkTableInstance.getDefault()
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
     // m_robotContainer.getFFArm().schedule();
-    // m_robotContainer.getFFSteer().schedule();
-    m_robotContainer.getSystemsCheck().schedule();
+    // m_robotContainer.getFFSteer().schedule();+
+    // m_robotContainer.getSystemsCheck().schedule();
   }
 
 

@@ -99,7 +99,7 @@ public class RobotContainer {
       .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  // private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public enum AutoPaths {
 
@@ -152,7 +152,7 @@ public class RobotContainer {
     }
   
 
-    drivetrain.registerTelemetry(logger::telemeterize);
+    // drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   public RobotContainer() {
