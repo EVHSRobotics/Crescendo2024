@@ -75,7 +75,7 @@ configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             if (noteReverseTimer.get() < 0.5) {
 
              
-                intake.set(-0.075);
+                intake.set(-0.1);
               
 
             }

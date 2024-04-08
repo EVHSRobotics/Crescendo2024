@@ -86,20 +86,21 @@ publisher = NetworkTableInstance.getDefault()
     
     // 2024.4.0
 
-  //   if(isUsingLimelight){
-  //      LimelightHelpers.SetRobotOrientation("limelight", TunerConstants.DriveTrain.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-  //     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-  //     if(Math.abs(TunerConstants.DriveTrain.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-  //     {
-  //       doRejectUpdate = true;
-  //     }
-  //     if(!doRejectUpdate)
-  //     {
-  //       updatePoseEstimatorWithVisionBotPose();
-  //   }
-  // }
-    if (isUsingLimelight) {   
-      updatePoseEstimatorWithVisionBotPose1(); 
+    if(isUsingLimelight){
+      //  LimelightHelpers.SetRobotOrientation("limelight", TunerConstants.DriveTrain.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+
+      if(Math.abs(TunerConstants.DriveTrain.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      {
+        doRejectUpdate = true;
+      }
+      if(!doRejectUpdate)
+      {
+        updatePoseEstimatorWithVisionBotPose();
+    }
+  }
+    // if (isUsingLimelight) {   
+    //   updatePoseEstimatorWithVisionBotPose();
       // var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
       
       // Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
@@ -111,7 +112,7 @@ publisher = NetworkTableInstance.getDefault()
         // TunerConstants.DriveTrain.setPose(llPose);
         // TunerConstants.DriveTrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       // }
-    }
+    // }
     
   }
 
@@ -169,7 +170,7 @@ publisher = NetworkTableInstance.getDefault()
   public void updatePoseEstimatorWithVisionBotPose() {
     try {
           var lastResult = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-           
+
           double latency = lastResult.latency;
           Pose2d visionBotPose = lastResult.pose;
 

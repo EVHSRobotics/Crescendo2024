@@ -14,6 +14,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -92,8 +93,8 @@ private CommandXboxController controller;
   private XboxController driver;
 
   public enum IntakeMode {
-    OUTTAKE(0.4, 1500), // for algo shoot and amp shoot
-    INTAKE(0.4, 750), // for high intake shoot
+    OUTTAKE(0.6, 1500), // for algo shoot and amp shoot
+    INTAKE(0.6, 750), // for high intake shoot
     INTAKE_HIGH(0.25, 750),
     MANUAL(0, 1000),
     REVERSE(-0.2, 1000),
@@ -215,10 +216,16 @@ private CommandXboxController controller;
 
 
         controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
-        controller.b().whileTrue(drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier));
+        controller.b().whileTrue(alignToAmp());
     
-  }
 
+  }
+ public Command alignToAmp() {
+  Pose2d drivetrainPose = TunerConstants.DriveTrain.getPose();
+  driveTrainXSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Red ? -6.45 : 6.45) -drivetrainPose.getX()) * 0.01);
+  driveTrainYSupplier = () -> ((3.49-drivetrainPose.getY()) * 0.01);
+    return drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier);
+  }
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -312,6 +319,7 @@ private CommandXboxController controller;
         }
 
       } */
+
     }
 
     // else if (operator.getAButtonReleased()) {
@@ -376,7 +384,13 @@ cancelAlgoShoot = false;
       // autoBalancingAlgo();
       operator.setRumble(RumbleType.kBothRumble, 0);
 
-    
+      driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
+      * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
+      * MaxSpeed;
+driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
+      * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
+      * MaxSpeed;
+
         driveTrainSupplier = () -> (Math.signum(driver.getRightX())
           * -(Math.abs(driver.getRightX()) > 0.15 ? Math.abs(Math.pow(driver.getRightX(), 2)) + 0.1 : 0))
           * MaxAngularRate;
@@ -407,6 +421,8 @@ cancelAlgoShoot = false;
   else {
     climbers.moveClimbers(0);
   }
+
+  
     // if (driver.getXButton()) {
       
       // double y = (Vision.aimLimelightObject("limelight-intake") *
