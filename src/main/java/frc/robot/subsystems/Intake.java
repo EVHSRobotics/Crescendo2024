@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -30,12 +33,39 @@ public class Intake implements Subsystem {
     bannerSensor = new DigitalInput(1); // 1 is the one that works!
     intake = new TalonFX(44);
 
-      TalonFXConfiguration configuration = new TalonFXConfiguration();
-configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    var configs = configuration.Slot0;
+    configs.kS = 0;
+    configs.kV = 0;
+    configs.kA = 0;
+  
+    configs.kP = 0.3;    
+    configs.kI = 0;
+    configs.kD = 0;
+    var motionMagic = configuration.MotionMagic;
 
     
+    motionMagic.MotionMagicAcceleration = 200;
+    motionMagic.MotionMagicJerk = 2000;
+    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    
     intake.getConfigurator().apply(configuration);
+  }
+
+  public Double topGetVelocity(){
+    return intake.getVelocity().getValueAsDouble();  
+  }
+
+  public void topVoltageConsumer(Double voltage){
+    SmartDashboard.putNumber("shooterVoltageFFChar", voltage);
+    SmartDashboard.updateValues();
+    intake.setControl(new VoltageOut(voltage));
+  }
+
+  public void setRPS(double RPS){
+    intake.setControl(new MotionMagicVelocityVoltage(RPS));
   }
 
   public void keepNote() {
