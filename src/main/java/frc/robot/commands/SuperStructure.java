@@ -16,8 +16,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -92,7 +94,7 @@ private CommandXboxController controller;
   public enum IntakeMode {
     OUTTAKE(0.4, 1500), // for algo shoot and amp shoot
     INTAKE(0.4, 750), // for high intake shoot
-    INTAKE_HIGH(0.3, 750),
+    INTAKE_HIGH(0.25, 750),
     MANUAL(0, 1000),
     REVERSE(-0.2, 1000),
     INTAKE_AUTO(0.5, 1000);
@@ -213,7 +215,7 @@ private CommandXboxController controller;
 
 
         controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
-        controller.b().whileTrue(drivetrain.moveToHeading(270, driveTrainXSupplier, driveTrainYSupplier));
+        controller.b().whileTrue(drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier));
     
   }
 

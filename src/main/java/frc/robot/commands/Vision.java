@@ -120,7 +120,7 @@ static public double caliOffset = -0.025;
   }
   public static double getPredVelocity() {
     double predictedVelocity = 69.9 + -0.999*LimelightHelpers.getTY("limelight") + 0.0529*Math.pow(LimelightHelpers.getTY("limelight"), 2);
-    return predictedVelocity;
+    return predictedVelocity * 1.1;
   }
   public static double getLimelightAprilTagTXError() {
     return LimelightHelpers.getTX("limelight");

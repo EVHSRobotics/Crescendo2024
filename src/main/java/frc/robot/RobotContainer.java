@@ -117,8 +117,10 @@ public class RobotContainer {
     Backup_Middle_Left("BackUp_Middle_Left"),  
     Backup_Middle_Right("BackUp_Middle_Right"),  
     Note_3_Center_Shoot("3_Note_Center_Shoot"),
+    Note_2_Center_Shoot("2_Note_Center_Shoot"),
     BackUp_Middle_Left_Steal("BackUp_Middle_Left_Steal"), 
     Note_4_Center_Shoot("4_Note_2_Right_Auto"),
+    disruptor("disrupt"),
     Middle_4("middle4");
 
 

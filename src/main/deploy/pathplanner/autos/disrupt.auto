@@ -2,19 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7669041156768799,
-      "y": 6.697556018829346
+      "x": 0.7474133372306824,
+      "y": 4.397637844085693
     },
-    "rotation": -120.96375009033116
+    "rotation": 119.86277074136822
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootMiddleClose"
+            "pathName": "messin with the opps"
           }
         }
       ]

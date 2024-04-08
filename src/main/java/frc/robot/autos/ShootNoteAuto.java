@@ -36,6 +36,8 @@ public class ShootNoteAuto extends Command {
                            
   private boolean isAutoFinished = false;
 
+  private final double autoCalib = 0.0065;
+
   /** Creates a new ShootNoteAuto. */
   public ShootNoteAuto(Arm arm, Intake intake, Shooter shoot) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -62,7 +64,7 @@ public class ShootNoteAuto extends Command {
     //   @Override
     //   public void run() {
                   
-    arm.setPosition(Vision.getPredTheta());
+    arm.setPosition(Vision.getPredTheta() + autoCalib);
     shoot.motionMagicVelo(Vision.getPredVelocity());
     // shoot.motionMagicVelo(10);
 
@@ -111,7 +113,7 @@ public class ShootNoteAuto extends Command {
     // arm.setPosition(
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
             
-    arm.setPosition(Vision.getPredTheta());
+    arm.setPosition(Vision.getPredTheta() + autoCalib);
     shoot.motionMagicVelo(Vision.getPredVelocity());
 
     }

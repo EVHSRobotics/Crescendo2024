@@ -14,38 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Outtake"
+            "name": "ShootMiddleClose"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Arm_Ground"
+            "waitTime": 8.0
           }
         },
         {
-          "type": "race",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "BackUp_Right"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake"
+            "pathName": "BackUp_Right"
           }
         },
         {

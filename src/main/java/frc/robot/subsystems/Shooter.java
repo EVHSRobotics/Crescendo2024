@@ -69,9 +69,9 @@ public class Shooter extends SubsystemBase {
     motionMagic.MotionMagicJerk = 2000;
     configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     
-    configuration.CurrentLimits.SupplyCurrentLimit = 80;
+    configuration.CurrentLimits.SupplyCurrentLimit = 90;
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
-    configuration.CurrentLimits.StatorCurrentLimit = 80;
+    configuration.CurrentLimits.StatorCurrentLimit = 90;
     configuration.CurrentLimits.StatorCurrentLimitEnable = true;
     
 
