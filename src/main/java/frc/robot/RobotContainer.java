@@ -16,9 +16,11 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import frc.robot.autos.AdjustAimMove;
 import frc.robot.autos.GroundArm;
 import frc.robot.autos.ShootNoteAuto;
 import frc.robot.autos.ShootNoteClose;
+import frc.robot.autos.ShootNoteFast;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -232,6 +234,8 @@ public class RobotContainer {
     eventMap.put("Intake", new GroundIntake(intakeSub, shootSub));
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
     eventMap.put("ShootMiddleClose", new ShootNoteClose(arm, intakeSub, shootSub));
+    eventMap.put("OuttakeFast", new ShootNoteFast(arm, intakeSub, shootSub));
+    eventMap.put("Aim", new AdjustAimMove(arm, shootSub));
 // krish
 
     NamedCommands.registerCommands(eventMap);

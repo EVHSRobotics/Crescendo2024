@@ -20,7 +20,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-public class ShootNoteAuto extends Command {
+public class ShootNoteFast extends Command {
   private double MaxSpeed = 6; // 6 meters per second desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -39,7 +39,7 @@ public class ShootNoteAuto extends Command {
   private final double autoCalib = 0.0065;
 
   /** Creates a new ShootNoteAuto. */
-  public ShootNoteAuto(Arm arm, Intake intake, Shooter shoot) {
+  public ShootNoteFast(Arm arm, Intake intake, Shooter shoot) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.intake = intake;
@@ -79,13 +79,11 @@ public class ShootNoteAuto extends Command {
     intake.pushIntake(0);
     //   }
     // }
-  
     shootTimer.schedule(new TimerTask() {
       @Override
       public void run() {
         // runningInitializeIntake = false;
         this.cancel();
-
         intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
         shootTimer.schedule(new TimerTask() {
 
@@ -97,9 +95,9 @@ public class ShootNoteAuto extends Command {
             isAutoFinished = true;
           }
 
-        }, 650);
+        }, 400);
       }
-    }, 1300);
+    }, 100);
   // }
   // }, 1000);
     
