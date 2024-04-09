@@ -105,26 +105,33 @@ public class RobotContainer {
 
   public enum AutoPaths {
 
-    BackupMiddleAuto("BackUp_Middle"),
-    BackupLeftAuto("BackUp_Left"),
-    BackupRightAuto("BackUp_Right"),
-    BackupLeftCenterAuto("BackUp_Left_Center"),
-    BackupRightCenterAuto("BackUp_Right_Center"),
-    BackupLeftCenterShootAuto("BackUp_Left_Center_Shoot"),
-    BackupRightCenterShootAuto("BackUp_Right_Center_Shoot"),
-    BackupRight4NoteShootAuto("BackUp_Right_Middle_Left"),
-    BackupLeft4NoteShootAuto("BackUp_Left_Middle_Right"),
-    BackupRight5NoteShootAuto("BackUp_Right_Middle_Left_Center"),   
-    BackupLeft5NoteShootAuto("BackUp_Left_Middle_Right_Center"),
-    Backup_Middle_Left("BackUp_Middle_Left"),  
-    Backup_Middle_Right("BackUp_Middle_Right"),  
-    Note_3_Center_Shoot("3_Note_Center_Shoot"),
-    Note_2_Center_Shoot("2_Note_Center_Shoot"),
-    BackUp_Middle_Left_Steal("BackUp_Middle_Left_Steal"), 
-    Note_4_Center_Shoot("4_Note_2_Right_Auto"),
-    disruptor("disrupt"),
-    Middle_4("middle4");
-
+    // BackupMiddleAuto("BackUp_Middle"),
+    // BackupLeftAuto("BackUp_Left"),
+    // BackupRightAuto("BackUp_Right"),
+    // BackupLeftCenterAuto("BackUp_Left_Center"),
+    // BackupRightCenterAuto("BackUp_Right_Center"),
+    // BackupLeftCenterShootAuto("BackUp_Left_Center_Shoot"),
+    // BackupRightCenterShootAuto("BackUp_Right_Center_Shoot"),
+    // BackupRight4NoteShootAuto("BackUp_Right_Middle_Left"),
+    // BackupLeft4NoteShootAuto("BackUp_Left_Middle_Right"),
+    // BackupRight5NoteShootAuto("BackUp_Right_Middle_Left_Center"),   
+    // BackupLeft5NoteShootAuto("BackUp_Left_Middle_Right_Center"),
+    // Backup_Middle_Left("BackUp_Middle_Left"),  
+    // Backup_Middle_Right("BackUp_Middle_Right"),  
+    // Note_3_Center_Shoot("3_Note_Center_Shoot"),
+    // Note_2_Center_Shoot("2_Note_Center_Shoot"),
+    // BackUp_Middle_Left_Steal("BackUp_Middle_Left_Steal"), 
+    // Note_4_Center_Shoot("4_Note_2_Right_Auto"),
+    // disruptor("disrupt"),
+    // Middle_4("middle4");
+    Source_3Note_Steal_Disrupt("Source_3Note_Steal_Disrupt"),
+    Source_1Note_Disrupt("Source_1Note_Disrupt"),
+    Source_3Note_Steal("Source_3Note_Steal"),
+    Amp_2Note_Steal("Amp_2Note_Steal"),
+    Middle_2Note("Middle_2Note"),
+    Middle_4Note("Middle_4Note"),
+    Source_2Note("Source_2Note"),
+    Amp_2Note("Amp_2Note");
 
     private String pathName;
 
