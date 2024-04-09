@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7552586197853088,
-      "y": 4.420613765716553
+      "x": 1.3810584545135498,
+      "y": 1.6107929944992063
     },
-    "rotation": 120.57923354348726
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootMiddleClose"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -36,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideDisrupt.1"
+                  "pathName": "SourceSideDisrupt1Note.1"
                 }
               }
             ]
@@ -45,7 +39,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceSideDisrupt.2"
+            "pathName": "SourceSideDisrupt1Note.2"
           }
         },
         {
@@ -61,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideDisrupt.3"
+                  "pathName": "SourceSideDisrupt1Note.3"
                 }
               }
             ]
