@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3810584545135498,
-      "y": 1.6107929944992063
+      "x": 0.766904354095459,
+      "y": 4.417128086090088
     },
-    "rotation": 180.0
+    "rotation": 122.00536745838374
   },
   "command": {
     "type": "sequential",
@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "ShootMiddleClose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Arm_Ground"
           }
         },
@@ -30,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal3Note.1"
+                  "pathName": "SourceSideSteal4Note.1"
                 }
               }
             ]
@@ -49,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal3Note.2"
+                  "pathName": "SourceSideSteal4Note.2"
                 }
               }
             ]
@@ -80,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal3Note.3"
+                  "pathName": "SourceSideSteal4Note.3"
                 }
               }
             ]
@@ -99,7 +105,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal3Note.4"
+                  "pathName": "SourceSideSteal4Note.4"
                 }
               }
             ]
@@ -130,7 +136,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal3Note.5"
+                  "pathName": "SourceSideSteal4Note.5"
                 }
               }
             ]
@@ -139,7 +145,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceSideSteal3Note.6"
+            "pathName": "SourceSideSteal4Note.6"
           }
         },
         {
