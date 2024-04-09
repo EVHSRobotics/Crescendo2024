@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "AmpSideSteal.1"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Arm_Ground"
@@ -36,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpSideSteal.1"
+                  "pathName": "AmpSideSteal.2"
                 }
               }
             ]
@@ -49,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpSideSteal.2"
+                  "pathName": "AmpSideSteal.3"
                 }
               },
               {
@@ -86,7 +92,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpSideSteal.3"
+                  "pathName": "AmpSideSteal.4"
                 }
               }
             ]
@@ -99,7 +105,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpSideSteal.4"
+                  "pathName": "AmpSideSteal.5"
                 }
               },
               {

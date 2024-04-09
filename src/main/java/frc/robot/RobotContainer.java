@@ -124,10 +124,10 @@ public class RobotContainer {
     // Note_4_Center_Shoot("4_Note_2_Right_Auto"),
     // disruptor("disrupt"),
     // Middle_4("middle4");
-    Source_3Note_Steal_Disrupt("Source_3Note_Steal_Disrupt"),
+    Source_4Note_Steal("Source_4Note_Steal"),
     Source_1Note_Disrupt("Source_1Note_Disrupt"),
     Source_3Note_Steal("Source_3Note_Steal"),
-    Amp_2Note_Steal("Amp_2Note_Steal"),
+    Amp_3Note_Steal("Amp_3Note_Steal"),
     Middle_2Note("Middle_2Note"),
     Middle_4Note("Middle_4Note"),
     Source_2Note("Source_2Note"),
