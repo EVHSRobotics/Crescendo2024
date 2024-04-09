@@ -10,6 +10,7 @@ import java.util.TimerTask;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Vision;
@@ -35,8 +36,6 @@ public class ShootNoteAuto extends Command {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                            
   private boolean isAutoFinished = false;
-
-  private final double autoCalib = 0.0065;
 
   /** Creates a new ShootNoteAuto. */
   public ShootNoteAuto(Arm arm, Intake intake, Shooter shoot) {
@@ -64,7 +63,7 @@ public class ShootNoteAuto extends Command {
     //   @Override
     //   public void run() {
                   
-    arm.setPosition(Vision.getPredTheta() + autoCalib);
+    arm.setPosition(Vision.getPredTheta());
     shoot.motionMagicVelo(Vision.getPredVelocity());
     // shoot.motionMagicVelo(10);
 
@@ -99,7 +98,7 @@ public class ShootNoteAuto extends Command {
 
         }, 650);
       }
-    }, 1300);
+    }, 1100);
   // }
   // }, 1000);
     
@@ -108,16 +107,34 @@ public class ShootNoteAuto extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+        // drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
     // shoot.motionMagicVelo(
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
     // arm.setPosition(
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedTheta").getDouble(0));
             
-    arm.setPosition(Vision.getPredTheta() + autoCalib);
+    arm.setPosition(Vision.getPredTheta());
     shoot.motionMagicVelo(Vision.getPredVelocity());
 
+    if (MathUtil.applyDeadband(Vision.getPredTheta() - arm.getArmPosition(), 0.003) == 0 && 
+    MathUtil.applyDeadband(Vision.getPredVelocity() - shoot.getVelocity(), 3) == 0) {
+      shootTimer.cancel();
+      shootTimer.purge();
+
+
+      intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+      shootTimer.schedule(new TimerTask() {
+
+        @Override
+        public void run() {   
+          this.cancel();
+          intake.pushIntake(0);
+          shoot.stopShooters();
+          isAutoFinished = true;
+        }
+
+      }, 400);    }
     }
 
   // Called once the command ends or is interrupted.
