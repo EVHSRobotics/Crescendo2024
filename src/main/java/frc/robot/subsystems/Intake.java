@@ -34,22 +34,21 @@ public class Intake implements Subsystem {
     intake = new TalonFX(44);
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
-    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    var configs = configuration.Slot0;
-    configs.kS = 0;
-    configs.kV = 0;
-    configs.kA = 0;
+    // // var configs = configuration.Slot0;
+    // // configs.kS = 0;
+    // // configs.kV = 0;
+    // // configs.kA = 0;
   
-    configs.kP = 0.3;    
-    configs.kI = 0;
-    configs.kD = 0;
-    var motionMagic = configuration.MotionMagic;
+    // // configs.kP = 0.3;    
+    // // configs.kI = 0;
+    // // configs.kD = 0;
+    // // var motionMagic = configuration.MotionMagic;
 
     
-    motionMagic.MotionMagicAcceleration = 200;
-    motionMagic.MotionMagicJerk = 2000;
-    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    // // motionMagic.MotionMagicAcceleration = 200;
+    // // motionMagic.MotionMagicJerk = 2000;
     
     intake.getConfigurator().apply(configuration);
   }

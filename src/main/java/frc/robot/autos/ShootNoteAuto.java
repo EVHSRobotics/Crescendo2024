@@ -30,12 +30,15 @@ public class ShootNoteAuto extends Command {
   private Intake intake;
   private Shooter shoot;
   private Timer shootTimer;
+  
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                            
   private boolean isAutoFinished = false;
+
+  private boolean timerFinished = false;
 
   /** Creates a new ShootNoteAuto. */
   public ShootNoteAuto(Arm arm, Intake intake, Shooter shoot) {
@@ -58,6 +61,7 @@ public class ShootNoteAuto extends Command {
 // runningInitializeIntake = true;
 
     shootTimer.purge();
+    timerFinished = false;
       
     // shootTimer.schedule(new TimerTask() {
     //   @Override
@@ -107,7 +111,7 @@ public class ShootNoteAuto extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        // drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+        drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
     // shoot.motionMagicVelo(
     //         NetworkTableInstance.getDefault().getTable("shootModel").getEntry("predictedPerOut").getDouble(0));
@@ -116,27 +120,33 @@ public class ShootNoteAuto extends Command {
             
     arm.setPosition(Vision.getPredTheta());
     shoot.motionMagicVelo(Vision.getPredVelocity());
+    // try{
+    // if (MathUtil.applyDeadband(Vision.getPredTheta() - arm.getArmPosition(), 0.003) == 0 && 
+    // MathUtil.applyDeadband(Vision.getPredVelocity() - shoot.getVelocity(), 3) == 0) {
+    //   if(!timerFinished){
+    //     shootTimer.cancel();
+    //     shootTimer.purge();
+    //     timerFinished = true;
+    //     shootTimer.schedule(new TimerTask() {
 
-    if (MathUtil.applyDeadband(Vision.getPredTheta() - arm.getArmPosition(), 0.003) == 0 && 
-    MathUtil.applyDeadband(Vision.getPredVelocity() - shoot.getVelocity(), 3) == 0) {
-      shootTimer.cancel();
-      shootTimer.purge();
+    //       @Override
+    //       public void run() {   
+    //         this.cancel();
+    //         intake.pushIntake(0);
+    //         shoot.stopShooters();
+    //         isAutoFinished = true;
+    //       }
+  
+    //     }, 400);    }
+      
 
+    //   intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
+    // }
+    // } catch(Exception e){
 
-      intake.pushIntake(IntakeMode.OUTTAKE.getSpeed());
-      shootTimer.schedule(new TimerTask() {
-
-        @Override
-        public void run() {   
-          this.cancel();
-          intake.pushIntake(0);
-          shoot.stopShooters();
-          isAutoFinished = true;
-        }
-
-      }, 400);    }
+    // }
+    // }
     }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

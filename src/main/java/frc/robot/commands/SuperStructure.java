@@ -93,8 +93,8 @@ private CommandXboxController controller;
   private XboxController driver;
 
   public enum IntakeMode {
-    OUTTAKE(0.6, 1500), // for algo shoot and amp shoot
-    INTAKE(0.6, 750), // for high intake shoot
+    OUTTAKE(0.4, 1500), // for algo shoot and amp shoot
+    INTAKE(0.5, 750), // for high intake shoot
     INTAKE_HIGH(0.25, 750),
     MANUAL(0, 1000),
     REVERSE(-0.2, 1000),
