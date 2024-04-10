@@ -97,7 +97,7 @@ public class ShootNoteFast extends Command {
 
         }, 400);
       }
-    }, 100);
+    }, 500);
   // }
   // }, 1000);
     

@@ -39,6 +39,7 @@ public class AdjustArmRpmFar extends Command {
       addRequirements(arm);
       addRequirements(intake);
       addRequirements(shoot);
+      
     }
 
     @Override
@@ -50,6 +51,8 @@ public class AdjustArmRpmFar extends Command {
   
   
       shootTimer.purge();
+
+      intake.pushIntake(0);
         
       // shootTimer.schedule(new TimerTask() {
       //   @Override

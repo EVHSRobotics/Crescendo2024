@@ -47,12 +47,6 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Aim"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "SourceSideSteal.2"
@@ -96,12 +90,6 @@
           "type": "race",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim"
-                }
-              },
               {
                 "type": "path",
                 "data": {

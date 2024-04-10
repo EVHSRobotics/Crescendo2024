@@ -242,7 +242,7 @@ public class RobotContainer {
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
     eventMap.put("ShootMiddleClose", new ShootNoteClose(arm, intakeSub, shootSub));
     eventMap.put("OuttakeFast", new ShootNoteFast(arm, intakeSub, shootSub));
-    eventMap.put("Aim", new AdjustAimMove(arm, shootSub));
+    eventMap.put("Aim", new AdjustAimMove(arm, shootSub, intakeSub));
 // krish
 
     NamedCommands.registerCommands(eventMap);

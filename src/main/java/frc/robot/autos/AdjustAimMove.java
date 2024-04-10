@@ -27,6 +27,7 @@ public class AdjustAimMove extends Command {
   // private boolean runningInitializeIntake = true;
   private Arm arm;
   private Shooter shoot;
+  private Intake intake;
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -36,10 +37,11 @@ public class AdjustAimMove extends Command {
   private final double autoCalib = 0.0065;
 
   /** Creates a new ShootNoteAuto. */
-  public AdjustAimMove(Arm arm, Shooter shoot) {
+  public AdjustAimMove(Arm arm, Shooter shoot, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.shoot = shoot;
+    this.intake = intake;
 
 
     addRequirements(arm);
@@ -49,20 +51,20 @@ public class AdjustAimMove extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+    // drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
 
     arm.setPosition(Vision.getPredTheta() + autoCalib);
     shoot.motionMagicVelo(Vision.getPredVelocity());
-  
+    intake.keepNote();
     
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
+        // drivetrain.applyRequest(() -> drive.withRotationalRate(Vision.aimLimelightObject("limelight") * MaxAngularRate)).execute(); // Drive counterclockwise with negative X (left)
         
-
+    intake.keepNote();
     arm.setPosition(Vision.getPredTheta() + autoCalib);
     shoot.motionMagicVelo(Vision.getPredVelocity());
 
