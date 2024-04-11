@@ -14,6 +14,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -52,7 +53,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-
+    TunerConstants.DriveTrain.configureArea(DriverStation.getAlliance().get() == (Alliance.Blue) ? new Translation2d(1.5, 7.0) : new Translation2d(1.5, -7.0));
  
    
     m_robotContainer = new RobotContainer();
