@@ -160,6 +160,10 @@ public class RobotContainer {
     // reset the field-centric heading on right bumper press
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
+    // move to face the amp area
+    joystick.rightTrigger().whileTrue(drivetrain.moveHeadingStack(() -> joystick.getLeftX(), () -> joystick.getLeftY()));
+
+
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }

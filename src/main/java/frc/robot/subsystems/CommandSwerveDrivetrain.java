@@ -27,6 +27,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -47,6 +48,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    private Translation2d shootingArea = new Translation2d(0,0);
+
+    private double stowHeading = 0;
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
@@ -104,6 +109,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     }
 
+    public void configureArea(Translation2d area){
+        shootingArea = area;
+    }
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
@@ -179,6 +187,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
         );
         return pathfindingCommand;
+
+    }
+
+    public Command moveHeadingStack(Supplier<Double> suppX, Supplier<Double> suppY){
+        
+       return applyRequest(() -> heading
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.Velocity)
+            // need to check this angle
+            .withTargetDirection(getPose().getTranslation().minus(shootingArea).getAngle())
+            .withVelocityX(suppX.get())
+            .withVelocityY(suppY.get()));
 
     }
 
