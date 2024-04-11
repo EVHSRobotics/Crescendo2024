@@ -98,7 +98,7 @@ private CommandXboxController controller;
     INTAKE_HIGH(0.25, 750),
     MANUAL(0, 1000),
     REVERSE(-0.2, 1000),
-    INTAKE_AUTO(0.5, 1000);
+    INTAKE_AUTO(0.6, 1000);
 
     private double speed;
     private long time; // IN MS
@@ -121,7 +121,7 @@ private CommandXboxController controller;
   public enum ArmPosition {
     REVERSE_TIPPING(-0.3),
     STOW(-0.25),
-    LOW_INTAKE(0.055),
+    LOW_INTAKE(0.06),
     HIGH_INTAKE(-0.167),
     // 0.01 amp
     AMP(0.01),
@@ -129,7 +129,7 @@ private CommandXboxController controller;
     STAGEFIT(0.01),
     ALGO(0),
     CLIMB(-0.43),
-    FEEDER(0.05),
+    FEEDER(0.01),
     HORIZONTAL(0);
 
     private double pos;
@@ -214,16 +214,16 @@ private CommandXboxController controller;
             .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
         ));
 
-
+        
         controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
         controller.b().whileTrue(alignToAmp());
     
 
   }
- public Command alignToAmp() {
+ public Command alignToAmp() {  
   Pose2d drivetrainPose = TunerConstants.DriveTrain.getPose();
-  driveTrainXSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Red ? -6.45 : 6.45) -drivetrainPose.getX()) * 0.01);
-  driveTrainYSupplier = () -> ((3.49-drivetrainPose.getY()) * 0.01);
+  driveTrainXSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Red ? -6.45 : 6.45) -drivetrainPose.getX()) * -5);
+  driveTrainYSupplier = () -> (-(3.49-drivetrainPose.getY()) * 5);
     return drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier);
   }
   // Called every time the scheduler runs while the command is scheduled.
@@ -501,7 +501,7 @@ driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
       }
      
       else if (currentPosition == ArmPosition.FEEDER) {
-        shoot.motionMagicVelo(70);
+        shoot.motionMagicVelo(65);
       }
         else if (currentPosition == ArmPosition.HIGH_INTAKE) {
       // shoot.motionMagicVelo(-20+);  01

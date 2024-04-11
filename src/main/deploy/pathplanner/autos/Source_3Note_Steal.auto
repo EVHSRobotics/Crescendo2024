@@ -51,6 +51,12 @@
                 "data": {
                   "pathName": "SourceSideSteal.2"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim"
+                }
               }
             ]
           }
@@ -58,7 +64,7 @@
         {
           "type": "named",
           "data": {
-            "name": "OuttakeFast"
+            "name": "ShootNoteSourceFar"
           }
         },
         {
@@ -95,6 +101,12 @@
                 "data": {
                   "pathName": "SourceSideSteal.4"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim"
+                }
               }
             ]
           }
@@ -102,7 +114,7 @@
         {
           "type": "named",
           "data": {
-            "name": "OuttakeFast"
+            "name": "ShootNoteSourceFar"
           }
         }
       ]

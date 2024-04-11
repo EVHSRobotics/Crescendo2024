@@ -17,10 +17,12 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import frc.robot.autos.AdjustAimMove;
+import frc.robot.autos.ArmHigh;
 import frc.robot.autos.GroundArm;
 import frc.robot.autos.ShootNoteAuto;
 import frc.robot.autos.ShootNoteClose;
 import frc.robot.autos.ShootNoteFast;
+import frc.robot.autos.ShootNoteSourceFar;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -161,7 +163,7 @@ public class RobotContainer {
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-  
+    
 
     // drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -238,11 +240,16 @@ public class RobotContainer {
   public void setUpAutoCommands() {
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
     eventMap.put("Arm_Ground", new GroundArm(arm));
+        eventMap.put("Arm_High", new ArmHigh(arm));
+    eventMap.put("ShootNoteSourceFar", new ShootNoteSourceFar(arm, intakeSub, shootSub));
+
     eventMap.put("Intake", new GroundIntake(intakeSub, shootSub));
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
     eventMap.put("ShootMiddleClose", new ShootNoteClose(arm, intakeSub, shootSub));
     eventMap.put("OuttakeFast", new ShootNoteFast(arm, intakeSub, shootSub));
     eventMap.put("Aim", new AdjustAimMove(arm, shootSub, intakeSub));
+    // eventMap.put("Reset Gyro", new FunctionalCommand());
+
 // krish
 
     NamedCommands.registerCommands(eventMap);

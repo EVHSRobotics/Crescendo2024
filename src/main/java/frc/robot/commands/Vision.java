@@ -187,20 +187,9 @@ static public double caliOffset = -0.025;
 
       // }
   }
-    
-    // if (!tv) {
-    //  if (lastTX < 0) {
-    //   return 0.75;
-    //  }
-    //  else {
-    //   return -0.75;
-    //  } 
-    // }
-    // else {
+  return 0;
+}
 
-    // }
-    return 0;
-  }
   
 
   // Called once the command ends or is interrupted.

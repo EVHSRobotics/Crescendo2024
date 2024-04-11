@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3810584545135498,
-      "y": 1.6107929944992063
+      "x": 1.4443525075912476,
+      "y": 1.50523579120636
     },
     "rotation": 180.0
   },
@@ -11,6 +11,25 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SourceSideDisrupt1Note.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm_High"
+                }
+              }
+            ]
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -22,40 +41,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideDisrupt1Note.1"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceSideDisrupt1Note.2"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "SourceSideDisrupt1Note.3"
+                  "pathName": "SourceSideDisrupt1Note.2"
                 }
               }
             ]

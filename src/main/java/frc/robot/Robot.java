@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private Command[] teleCommands;
 
-  private boolean isUsingLimelight = true
+  private boolean isUsingLimelight = false;
   ;
   private RobotContainer m_robotContainer;
 

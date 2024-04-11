@@ -34,7 +34,7 @@ public class Intake implements Subsystem {
     intake = new TalonFX(44);
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
-    // configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // // var configs = configuration.Slot0;
     // // configs.kS = 0;
@@ -69,7 +69,7 @@ public class Intake implements Subsystem {
 
   public void keepNote() {
     if (!getBanner()) {
-      intake.set(0.15);
+      intake.set(0.2);
     }
     else {
       intake.set(0);

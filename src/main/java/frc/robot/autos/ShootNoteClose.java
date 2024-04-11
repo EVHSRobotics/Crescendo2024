@@ -46,7 +46,7 @@ public class ShootNoteClose extends Command {
     public void initialize() 
     {
       shoot.motionMagicVelo(65);
-      arm.setPosition(0.04);    
+      arm.setPosition(0.05);    
       isAutoFinished = false;
   
   
