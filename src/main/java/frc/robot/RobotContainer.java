@@ -161,7 +161,6 @@ public class RobotContainer {
     joystick.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     // move to face the amp area
-    joystick.rightTrigger().whileTrue(drivetrain.moveHeadingStack(() -> joystick.getLeftX(), () -> joystick.getLeftY()));
 
 
     if (Utils.isSimulation()) {
@@ -246,13 +245,12 @@ public class RobotContainer {
     eventMap.put("Arm_Ground", new GroundArm(arm));
         eventMap.put("Arm_High", new ArmHigh(arm));
     eventMap.put("ShootNoteSourceFar", new ShootNoteSourceFar(arm, intakeSub, shootSub));
-
     eventMap.put("Intake", new GroundIntake(intakeSub, shootSub));
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
     eventMap.put("ShootMiddleClose", new ShootNoteClose(arm, intakeSub, shootSub));
     eventMap.put("OuttakeFast", new ShootNoteFast(arm, intakeSub, shootSub));
     eventMap.put("Aim", new AdjustAimMove(arm, shootSub, intakeSub));
-    // eventMap.put("Reset Gyro", new FunctionalCommand());
+    eventMap.put("Reset Gyro", new FunctionalCommand(drivetrain::seedFieldRelative, ()->{}, (done) -> {}, () -> true, drivetrain));
 
 // krish
 

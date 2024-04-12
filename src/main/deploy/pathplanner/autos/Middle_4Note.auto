@@ -109,6 +109,18 @@
           "data": {
             "name": "Outtake"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle4.4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Gyro"
+          }
         }
       ]
     }

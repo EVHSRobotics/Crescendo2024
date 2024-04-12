@@ -217,13 +217,13 @@ private CommandXboxController controller;
         
         controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
         controller.b().whileTrue(alignToAmp());
-    
+
 
   }
  public Command alignToAmp() {  
   Pose2d drivetrainPose = TunerConstants.DriveTrain.getPose();
-  driveTrainXSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Red ? -6.45 : 6.45) -drivetrainPose.getX()) * -5);
-  driveTrainYSupplier = () -> (-(3.49-drivetrainPose.getY()) * 5);
+  driveTrainXSupplier = () -> ((1.88-drivetrainPose.getX()) * - 5);
+  driveTrainYSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Blue ? 7.33 : -7.33) -drivetrainPose.getY()) * -5);
     return drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier);
   }
   // Called every time the scheduler runs while the command is scheduled.
@@ -347,16 +347,7 @@ cancelAlgoShoot = false;
       ledSub.setLED(SparkLEDColors.RAINBOW);
 
     } 
-    else if (operator.getStartButton()) {
-      cancelAlgoShoot = false;
-
-      setPosition(ArmPosition.FEEDER);
-    }
-    else if (operator.getStartButtonReleased()) {
-      if (!cancelAlgoShoot) {
-        setIntakeMode(IntakeMode.OUTTAKE);
-      }
-    }
+   
     else if (operator.getBButton()) {
       setPosition(ArmPosition.HIGH_INTAKE); 
       setIntakeMode(IntakeMode.INTAKE_HIGH);
@@ -415,6 +406,19 @@ driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
     
     climbers.moveClimbers(driver.getRightTriggerAxis());
   }
+   else if (driver.getXButton()) {
+      cancelAlgoShoot = false;
+
+      setPosition(ArmPosition.FEEDER);
+    }
+    else if (driver.getXButtonReleased()) {
+      if (!cancelAlgoShoot) {
+        setIntakeMode(IntakeMode.OUTTAKE);
+      }
+    }
+    else if (driver.getYButton()) {
+      drivetrain.moveHeadingStack(() -> controller.getLeftX(), () -> controller.getLeftY()).execute();
+    }
   else if (driver.getLeftTriggerAxis() > 0.1) {
     climbers.moveClimbers(-driver.getLeftTriggerAxis());
   }
@@ -437,7 +441,7 @@ driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
       //   drivetrain.applyRequest(() -> robotCentric
       //   .withVelocityX(x)
       //   .withRotationalRate(y)).execute();
-    // }
+    // }fszdddddddd
     // else if (driver.getRightBumper()) {
     //   Vision.caliOffset -= 0.01;
     // }
@@ -535,14 +539,18 @@ arm.setPositionClimb();
     }
     if (currentPosition == ArmPosition.LOW_INTAKE) {
       if(intake.getBanner()){
-        // setPosition(ArmPosition.STAGEFIT);
+        setPosition(ArmPosition.STAGEFIT);
+                ledSub.setLED(SparkLEDColors.LOW_INTAKE_TAKEN);
+
         driver.setRumble(RumbleType.kBothRumble, 0);
         operator.setRumble(RumbleType.kBothRumble, 0);
 
       }else {
         setPosition(ArmPosition.LOW_INTAKE);
-        operator.setRumble(RumbleType.kBothRumble, 0.3);
-        driver.setRumble(RumbleType.kBothRumble, 0.3);
+                ledSub.setLED(SparkLEDColors.LOW_INTAKE);
+
+      operator.setRumble(RumbleType.kBothRumble, 0.6);
+        driver.setRumble(RumbleType.kBothRumble, 0.6);
       }
       shoot.stopShooters();
     }

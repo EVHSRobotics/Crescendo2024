@@ -116,6 +116,18 @@
           "data": {
             "name": "ShootNoteSourceFar"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceSideSteal.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Gyro"
+          }
         }
       ]
     }

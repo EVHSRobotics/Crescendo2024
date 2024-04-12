@@ -101,7 +101,7 @@ public class Intake implements Subsystem {
           }
           else {
             System.out.println(noteReverseTimer.get());
-            if (noteReverseTimer.get() < 0.5) {
+            if (noteReverseTimer.get() < 0.3) {
 
              
                 intake.set(-0.1);

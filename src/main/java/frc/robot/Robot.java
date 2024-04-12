@@ -53,8 +53,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-    TunerConstants.DriveTrain.configureArea(DriverStation.getAlliance().get() == (Alliance.Blue) ? new Translation2d(1.5, 7.0) : new Translation2d(1.5, -7.0));
- 
+    TunerConstants.DriveTrain.configureArea(DriverStation.getAlliance().get() == (Alliance.Blue) ? new Translation2d(1.5, -7.0) : new Translation2d(1.5, 7.0));
+    poseA = TunerConstants.DriveTrain.getPose();
    
     m_robotContainer = new RobotContainer();
   // WPILib
@@ -80,6 +80,8 @@ publisher = NetworkTableInstance.getDefault()
       System.gc();
     }
     publisher.set(poseA);
+
+  
 
     arrayPublisher.set(new Pose2d[] {poseA});
 
