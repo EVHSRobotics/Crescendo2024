@@ -18,6 +18,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import frc.robot.autos.AdjustAimMove;
 import frc.robot.autos.ArmHigh;
+import frc.robot.autos.CheckNoteFarLeft;
+import frc.robot.autos.CheckNoteSecondLeft;
 import frc.robot.autos.GroundArm;
 import frc.robot.autos.ShootNoteAuto;
 import frc.robot.autos.ShootNoteClose;
@@ -67,6 +69,8 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
   private final XboxController driver = new XboxController(0);
   private final SendableChooser<String> autoChooser;
+  private final HashMap<String, Command> commandChooser;
+
   private Timer m_timer = new Timer();
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
@@ -172,11 +176,27 @@ public class RobotContainer {
   }
 
   public RobotContainer() {
+
+    
+    intakeSub = new Intake();
+
+    arm = new Arm();
+    shootSub = new Shooter();
+    ledSub = new Leds();
+    shoot = new Shoot(shootSub, operator);
+    climbers = new Climbers();
+    superStructure = new SuperStructure(arm, intakeSub, shootSub, climbers, ledSub, driver, operator, joystick);
+ 
+
+    setUpAutoCommands();
+
     autoChooser = new SendableChooser<String>();
+    commandChooser = new HashMap<String, Command>();
+
 
     AutoPaths[] allAutoPaths = AutoPaths.values();
-    for (int i=0; i<allAutoPaths.length; i++) 
-    {
+    for (int i=0; i<allAutoPaths.length; i++) {
+      commandChooser.put(allAutoPaths[i].getPath(), drivetrain.getAutoPath(allAutoPaths[i].getPath()));
       autoChooser.addOption(allAutoPaths[i].getPath(), allAutoPaths[i].getPath());
     }
 
@@ -187,17 +207,7 @@ public class RobotContainer {
     // steerCharacterization = new FPeedForwardCharacterization(drivetrain, drivetrain::steerWithVoltage, drivetrain::getVeloSteer);
 
 
-    intakeSub = new Intake();
-
-    arm = new Arm();
-    shootSub = new Shooter();
-    ledSub = new Leds();
-    shoot = new Shoot(shootSub, operator);
-    climbers = new Climbers();
-    superStructure = new SuperStructure(arm, intakeSub, shootSub, climbers, ledSub, driver, operator, joystick);
- 
     configureBindings();
-    setUpAutoCommands();
 
     // armCharacterization = new FeedForwardCharacterization(arm, arm::setVoltage, arm::getVelocity);
     // shootBottomCharacterization = new FeedForwardCharacterization(shootSub,
@@ -243,7 +253,7 @@ public class RobotContainer {
   public void setUpAutoCommands() {
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
     eventMap.put("Arm_Ground", new GroundArm(arm));
-        eventMap.put("Arm_High", new ArmHigh(arm));
+    eventMap.put("Arm_High", new ArmHigh(arm));
     eventMap.put("ShootNoteSourceFar", new ShootNoteSourceFar(arm, intakeSub, shootSub));
     eventMap.put("Intake", new GroundIntake(intakeSub, shootSub));
     eventMap.put("Outtake", new ShootNoteAuto(arm, intakeSub, shootSub));
@@ -251,6 +261,8 @@ public class RobotContainer {
     eventMap.put("OuttakeFast", new ShootNoteFast(arm, intakeSub, shootSub));
     eventMap.put("Aim", new AdjustAimMove(arm, shootSub, intakeSub));
     eventMap.put("Reset Gyro", new FunctionalCommand(drivetrain::seedFieldRelative, ()->{}, (done) -> {}, () -> true, drivetrain));
+    eventMap.put("CheckNoteFarLeft", new CheckNoteFarLeft(intakeSub));
+    eventMap.put("CheckNoteSecondLeft", new CheckNoteSecondLeft(intakeSub));
 
 // krish
 
@@ -273,10 +285,12 @@ public class RobotContainer {
     // easiest way: running auto through PathPlannerLib while using choreo
     // trajectories
     
-    String auto = autoChooser.getSelected();
-    drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
-    return drivetrain.getAutoPath(auto);
+    // String auto = autoChooser.getSelected();
+    // drivetrain.setPose(PathPlannerAuto.getStaringPoseFromAutoFile(auto));
+    // return drivetrain.getAutoPath(auto);
     
+
+    return commandChooser.get(autoChooser.getSelected());
     // drivetrain.setPose(null);
     // Command chooser = autoChooser.getSelected().;
     // return autoChooser.getSelected();

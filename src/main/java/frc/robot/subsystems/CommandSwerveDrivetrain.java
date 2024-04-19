@@ -104,7 +104,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     // Pathfinding.setPathfinder(new LocalADStar());
 
     this.heading.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    this.heading.HeadingController.setPID(10, 0.5, 2);
+    this.heading.HeadingController.setPID(15, 0.5, 1);
 
 
     }

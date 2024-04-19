@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Intake;
 
-public class CheckNoteFarLeft extends Command{
+public class CheckNoteSecondLeft extends Command{
 
     Intake intake;
     boolean finished = false;
-    public CheckNoteFarLeft(Intake intake){
+    public CheckNoteSecondLeft(Intake intake){
         this.intake = intake;
     }
     
@@ -19,7 +19,7 @@ public class CheckNoteFarLeft extends Command{
 
         if(!intake.getBanner()){
             CommandScheduler.getInstance().cancelAll();
-            TunerConstants.DriveTrain.getAutoPath("Adjust_Far_Left").schedule();
+            TunerConstants.DriveTrain.getAutoPath("Adjust_Second_Left").schedule();
         }
         finished = true;
     }

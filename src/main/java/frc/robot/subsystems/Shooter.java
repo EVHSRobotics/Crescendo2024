@@ -58,7 +58,7 @@ public class Shooter extends SubsystemBase {
     slot0Configs.kS = 0.27002;
     slot0Configs.kV = 0.11435;
     slot0Configs.kA = 0;
-    slot0Configs.kP = 0.3;
+    slot0Configs.kP = 0.33;
     slot0Configs.kI = 0; // 0.05
     slot0Configs.kD = 0; // 0.1
     var motionMagic = configuration.MotionMagic;

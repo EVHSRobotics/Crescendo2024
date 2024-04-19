@@ -129,7 +129,8 @@ private CommandXboxController controller;
     STAGEFIT(0.01),
     ALGO(0),
     CLIMB(-0.43),
-    FEEDER(0.01),
+    FEEDER(0.02
+    ),
     HORIZONTAL(0);
 
     private double pos;
@@ -169,7 +170,7 @@ private CommandXboxController controller;
 
     driveTrainXSupplier = () -> (Math.signum(driver.getLeftY())
                 * -(Math.abs(driver.getLeftY()) > 0.1 ? Math.abs(Math.pow(driver.getLeftY(), 2)) + 0.1 : 0))
-                * MaxSpeed;
+                * MaxSpeed; 
       driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
                 * -(Math.abs(driver.getLeftX()) > 0.1 ? Math.abs(Math.pow(driver.getLeftX(), 2)) + 0.1 : 0))
                 * MaxSpeed;
@@ -212,18 +213,19 @@ private CommandXboxController controller;
             // negative Y (forward)
             .withVelocityY(driveTrainYSupplier.get()) // Drive left with negative X (left)
             .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
-        ));
+            .withDriveRequestType(DriveR)
+            ));
 
         
-        controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
+        // controller.y().whileTrue(drivetrain.moveToHeading(58, driveTrainXSupplier, driveTrainYSupplier));
         controller.b().whileTrue(alignToAmp());
-
+    controller.leftBumper().whileTrue(drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? 215 : 145, driveTrainXSupplier, driveTrainYSupplier));
 
   }
  public Command alignToAmp() {  
   Pose2d drivetrainPose = TunerConstants.DriveTrain.getPose();
-  driveTrainXSupplier = () -> ((1.88-drivetrainPose.getX()) * - 5);
-  driveTrainYSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Blue ? 7.33 : -7.33) -drivetrainPose.getY()) * -5);
+  // driveTrainXSupplier = () -> ((1.88-drivetrainPose.getX()) * - 5);
+  // driveTrainYSupplier = () -> (((DriverStation.getAlliance().get() == Alliance.Blue ? 7.33 : -7.33) -drivetrainPose.getY()) * -5);
     return drivetrain.moveToHeading(DriverStation.getAlliance().get() == Alliance.Red ? -90 : 90, driveTrainXSupplier, driveTrainYSupplier);
   }
   // Called every time the scheduler runs while the command is scheduled.
@@ -416,16 +418,15 @@ driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
         setIntakeMode(IntakeMode.OUTTAKE);
       }
     }
-    else if (driver.getYButton()) {
-      drivetrain.moveHeadingStack(() -> controller.getLeftX(), () -> controller.getLeftY()).execute();
-    }
   else if (driver.getLeftTriggerAxis() > 0.1) {
     climbers.moveClimbers(-driver.getLeftTriggerAxis());
   }
   else {
     climbers.moveClimbers(0);
   }
-
+//  if (driver.getLeftBumper()) {
+//       drivetrain.moveHeadingStack(() -> controller.getLeftX(), () -> controller.getLeftY()).execute();
+//     }
   
     // if (driver.getXButton()) {
       
@@ -505,7 +506,7 @@ driveTrainYSupplier = () -> (Math.signum(driver.getLeftX())
       }
      
       else if (currentPosition == ArmPosition.FEEDER) {
-        shoot.motionMagicVelo(65);
+        shoot.motionMagicVelo(55);
       }
         else if (currentPosition == ArmPosition.HIGH_INTAKE) {
       // shoot.motionMagicVelo(-20+);  01

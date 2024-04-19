@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
   private Command[] teleCommands;
 
   private boolean isUsingLimelight = false;
-  ;
+  
   private RobotContainer m_robotContainer;
 
   private boolean hasRun = false;
@@ -238,6 +238,7 @@ publisher = NetworkTableInstance.getDefault()
 
   @Override
   public void autonomousInit() {
+    isUsingLimelight = false;
 
      if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
@@ -269,6 +270,7 @@ publisher = NetworkTableInstance.getDefault()
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    isUsingLimelight = true;
     if(DriverStation.getAlliance().get() == Alliance.Blue){
       tagId = 7;
     } else{

@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7474145889282227,
-      "y": 4.41712760925293
+      "x": 8.275590896606445,
+      "y": 0.9107881784439088
     },
-    "rotation": 120.96375009033116
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootMiddleClose"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -36,16 +30,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal.1"
+                  "pathName": "AdjustFarLeft.1"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "CheckNoteFarLeft"
           }
         },
         {
@@ -55,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal.2"
+                  "pathName": "AdjustFarLeft.2"
                 }
               },
               {
@@ -84,24 +72,18 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "AdjustFarLeft.3"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "Intake"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "SourceSideSteal.3"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "CheckNoteSecondLeft"
           }
         },
         {
@@ -111,13 +93,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SourceSideSteal.4"
+                  "pathName": "AdjustFarLeft.4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Aim"
+                  "name": "Arm_Ground"
                 }
               }
             ]
@@ -132,7 +114,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceSideSteal.5"
+            "pathName": "AdjustFarLeft.5"
           }
         },
         {

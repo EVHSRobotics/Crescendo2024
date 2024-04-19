@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+
 import java.util.TimerTask;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -13,7 +14,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 
-public class ShootNoteClose extends Command {
+public class ShootNoteMiddleClose extends Command {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   
@@ -29,7 +30,7 @@ public class ShootNoteClose extends Command {
     private boolean isAutoFinished = false;
   
     /** Creates a new ShootNoteAuto. */
-    public ShootNoteClose(Arm arm, Intake intake, Shooter shoot) {
+    public ShootNoteMiddleClose(Arm arm, Intake intake, Shooter shoot) {
       // Use addRequirements() here to declare subsystem dependencies.
       this.arm = arm;
       this.intake = intake;
@@ -46,7 +47,7 @@ public class ShootNoteClose extends Command {
     public void initialize() 
     {
       shoot.motionMagicVelo(65);
-      arm.setPosition(0.05);    
+      arm.setPosition(0.07);    
       isAutoFinished = false;
   
   
