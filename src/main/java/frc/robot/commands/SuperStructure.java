@@ -181,29 +181,15 @@ private CommandXboxController controller;
     addRequirements(climbers);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // SmartDashboard.putNumber("setArm", 0);
-    // SmartDashboard.putNumber("setRPM", 0);
-    // SmartDashboard.updateValues();
 
-    
     algoShootBoolean = true;
     speedFly = 0.0;
     theta = 0.0;
     currentPosition = ArmPosition.STOW;
     currentIntake = IntakeMode.MANUAL;
     ledSub.setLED(SparkLEDColors.RAINBOW);
-    // boardAlgoShoot = Shuffleboard.getTab("DriverStation_2024").add("AlgoShoot", true).getEntry();
-    // boardBanner = Shuffleboard.getTab("DriverStation_2024").add("Banner", false).getEntry();
-    // armPositionEntry = Shuffleboard.getTab("DriverStation_2024").add("ArmPosition", "Stow").getEntry();
-    // intakeModeEntry = Shuffleboard.getTab("DriverStation_2024").add("IntakeMode", "Manual").getEntry();
-    // flyWheelSpeedEntry = Shuffleboard.getTab("DriverStation_2024").add("FlyWheelSpeed", 0.0).getEntry();
-    // armThetaEntry = Shuffleboard.getTab("DriverStation_2024").add("ArmTheta", 0.0).getEntry();
-    // tyEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TY", 0.0).getEntry();
-    // txEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TX", 0.0).getEntry();
-    // taEntry = Shuffleboard.getTab("DriverStation_2024").add("Limelight_TA", 0.0).getEntry();
 
     m_timer = new Timer();
     // Sets up Swerve
@@ -213,7 +199,6 @@ private CommandXboxController controller;
             // negative Y (forward)
             .withVelocityY(driveTrainYSupplier.get()) // Drive left with negative X (left)
             .withRotationalRate(driveTrainSupplier.get()) // Drive counterclockwise with negative X (left)
-            .withDriveRequestType(DriveR)
             ));
 
         

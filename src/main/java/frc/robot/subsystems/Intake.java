@@ -24,8 +24,8 @@ public class Intake implements Subsystem {
   private DigitalInput bannerSensor;
   private TalonFX intake;
   public boolean useBanner;
-  public boolean didSeeNote = false;
-  public Timer noteReverseTimer = new Timer();
+  public boolean seenNote = false;
+  public Timer timer = new Timer();
   
 
   public Intake() {
@@ -85,48 +85,27 @@ public class Intake implements Subsystem {
     
   }
   public void runIntake(double power) {
-    if (useBanner) {
-        // Outtaking is ok
-        SmartDashboard.putNumber("test", power);
-        if (!getBanner() || power < 0) {
-                    didSeeNote = false;
-
-          intake.set(power);
-        } else {
-          if (!didSeeNote) {
-                     didSeeNote = true;
-
-            noteReverseTimer.restart();
-
-          }
-          else {
-            System.out.println(noteReverseTimer.get());
-            if (noteReverseTimer.get() < 0.3) {
-
-             
-                intake.set(-0.1);
-              
-
-            }
-            else {
-              
-             intake.set(0);
-
-            }
-
-          } 
-          
-        }
-
-
-      
-    } else {
-      intake.set(power);
+    // first chceck if the sensor has seen the note, if false, and the banner is not detecting then intake, reset timer at this moment
+    if(!seenNote && !getBanner()){
+       intake.set(power);
+       seenNote = getBanner();
+       timer.reset();
     }
-    SmartDashboard.putNumber("BannerSeen?", power);
-    SmartDashboard.updateValues();
 
+    //e we have already seen the note, and the timer is less thatn 1.5 seconds, we do a little rieverse itnake to push it back (might not be needed)
+    else if (seenNote && (timer.get() <1.5)){
+        intake.set(-0.1);
+    }
+
+    //since the SeenNote, would be true, and so would Banner, reset SeenNote as already stored. and the first if won't run as getBanner is still true, and neither will the second if run as timer has run out
+    else {
+      seenNote=false;
+
+      intake.set(0);
+    }
   }
+      
+  
 
   public void intakePushOut (){
     intake.set(SmartDashboard.getNumber("IntakePushOutSpeed", -0.5));

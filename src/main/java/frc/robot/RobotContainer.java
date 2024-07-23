@@ -45,7 +45,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.autos.GroundIntake;
-import frc.robot.commands.Shoot;
 import frc.robot.commands.SuperStructure;
 import frc.robot.commands.SystemsCheck;
 import frc.robot.commands.Vision;
@@ -56,7 +55,6 @@ import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
@@ -77,7 +75,6 @@ public class RobotContainer {
   // private Vision vision;
   // private RunArm runArm;
   // private RunIntake intake;
-  private Shoot shoot;
   private SuperStructure superStructure;
   private Shooter shootSub;
   private Intake intakeSub;
@@ -183,7 +180,6 @@ public class RobotContainer {
     arm = new Arm();
     shootSub = new Shooter();
     ledSub = new Leds();
-    shoot = new Shoot(shootSub, operator);
     climbers = new Climbers();
     superStructure = new SuperStructure(arm, intakeSub, shootSub, climbers, ledSub, driver, operator, joystick);
  
